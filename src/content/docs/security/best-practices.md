@@ -1,0 +1,25 @@
+---
+title: Best Practices
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+# Best Practices For Security
+
+<Aside type="note">
+This guide is incomplete. Please help us complete it by contributing to the documentation repository.
+</Aside>
+
+We are aiming to make FOSSBilling as secure as possible but, just as with any other piece of software, there are still a lot of best practices that you should be following.
+
+## Network/server level
+
+Security starts at the network and server levels. If those are compromised then it makes no difference how secure something is at the app level (FOSSBilling).
+
+In many cases you might not have as much control as would be ideal over network level security, but it is something you should bear in mind when choosing an infrastructure provider. You should absolutely be taking basic steps to make sure that your server is as secure as possible though, some good starting points would be:
+
+* Make sure that your server OS is kept up to date with the latest security patches at all times.
+* Do not run things as a root user unless you absolutely have to, that is what `sudo` exists for. 
+* Use SSH keys to login to your server rather than relying on passwords.
+* Do not allow remote access to anything, for example databases, unless you have a valid reason.
+* Close any ports that do not explicitly need to be publicly accessible, using a firewall.
