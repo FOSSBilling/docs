@@ -42,7 +42,7 @@ Some Cloudflare features can cause issues within FOSSBilling, here is a list of 
 
 ### Auto Minify
 
-- Enabling the "Auto Minify" feature with Cloudflare can cause issues within the admin panel, specifically related to file integrity checks. This will cause JS and CSS files to no longer be loaded inside your web browser and for the administrator panel to be unusable. If this issue is effecting you, your browser should display an error like this: `None of the "sha384" hashes in the integrity attribute match the content of the subresource.`
+- Enabling the "Auto Minify" feature with Cloudflare can cause issues within the admin panel, specifically related to file integrity checks. This will cause JS and CSS files to no longer be loaded inside your web browser and for the administrator panel to be unusable. If this issue is affecting you, your browser should display an error like this: `None of the "sha384" hashes in the integrity attribute match the content of the subresource.`
 - The solution for this issue is to simply disable the "Auto Minify" feature.
 
 ## Permission issues
@@ -59,7 +59,7 @@ If you're receiving permission related errors (such as with the `config.php` fil
 
 ### File ownership
 
-If the wrong owner is assigned to the files, then even with the correct file permissions assigned (`755`), things will still not work correctly. You can check the correct own using the following steps:
+If the wrong owner is assigned to the files, then even with the correct file permissions assigned (`755`), things will still not work correctly. You can check the correct owner using the following steps:
 
 - Create a new PHP file and place the following contents inside of it: `<?php var_dump(get_current_user());?>`
 - Open the PHP file in your web-browser. This should output the user that is used to execute PHP, which you can then use to fix the user / group permissions for your website.
