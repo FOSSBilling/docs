@@ -42,7 +42,7 @@ Some Cloudflare features can cause issues within FOSSBilling, here is a list of 
 
 ### Auto Minify
 
-- Enabling the "Auto Minify" feature with Cloudflare can cause issues within the admin panel, specifically related to file integrity checks. This will cause JS and CSS files to no longer be loaded inside your web browser and for the administrator panel to be unusable. If this issue is effecting you, your browser should display an error like this: `None of the "sha384" hashes in the integrity attribute match the content of the subresource.`
+- Enabling the "Auto Minify" feature with Cloudflare can cause issues within the admin panel, specifically related to file integrity checks. This will cause JS and CSS files to no longer be loaded inside your web browser and for the administrator panel to be unusable. If this issue is affecting you, your browser should display an error like this: `None of the "sha384" hashes in the integrity attribute match the content of the subresource.`
 - The solution for this issue is to simply disable the "Auto Minify" feature.
 
 ## Permission issues
