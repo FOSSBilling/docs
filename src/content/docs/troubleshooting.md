@@ -88,7 +88,7 @@ Those of you who are using a RHEL derived Linux distribution (RHEL, CentOS, Rock
 ## Unknown "encore_entry_link_tags" function.
 
 This error occurs when attempting to use FOSSBilling under a sub-folder (`example.com/billing`).
-For the time being, we aren't providing support for installing FOSSBilling under a sub-folder, however we do intend to improve how routing is handling later down the line which should resolve this issue.
+For the time being, we aren't providing support for installing FOSSBilling under a sub-folder, however we do intend to improve how routing is handled later down the line which should resolve this issue.
 The fix is to instead install FOSSBilling to a sub-domain (`billing.example.com`).
 
 ## Errors after updating
