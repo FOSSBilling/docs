@@ -88,7 +88,7 @@ Those of you who are using a RHEL derived Linux distribution (RHEL, CentOS, Rock
 ## Unknown "encore_entry_link_tags" function.
 
 This error occurs when attempting to use FOSSBilling under a sub-folder (`example.com/billing`).
-For the time being, we aren't providing support for installing FOSSBilling under a sub-folder, however we do intend to improve how routing is handling later down the line which should resolve this issue.
+For the time being, we aren't providing support for installing FOSSBilling under a sub-folder, however we do intend to improve how routing is handled later down the line which should resolve this issue.
 The fix is to instead install FOSSBilling to a sub-domain (`billing.example.com`).
 
 ## Errors after updating
@@ -111,14 +111,14 @@ If you're seeing a message similar to this in the FOSSBilling dashboard, that me
 
 ### An incorrect PHP version is being used
 
-Because cron is executed as a command on the host server, these steps aren't associated with any domain which results in a control panel using it's default or the "system" PHP version. Often, this version can be too old for FOSSBilling (see the [system requirements](/docs/getting-started/requirements) which results in the cronjob failing).
+Because cron is executed as a command on the host server, these steps aren't associated with any domain which results in a control panel using its default or the "system" PHP version. Often, this version can be too old for FOSSBilling (see the [system requirements](/docs/getting-started/requirements) which results in the cronjob failing).
 
 These steps may help you resolve this issue:
 
 1.  If your control panel gives you a PHP version selector for cron, use that to select one that meets FOSSBilling's requirements.
 2.  Try specifying a different PHP binary to use in the cron job (Examples: `php8.2` or `/usr/bin/php8.2` instead of simply using `php`)
 2.  Remove any PHP versions less than 8.2 to ensure it can't use an incorrect version.
-4.  Contact the maintainers of your control panel and how to select a different PHP version for cron.
+4.  Contact the maintainers of your control panel and ask how to select a different PHP version for cron.
 5.  Switch to utilizing [cronjob API endpoint](/docs/getting-started/installation#utilizing-a-remote-service-to-activate-cron) by either using `wget` to call the API endpoint via a cronjob or by using an external service.
     - Note: cron may sometimes be long-running. Calling the API endpoint to run cron should be treated as a final resort as you run into a higher chance of running into timeouts. You should consider increasing the timeout limit on your server if you will be using this.
 
