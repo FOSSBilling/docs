@@ -111,7 +111,7 @@ If you're seeing a message similar to this in the FOSSBilling dashboard, that me
 
 ### An incorrect PHP version is being used
 
-Because cron is executed as a command on the host server, these steps aren't associated with any domain which results in a control panel using it's default or the "system" PHP version. Often, this version can be too old for FOSSBilling (see the [system requirements](/docs/getting-started/requirements) which results in the cronjob failing).
+Because cron is executed as a command on the host server, these steps aren't associated with any domain which results in a control panel using its default or the "system" PHP version. Often, this version can be too old for FOSSBilling (see the [system requirements](/docs/getting-started/requirements) which results in the cronjob failing).
 
 These steps may help you resolve this issue:
 
