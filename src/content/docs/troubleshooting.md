@@ -59,7 +59,7 @@ If you're receiving permission related errors (such as with the `config.php` fil
 
 ### File ownership
 
-If the wrong owner is assigned to the files, then even with the correct file permissions assigned (`755`), things will still not work correctly. You can check the correct owner using the following steps:
+If the wrong owner is assigned to the files and folders, then even with correct permissions assigned (for example, `755` for directories and `644` for files), things will still not work correctly. You can check the correct owner using the following steps:
 
 - Create a new PHP file and place the following contents inside of it: `<?php var_dump(get_current_user());?>`
 - Open the PHP file in your web-browser. This should output the user that is used to execute PHP, which you can then use to fix the user / group permissions for your website.
