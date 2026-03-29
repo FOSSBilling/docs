@@ -52,7 +52,7 @@ If you're receiving permission related errors (such as with the `config.php` fil
 ### File and folder permissions
 
 - If you are using a control panel with a "fix permissions" button, first try that
-- Verify files and folders for your website have the correct permissions applied. Usually `755` is correct for folders and 644 for PHP files.
+- Verify files and folders for your website have the correct permissions applied. Usually `755` is correct for folders and `644` for PHP files.
   - From within your terminal and under the document root, you can manually apply the correct permissions by using the following commands:
     - `find . -type d -exec chmod 755 {} \;` to apply 755 to all folders.
     - `find . -type f -exec chmod 644 {} \;` to apply 644 to all files.
