@@ -8,7 +8,18 @@ import markdoc from '@astrojs/markdoc';
 export default defineConfig({
     integrations: [starlight({
         title: 'FOSSBilling Docs',
-        social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/FOSSBilling/FOSSBilling' }],
+        social: [
+            { icon: 'github', label: 'GitHub', href: 'https://github.com/FOSSBilling/FOSSBilling' },
+            { icon: 'discord', label: 'Discord', href: 'https://fossbilling.org/discord' },
+        ],
+        editLink: {
+            baseUrl: 'https://github.com/FOSSBilling/docs/edit/main/',
+        },
+        pagination: true,
+        tableOfContents: {
+            minHeadingLevel: 2,
+            maxHeadingLevel: 4,
+        },
         sidebar: [
             {
                 label: 'Getting Started',
@@ -94,15 +105,16 @@ export default defineConfig({
                 ],
             },
             {
-                label: 'FAQ',
+                label: 'FAQ & Support',
                 items: [
                     { label: 'Frequently Asked Questions', link: '/faq/' },
                     { label: 'Features & Functionality', link: '/faq/features/' },
                     { label: 'Error Reporting', link: '/faq/error-reporting/' },
+                    { label: 'Troubleshooting', link: '/troubleshooting' },
+                    { label: 'Extensions', link: '/extensions' },
+                    { label: 'Changelog', link: '/changelog' },
                 ],
             },
-            { label: 'Troubleshooting', link: '/troubleshooting' },
-            { label: 'Extensions', link: '/extensions' },
         ],
 		}), markdoc()],
 });
