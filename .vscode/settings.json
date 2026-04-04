@@ -1,0 +1,8 @@
+{
+  "files.associations": {
+    "*.mdoc": "markdoc"
+  },
+  "markdoc": {
+    "config": "markdoc.config.json"
+  }
+}
