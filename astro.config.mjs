@@ -8,8 +8,8 @@ export default defineConfig({
   integrations: [starlight({
       title: 'Docs',
       logo: {
-          light: '/public/img/wordmark-black.png',
-          dark: '/public/img/wordmark-white.png',
+          light: '/img/wordmark-black.png',
+          dark: '/img/wordmark-white.png',
       },
       tableOfContents: {
           minHeadingLevel: 2,
