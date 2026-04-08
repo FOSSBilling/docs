@@ -23,11 +23,10 @@ export default defineConfig({
               label: 'Getting Started',
               items: [
                   { label: 'Introduction', link: '/getting-started/' },
-                  { label: 'System Requirements', link: '/getting-started/requirements/' },
-                  { label: 'Standard Installation', link: '/getting-started/installation/' },
-                  { label: 'Docker Installation', link: '/getting-started/docker/' },
-                  { label: 'Migrate from BoxBilling', link: '/getting-started/migrate-from-boxbilling/' },
-                  { label: 'Building FOSSBilling', link: '/getting-started/building/' },
+                  { label: 'System Requirements', link: '/getting-started/requirements' },
+                  { label: 'Standard Installation', link: '/getting-started/installation' },
+                  { label: 'Docker Installation', link: '/getting-started/docker' },
+                  { label: 'Building FOSSBilling', link: '/getting-started/building' },
               ],
           },
           {
@@ -42,11 +41,11 @@ export default defineConfig({
               label: 'Customizing FOSSBilling',
               items: [
                   { label: 'Introduction', link: '/customizing-fossbilling/' },
-                  { label: 'Configuration File', link: '/customizing-fossbilling/config/' },
-                  { label: 'Email Templates', link: '/customizing-fossbilling/email_templates/' },
-                  { label: 'Localization', link: '/customizing-fossbilling/localization/' },
-                  { label: 'Company Information', link: '/customizing-fossbilling/company/' },
-                  { label: 'Invoice PDFs', link: '/customizing-fossbilling/invoice_pdf/' },
+                  { label: 'Configuration File', link: '/customizing-fossbilling/config' },
+                  { label: 'Email Templates', link: '/customizing-fossbilling/email-templates' },
+                  { label: 'Localization', link: '/customizing-fossbilling/localization' },
+                  { label: 'Company Information', link: '/customizing-fossbilling/company' },
+                  { label: 'Invoice PDFs', link: '/customizing-fossbilling/invoice-pdf' },
               ],
           },
           {
