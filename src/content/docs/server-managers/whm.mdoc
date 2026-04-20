@@ -1,5 +1,6 @@
 ---
 title: WHM / cPanel and FOSSBilling
+description: Connect WHM and cPanel to FOSSBilling for automated hosting account provisioning.
 ---
 
 ## Configuring WHM / cPanel
@@ -9,7 +10,7 @@ FOSSBilling connects to WHM using its API. Here's how to set up an API token:
 1. Log in to WHM and go to **Development** → **Manage API Tokens**
 2. Click **Generate Token**
 3. Give the token a friendly name (like "billing")
-4. Review the permissions. Usually the defaults work fine, but make sure you understand what access you're granting
+4. Review the permissions. The defaults are usually fine, but make sure you understand the access you are granting
 5. Click **Save**
 6. **Important:** Copy the token now — WHM won't show it to you again
 
@@ -32,7 +33,7 @@ When a customer orders a hosting plan, FOSSBilling first checks if WHM has a pac
 
 ### Option 1: Create packages in WHM (Recommended)
 
-This is the simpler approach and ensures packages follow your WHM standards:
+This is the simpler approach and keeps package definitions under your normal WHM workflow:
 
 1. Create the package in WHM under the account FOSSBilling uses to connect
 2. Configure limits and features as you normally would

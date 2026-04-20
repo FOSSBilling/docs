@@ -3,7 +3,7 @@ title: Email Templates
 description: Create beautiful, branded emails with custom templates.
 ---
 
-FOSSBilling uses [Twig](https://twig.symfony.com/) for email templates, giving you full control over formatting and content.
+FOSSBilling uses [Twig](https://twig.symfony.com/) for email templates, so you can control both the wording and the presentation of system messages.
 
 ## Managing Templates
 
@@ -12,7 +12,7 @@ FOSSBilling uses [Twig](https://twig.symfony.com/) for email templates, giving y
 1. Go to **Configuration → Settings**
 2. Click **Email**
 
-You'll see a list of all email templates with their subjects, which module uses them, and whether they're enabled.
+You'll see every installed email template, along with its subject, owning module, and enabled status.
 
 ### Generate Missing Templates
 
@@ -106,12 +106,12 @@ For full control, use HTML:
 
 ## Storage Location
 
-Templates are stored in two places:
+Templates exist in two places:
 
 1. **Module source** — `modules/{Module}/html_email/`
 2. **Database** — `email_template` table (copied there when module is installed)
 
-After installation, edit templates through the admin panel or database — changes to module files won't take effect unless you regenerate templates.
+After installation, edit templates through the admin panel or directly in the database. Changes made only to the module files will not apply until you regenerate the templates.
 
 ## Limitations
 

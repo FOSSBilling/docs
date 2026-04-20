@@ -4,22 +4,22 @@ description: Run FOSSBilling with Docker for a consistent, isolated environment.
 ---
 
 {% aside type="tip" %}
-New to Docker? It packages apps with all their dependencies, so they run the same way everywhere. No more "it works on my machine" problems. [Learn more about containers](https://www.docker.com/resources/what-container/).
+Docker is useful when you want a predictable local or server setup without installing FOSSBilling's runtime dependencies directly on the host.
 {% /aside %}
 
 ## Prerequisites
 
 - [Docker Engine](https://docs.docker.com/engine/install/) installed on your system
 
-## Choose Your Setup
+## Choose a Setup
 
 {% aside %}
-We use the `latest` tag for stable releases. Change to `preview` for bleeding-edge versions, or specify a version number like `0.6.0`.
+Use the `latest` tag for the current stable release. Switch to `preview` for preview builds, or pin a specific version such as `0.6.0`.
 {% /aside %}
 
 {% tabs %}
 {% tabitem label="Standalone" %}
-Simplest option — runs FOSSBilling alone. You'll need an external database.
+The simplest option. This runs only the FOSSBilling container, so you must provide your own database service.
 
 ```bash
 docker run -d -p 80:80 \
@@ -28,10 +28,10 @@ docker run -d -p 80:80 \
   fossbilling/fossbilling:latest
 ```
 
-Then visit your server IP/hostname in a browser to complete the web installer.
+Then open your server IP or hostname in a browser to complete the web installer.
 {% /tabitem %}
 {% tabitem label="Docker Compose" %}
-Complete stack with MySQL included. Best for getting started quickly.
+This option brings up FOSSBilling and MySQL together, which makes it the fastest way to get started.
 
 ```yaml
 version: "3.9"
@@ -66,7 +66,7 @@ Run it:
 docker compose up -d
 ```
 
-First startup downloads images — this may take a few minutes.
+The first startup downloads container images, so it may take a few minutes.
 
 **Database credentials** (if using the example above):
 - Hostname: `mysql`
@@ -74,7 +74,7 @@ First startup downloads images — this may take a few minutes.
 - Username: `fossbilling`
 - Password: `fossbilling`
 
-Access the installer at `http://localhost` (or your server IP/hostname).
+Open `http://localhost` or your server's IP/hostname to continue with the installer.
 {% /tabitem %}
 {% /tabs %}
 
@@ -99,5 +99,5 @@ docker ps
 ## Next Steps
 
 1. Complete the web installer
-2. Configure the cron job above
+2. Configure the cron job shown above
 3. [Secure your installation](/security/)

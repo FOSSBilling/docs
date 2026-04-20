@@ -9,17 +9,17 @@ description: Keep your FOSSBilling installation up to date with the latest featu
 
 ## Automatic Updates (Recommended)
 
-The easiest way to update:
+For most installations, the built-in updater is the easiest option:
 
 1. Log in to your admin panel
 2. Go to **System** → **Update**
 3. Click to apply the update
 
-FOSSBilling downloads and applies the update automatically. The update uses whichever branch you've configured — `preview` or `release`. You can change this in your [configuration file](/customizing-fossbilling/config).
+FOSSBilling downloads and applies the update automatically. It follows the configured update branch, usually `release` or `preview`, which you can change in your [configuration file](/customizing-fossbilling/config/).
 
 ## Manual Updates
 
-If you prefer to update manually:
+If you prefer to manage files yourself:
 
 1. **Back up your database and files**
 2. [Download the latest release](https://fossbilling.org/downloads/stable)
@@ -30,10 +30,10 @@ If you prefer to update manually:
 
 ## Emergency Recovery
 
-Can't access the admin panel after an update? Use the backup patcher:
+If you cannot access the admin panel after updating, use the fallback patcher:
 
 1. Visit `yourdomain.com/run-patcher` in your browser
-2. This runs database migrations and config updates automatically
+2. This runs database migrations and configuration updates automatically
 3. Once complete, try logging in again
 
 {% aside type="tip" %}
@@ -45,4 +45,4 @@ If the patcher doesn't fix the issue, restore from your backup and try the updat
 - **Automatic updates**: Core files, database schema, configuration
 - **Patches (manual step)**: Database migrations, config updates
 
-Always run the patches after manually updating files — this ensures your database schema matches the code.
+Always run the patches after copying in new files so the database schema and configuration stay in sync with the codebase.

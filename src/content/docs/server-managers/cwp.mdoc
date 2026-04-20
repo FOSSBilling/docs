@@ -1,5 +1,6 @@
 ---
 title: CWP and FOSSBilling
+description: Configure Control Web Panel so FOSSBilling can provision and manage hosting accounts.
 ---
 
 ## Configuring CWP
@@ -18,7 +19,7 @@ FOSSBilling integrates with CWP (Control-WebPanel) using its API. Here's how to 
    - **Change Password**: `Update`
 6. Copy the API key and save your changes
 
-Need more details? Check the [CWP API documentation](https://docs.control-webpanel.com/docs/developer-tools/api-manager/configuration).
+For more detail, see the [CWP API documentation](https://docs.control-webpanel.com/docs/developer-tools/api-manager/configuration).
 
 ## Adding a CWP server to FOSSBilling
 
@@ -36,7 +37,7 @@ Need more details? Check the [CWP API documentation](https://docs.control-webpan
 Hosting plan names with spaces (like "Plan 1") won't work correctly. Use names without spaces, like "Plan1".
 {% /aside %}
 
-Due to technical limitations, FOSSBilling can't create hosting packages automatically in CWP. You'll need to:
+Because of CWP API limitations, FOSSBilling cannot create hosting packages for you automatically. You need to:
 
 1. Create your hosting plans (packages) directly in CWP first, setting all limits and capabilities there
 2. Create matching plans in FOSSBilling with the **exact same name**

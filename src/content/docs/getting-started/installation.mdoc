@@ -4,21 +4,21 @@ description: Complete installation guide covering web server configuration (Apac
 ---
 
 {% aside type="tip" %}
-  This article needs visual improvements. If you can provide screenshots or other helpful visuals, please contribute using the **Edit page** button at the bottom of this page.
+  This guide is accurate, but it could still use better visuals. If you can contribute screenshots or clarifying examples, use the **Edit page** link at the bottom of this page.
 {% /aside %}
 
 ## Prerequisites
 
 - A domain or subdomain dedicated to FOSSBilling.
 - A server that meets the [system requirements](/getting-started/requirements).
-- A web server running a FOSSBilling-compatible configuration (see examples below).
+- A web server running a FOSSBilling-compatible configuration.
 
 ## Web Server Configuration
 
-Apache requires no additional configuration, but the templates below for other web servers are intended as starting points. Be sure to review and adjust paths, SSL settings, and environment-specific placeholders before deploying.
+Apache usually requires no extra application-specific configuration. The templates below for other web servers should be treated as starting points and adjusted for your own paths, SSL settings, and deployment conventions.
 
 {% aside %}
-  Need a primer on web server fundamentals? DigitalOcean maintains excellent documentation covering virtual hosts and basic setup.
+  Need a refresher on virtual hosts or basic web server setup? DigitalOcean has solid introductory guides for Apache and NGINX administration.
 {% /aside %}
 
 {% tabs %}
@@ -30,7 +30,7 @@ Apache requires no additional configuration, but the templates below for other w
   {% tabitem label="NGINX" %}
     Use the configuration below as a starting point for running FOSSBilling on NGINX. Be sure to replace placeholder values (like `%%DOMAIN%%` and `%%SOURCE_PATH%%`) and adjust SSL paths to match your environment.
 
-```conf
+```nginx
 server {
 	listen 80;
 	server_name %%DOMAIN%%;
@@ -115,15 +115,15 @@ server {
 
 ## Pre-installation Steps
 
-1. **Download FOSSBilling**: Grab the latest [stable release](https://fossbilling.org/downloads) from our downloads page. (Preview builds are for testing only - stick with the stable version for production.)
-2. **Prepare your database**: Create a new MySQL database and dedicated user for your FOSSBilling installation. Note the credentials — you'll need them during setup.
-3. **Set up SSL (Optional)**: If you plan to use HTTPS (highly recommended!), set up and verify your SSL certificate *before* starting the installation. This avoids redirect issues later.
-4. **Configure Reverse Proxy Headers**: If you're behind a reverse proxy, ensure it forwards the `X-Forwarded-Host` and `X-Forwarded-Proto` headers. FOSSBilling uses these to generate correct URLs and enforce secure connections.
+1. **Download FOSSBilling**: Grab the latest [stable release](https://fossbilling.org/downloads) from our downloads page. Preview builds are for testing, not production.
+2. **Prepare your database**: Create a new MySQL database and a dedicated user for this installation. Keep the credentials handy for the installer.
+3. **Set up SSL**: If you plan to use HTTPS, and you should, configure and verify your certificate *before* you start the installer. That avoids redirect and mixed-URL issues later.
+4. **Configure reverse-proxy headers**: If you run behind a reverse proxy, forward the `X-Forwarded-Host` and `X-Forwarded-Proto` headers so FOSSBilling can generate the correct URLs and enforce HTTPS properly.
 
 ## Installation Steps
 
-1. **Clean Your Document Root**: Delete any placeholder files created by your control panel (default index pages, `.htaccess` files, etc.) to avoid conflicts during installation.
-2. **Upload and Extract FOSSBilling**: Upload the release you downloaded and extract it into your document root. Your directory should look similar to this:
+1. **Clean your document root**: Remove placeholder files created by your control panel, such as default index pages or sample `.htaccess` files, so they do not interfere with routing.
+2. **Upload and extract FOSSBilling**: Upload the release you downloaded and extract it into your document root. Your directory should look similar to this:
 
 	```
 	├── data
@@ -139,7 +139,7 @@ server {
 	├── index.php
 	...
 	```
-3. **Launch the Installer**: Visit the domain you set up for FOSSBilling. If you're using HTTPS, access it via `https://` so the application auto-configures for secure connections.
+3. **Launch the installer**: Visit the domain you set up for FOSSBilling. If you are using HTTPS, access it over `https://` so the application configures secure URLs automatically.
 
 	{% aside type="tip" title="Seeing HTTP 500, HTTP 404, or permission errors?" %}
 	  You may need to [fix folder permissions](/troubleshooting#permission-issues) before the installer can run.
@@ -147,9 +147,9 @@ server {
 
 	If you see the FOSSBilling installer welcome page below, you're ready to proceed.
 	![The FOSSBilling Installer Landing Page](/img/guides/install/installer-landing.png)
-4. **Complete the Setup Wizard**: Follow the on-screen steps to accept the license, enter your database credentials, and create your administrator account.
-5. **Configure Default Currency**: The price format **must** include `{{price}}` as a placeholder. Simply place your currency symbol before or after it - for example: `{{price}} USD` or `$ {{price}}`.
-6. **Install**: Click install. After a few moments, you should see a success page.
+4. **Complete the setup wizard**: Follow the on-screen steps to accept the license, enter your database credentials, and create your administrator account.
+5. **Configure the default currency**: The price format **must** include `{{price}}` as a placeholder. Place your currency symbol before or after it, for example `{{price}} USD` or `$ {{price}}`.
+6. **Install**: Click install and wait for the success page to appear.
 
 	{% aside type="tip" %}
 	  Installation failed? You may need to manually empty the database before trying again.
@@ -157,13 +157,13 @@ server {
 
 ## Post-installation Steps
 
-Once the installer completes, there's just one final step: configure the cron job. After that, you're ready to start using FOSSBilling.
+Once the installer finishes, configure the cron job before you begin using the system in earnest.
 
 ### Configuring the Cronjob
 
-FOSSBilling relies on the cronjob to perform important actions such as handling renewals, expired orders, sending emails, and more. Because of this, it's critical that cron is configured correctly, is running reliably, and that it's setup to run frequently enough.
+FOSSBilling relies on cron to handle renewals, expired orders, email delivery, background checks, and other scheduled work. It needs to be configured correctly, run consistently, and execute often enough to keep the platform healthy.
 
-We recommend configuring cron to run once every 5 minutes. If 15 minutes goes past without cron executing, FOSSBilling will display a notification in the administrator panel. If you see this message, you need to resolve the issue as soon as possible.
+We recommend running cron every five minutes. If more than 15 minutes pass without a run, FOSSBilling will show a warning in the admin panel. Treat that warning as urgent.
 ![FOSSBilling warning about cron execution](/img/guides/install/cron-warning.png)
 
 #### Option 1: Local Cron Job
@@ -172,16 +172,14 @@ We recommend configuring cron to run once every 5 minutes. If 15 minutes goes pa
   The cronjob also needs to be run on a PHP version that FOSSBilling supports. If you are running into errors, you may be experiencing a common issue where your cronjob isn't being run on the same PHP version as your domain is configured for. For troubleshooting steps, please check [this forum post](https://forum.fossbilling.org/d/117-error-in-cron-after-update/3) for some pointers.
 {% /aside %}
 
-FOSSBilling will display the correct cron command to utilize to run it's cronjob both on the installation complete page as well as in the administrator panel.
-If you ever need to find it again, navigate to `Settings` -> `Scheduled Tasks` (/admin/extension/settings/cron).
+FOSSBilling shows the correct cron command on the installation-complete screen and again in the admin panel. If you need to find it later, go to `Settings` -> `Scheduled Tasks` (`/admin/extension/settings/cron`).
 
 ![Cron settings - correct cron command](/img/guides/install/cron-settings-command.png)
 
 #### Option 2: Remote Cron Service
 
-If you find that you are unable to use a local cronjob to run cron, you may instead use a remote service to call a given URL to execute cron, but first you must enable the functionality.
-To do this navigate to `Settings` -> `Scheduled Tasks` (/admin/extension/settings/cron) and then enable the cron API endpoint and click on "update"
+If you cannot run cron locally, you can use a remote service to call a URL instead. First, go to `Settings` -> `Scheduled Tasks` (`/admin/extension/settings/cron`), enable the cron API endpoint, and click **Update**.
 
-You will then be able to use the URL displayed on the page with an external service to automatically execute the cronjob.
+After that, you can give the displayed URL to an external cron service so it can trigger scheduled tasks for you.
 
 ![Cron settings - remote URL](/img/guides/install/cron-settings-remote.png)

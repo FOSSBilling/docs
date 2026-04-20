@@ -3,11 +3,11 @@ title: Localization
 description: Run FOSSBilling in your language and contribute translations.
 ---
 
-FOSSBilling speaks multiple languages. Use an existing translation or create your own.
+FOSSBilling supports multiple languages for both the client area and administration workflows. You can use an existing translation, improve one, or add your own.
 
 ## Installing Languages
 
-FOSSBilling ships with translations that are at least 25% complete. To add more:
+FOSSBilling ships with translations that are at least 25% complete. To install more:
 
 1. Download the translation files
 2. Upload to `/locale/` in your FOSSBilling directory
@@ -55,11 +55,9 @@ Need help? Ask in our [Discord](https://fossbilling.org/discord).
 
 ## Setting the Default Language
 
-Edit `config.php`:
+Set the default locale in your `config.php` file. If you are unsure which key to change, check the [configuration reference](/customizing-fossbilling/config/).
 
-```php
-'locale' => 'en_US',  // Change to your language code
-```
+Use a locale code such as `en_US`, `fr_FR`, or `de_DE`.
 
 ## Managing Languages
 
@@ -87,5 +85,5 @@ FOSSBilling automatically detects the visitor's preferred language from their br
 - **Language match:** `en_GB` ↔ `en_US` (same language, different region)
 
 {% aside %}
-Only the browser's first preferred language is checked. Secondary languages in the header are ignored.
+FOSSBilling currently checks only the browser's first preferred language. Secondary language preferences in the header are ignored.
 {% /aside %}

@@ -3,7 +3,7 @@ title: Customizing Invoice PDFs
 description: Make your invoice PDFs match your brand with custom CSS and HTML templates.
 ---
 
-FOSSBilling generates PDFs using [Dompdf](https://github.com/dompdf/dompdf), which converts HTML/CSS to PDF.
+FOSSBilling generates invoice PDFs with [Dompdf](https://github.com/dompdf/dompdf), which renders HTML and CSS into a printable document.
 
 ## CSS Limitations
 
@@ -36,7 +36,7 @@ Editing `default-pdf.css` directly is overwritten on updates. Always use `custom
 
 ![PDF layout with CSS classes](../../../assets/invoice-layout.png)
 
-Common classes:
+Common classes include:
 
 - `.invoice-header` — Company and client info
 - `.invoice-details` — Invoice number, date, due date
@@ -77,7 +77,7 @@ Available in PDF templates:
 
 ### Twig Filters
 
-PDF templates support the same [Twig filters](/developing-fossbilling/twig-filters/) as the front-end:
+PDF templates support the same [Twig filters](/developing-fossbilling/twig-filters/) available elsewhere in FOSSBilling:
 
 ```twig
 {{ invoice.total | money }}           {# Format as currency #}
@@ -105,4 +105,4 @@ For complex issues, enable Dompdf debugging in `config.php`:
 ],
 ```
 
-Check PHP error logs for Dompdf messages.
+Then review your PHP error logs for Dompdf-related messages.

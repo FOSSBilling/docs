@@ -4,14 +4,14 @@ description: Use the JavaScript wrapper for easier, more reliable API calls from
 ---
 
 {% aside type="note" %}
-If you're building themes or modules, use this wrapper instead of making raw API calls. It handles authentication, CSRF tokens, and future-proofs your code against API changes.
+If you're building themes or modules, use this wrapper instead of making raw API calls. It handles authentication, CSRF tokens, and other repetitive details for you.
 {% /aside %}
 
 ## Why Use the Wrapper?
 
 - **Automatic CSRF handling** — No need to manage tokens manually
 - **Built-in spinner** — Shows a loading indicator during requests
-- **Future-proof** — If the API changes, we update the wrapper
+- **Less coupling** — If the API changes, the wrapper absorbs more of that churn
 - **Cleaner code** — Less boilerplate for you
 
 ## Importing the Wrapper

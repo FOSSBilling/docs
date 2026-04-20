@@ -9,7 +9,7 @@ FOSSBilling works with any of these:
 
 - **Apache** (with `mod_rewrite` enabled)
 - **LiteSpeed Web Server**
-- **NGINX** — [see our recommended config](/getting-started/installation#webserver-configurations)
+- **NGINX** — [see our recommended config](/getting-started/installation#web-server-configuration)
 - **OpenLiteSpeed** — note: may not be ideal if you're *selling* web hosting (FOSSBilling itself runs fine)
 
 **Our recommendation:** Apache or Apache behind an NGINX reverse proxy (handling static files). Most control panels are set up this way by default.
@@ -62,7 +62,7 @@ Edit your `php.ini`:
 Use `utf8mb4` with `utf8mb4_unicode_ci` collation. Your database user needs full privileges: `SELECT`, `INSERT`, `UPDATE`, `DELETE`, `CREATE`, `DROP`, `INDEX`, `ALTER`.
 {% /aside %}
 
-FOSSBilling requires MySQL-compatible database:
+FOSSBilling requires a MySQL-compatible database:
 
 - **MySQL** 8.0 or newer
 - **MariaDB** 10.3 or newer

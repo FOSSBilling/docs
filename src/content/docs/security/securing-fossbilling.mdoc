@@ -1,10 +1,13 @@
 ---
 title: Securing FOSSBilling
+description: Configure FOSSBilling's built-in security settings for HTTPS, sessions, API access, and reverse-proxy deployments.
 ---
+
+This page covers the application-level settings you should review after installation. Pair these with the broader infrastructure guidance in [Best Practices](/security/best-practices/).
 
 ## Configuration Options
 
-These settings live in your `config.php` file and control various security features.
+These settings live in your `config.php` file and control FOSSBilling's built-in security behavior.
 
 ### Security Options
 
@@ -38,14 +41,14 @@ These settings live in your `config.php` file and control various security featu
 
 ## Cloudflare
 
-If you're using Cloudflare, enable **IP Geolocation** under your website's **Network** settings. This lets FOSSBilling use the visitor's country (based on IP) to help prevent session hijacking.
+If you're using Cloudflare, enable **IP Geolocation** under your site's **Network** settings. This allows FOSSBilling to use the visitor's country information to strengthen some session checks.
 
 ## Reverse Proxies
 
 ### HTTPS Detection
 
-Reverse proxies often make FOSSBilling think it's being accessed over HTTP, even when the end user is on HTTPS. To fix this, ensure your reverse proxy forwards the `X-Forwarded-Proto` header set to `https`.
+Reverse proxies often make FOSSBilling think it is being accessed over HTTP even when the visitor is using HTTPS. To avoid that, make sure your proxy forwards `X-Forwarded-Proto: https`.
 
 ### Trusted Proxies
 
-If you're behind a reverse proxy, you may also need to configure trusted proxy settings in FOSSBilling to ensure security features work correctly.
+If you are running behind a reverse proxy, review any trusted-proxy settings in your deployment as well so request metadata is interpreted correctly.
