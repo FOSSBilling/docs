@@ -1,0 +1,127 @@
+---
+title: API Keys
+description: Sell API keys for your custom applications and services.
+---
+
+API key products let you sell access to your own APIs or services. Customers receive a unique API key after purchase, which your application can validate against FOSSBilling.
+
+{% aside type="tip" %}
+This extension is included with FOSSBilling since version 0.5.3. Enable it from **Extensions** → **API Key Product**.
+{% /aside %}
+
+{% aside type="caution" %}
+Disabling or removing this extension will delete the database table storing API keys. Make sure to back up your data first.
+{% /aside %}
+
+## Use Cases
+
+- Sell access to your REST API
+- Limit requests per customer
+- Offer tiered plans with different limits
+- Track usage per customer
+
+## Setting Up API Key Products
+
+### 1. Enable the Extension
+
+Go to **Extensions** and install "API Key Product".
+
+### 2. Configure Key Generation
+
+When creating the product, set these options:
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `Length` | 32 | Total characters in the key |
+| `Split` | Enabled | Add dashes for readability |
+| `Split Interval` | 8 | Characters between dashes |
+| `Capitalization` | Uppercase | Uppercase, lowercase, or mixed |
+
+**Example key with default settings:**
+
+```
+BA907863-47C1A4F5-3CB914D3-AC927BDD
+```
+
+{% aside type="note" %}
+Dashes don't count toward the key length. If you disable splitting, the key would be `BA90786347C1A4F53CB914D3AC927BDD`.
+{% /aside %}
+
+### 3. Add Custom Parameters
+
+You can define custom parameters attached to each API key:
+
+- `monthlyLimit` — number of allowed requests per month
+- `tier` — pricing tier (basic, pro, enterprise)
+- Any other metadata your application needs
+
+{% aside type="danger" %}
+Custom parameters are retrievable by anyone with the API key. **Don't store sensitive information here.**
+{% /aside %}
+
+## API Endpoints
+
+| Endpoint | Access | Description |
+|----------|--------|-------------|
+| `/admin/serviceapikey/update` | Admin | Update API key config and validity |
+| `/admin/serviceapikey/reset` | Admin | Regenerate a new API key |
+| `/client/serviceapikey/reset` | Client | Customer resets their own key |
+| `/guest/serviceapikey/check` | Guest | Check if a key is valid |
+| `/guest/serviceapikey/get_info` | Guest | Get key validity + custom parameters |
+
+### Checking Key Validity
+
+```bash
+curl -X POST "https://your-fossbilling.com/api/guest/serviceapikey/check" \
+  -H "Content-Type: application/json" \
+  -d '{"key": "BA907863-47C1A4F5-3CB914D3-AC927BDD"}'
+```
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "error": null
+}
+```
+
+### Getting Key Info (with custom params)
+
+```bash
+curl -X POST "https://your-fossbilling.com/api/guest/serviceapikey/get_info" \
+  -H "Content-Type: application/json" \
+  -d '{"key": "BA907863-47C1A4F5-3CB914D3-AC927BDD"}'
+```
+
+**Response:**
+
+```json
+{
+  "result": {
+    "valid": 1,
+    "config": {
+      "monthlyLimit": 250,
+      "tier": "pro"
+    }
+  },
+  "error": null
+}
+```
+
+## Rate Limiting
+
+FOSSBilling includes basic rate limiting on all API requests. This prevents brute-force attacks on your `/check` endpoints.
+
+{% aside type="tip" %}
+Cache validation results in your application for a few minutes. This avoids hitting rate limits and reduces server load.
+{% /aside %}
+
+You can adjust rate limits in the [configuration](/customizing-fossbilling/config#api-configuration).
+
+## Security Considerations
+
+- **Clients can reset their keys** — they see and can regenerate their own API keys
+- **To revoke access**, change the key's validity rather than resetting it
+- **Validate keys server-side** — don't trust client-side checks
+- **Use HTTPS** — always encrypt API key traffic

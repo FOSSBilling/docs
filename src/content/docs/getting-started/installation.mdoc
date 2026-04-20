@@ -1,0 +1,187 @@
+---
+title: Installing FOSSBilling
+description: Complete installation guide covering web server configuration (Apache, NGINX, LiteSpeed), database setup, file permissions, and cron job configuration for FOSSBilling.
+---
+
+{% aside type="tip" %}
+  This article needs visual improvements. If you can provide screenshots or other helpful visuals, please contribute using the **Edit page** button at the bottom of this page.
+{% /aside %}
+
+## Prerequisites
+
+- A domain or subdomain dedicated to FOSSBilling.
+- A server that meets the [system requirements](/getting-started/requirements).
+- A web server running a FOSSBilling-compatible configuration (see examples below).
+
+## Web Server Configuration
+
+Apache requires no additional configuration, but the templates below for other web servers are intended as starting points. Be sure to review and adjust paths, SSL settings, and environment-specific placeholders before deploying.
+
+{% aside %}
+  Need a primer on web server fundamentals? DigitalOcean maintains excellent documentation covering virtual hosts and basic setup.
+{% /aside %}
+
+{% tabs %}
+  {% tabitem label="Apache / LiteSpeed / OpenLiteSpeed" %}
+	FOSSBilling includes a ready-to-use `.htaccess` file for Apache, LiteSpeed, and OpenLiteSpeed. Set up your domain as you normally would, then proceed with installation.
+
+	**OpenLiteSpeed users:** After installation, remember to reload the web server so it picks up the new `.htaccess` file.
+  {% /tabitem %}
+  {% tabitem label="NGINX" %}
+    Use the configuration below as a starting point for running FOSSBilling on NGINX. Be sure to replace placeholder values (like `%%DOMAIN%%` and `%%SOURCE_PATH%%`) and adjust SSL paths to match your environment.
+
+```conf
+server {
+	listen 80;
+	server_name %%DOMAIN%%;
+	return 301 https://$host$request_uri;
+}
+
+server {
+	listen 443 ssl http2;
+	ssl_certificate      /path/to/ssl/certificate.crt;
+	ssl_certificate_key  /path/to/ssl/certificate.key;
+	ssl_stapling on;
+	ssl_stapling_verify on;
+
+	set $root_path %%SOURCE_PATH%%;
+	server_name %%DOMAIN%%;
+
+	index index.php;
+	root $root_path;
+	try_files $uri $uri/ @rewrite;
+	sendfile off;
+	include /etc/nginx/mime.types;
+
+	# Block access to sensitive files
+	location ~* .(ini|sh|inc|bak|twig|sql)$ {
+		return 403;
+	}
+
+	# Block /vendor completely
+	location ^~ /vendor/ {
+		return 403;
+	}
+	
+	# Block direct access to config.php
+	location = /config.php {
+		return 403;
+	}
+
+	# Block access to hidden files except .well-known
+	location ~ /\.(?!well-known\/) {
+		return 403;
+	}
+
+	# Disable PHP execution in /uploads
+	location ~* /uploads/.*\.php$ {
+		return 403;
+	}
+
+	# Deny access to /data, except /assets/gateways
+	location ~* /data/(?!(assets/gateways/)) {
+		return 403;
+	}
+
+	location @rewrite {
+		rewrite ^/page/(.*)$ /index.php?_url=/custompages/$1;
+		rewrite ^/(.*)$ /index.php?_url=/$1;
+	}
+
+	location ~ \.php$ {
+		fastcgi_split_path_info ^(.+\.php)(/.+)$;
+
+		# fastcgi_pass need to be changed according your server setup:
+		# phpx.x is your server setup
+		# examples: /var/run/phpx.x-fpm.sock, /var/run/php/phpx.x-fpm.sock or /run/php/phpx.x-fpm.sock are all valid options
+		# Or even localhost:port (Default 9000 will work fine)
+		# Please check your server setup
+
+		fastcgi_pass unix:/run/php/phpx.x-fpm.sock;
+			fastcgi_param PATH_INFO       $fastcgi_path_info;
+			fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+			fastcgi_intercept_errors on;
+			include fastcgi_params;
+		}
+
+		location ~* ^/(css|img|js|flv|swf|download)/(.+)$ {
+			root $root_path;
+			expires off;
+		}
+}
+```
+  {% /tabitem %}
+{% /tabs %}
+
+## Pre-installation Steps
+
+1. **Download FOSSBilling**: Grab the latest [stable release](https://fossbilling.org/downloads) from our downloads page. (Preview builds are for testing only - stick with the stable version for production.)
+2. **Prepare your database**: Create a new MySQL database and dedicated user for your FOSSBilling installation. Note the credentials — you'll need them during setup.
+3. **Set up SSL (Optional)**: If you plan to use HTTPS (highly recommended!), set up and verify your SSL certificate *before* starting the installation. This avoids redirect issues later.
+4. **Configure Reverse Proxy Headers**: If you're behind a reverse proxy, ensure it forwards the `X-Forwarded-Host` and `X-Forwarded-Proto` headers. FOSSBilling uses these to generate correct URLs and enforce secure connections.
+
+## Installation Steps
+
+1. **Clean Your Document Root**: Delete any placeholder files created by your control panel (default index pages, `.htaccess` files, etc.) to avoid conflicts during installation.
+2. **Upload and Extract FOSSBilling**: Upload the release you downloaded and extract it into your document root. Your directory should look similar to this:
+
+	```
+	├── data
+	├── install
+	├── library
+	├── locale
+	├── modules
+	├── themes
+	├── vendor
+	├── config-sample.php
+	├── cron.php
+	├── di.php
+	├── index.php
+	...
+	```
+3. **Launch the Installer**: Visit the domain you set up for FOSSBilling. If you're using HTTPS, access it via `https://` so the application auto-configures for secure connections.
+
+	{% aside type="tip" title="Seeing HTTP 500, HTTP 404, or permission errors?" %}
+	  You may need to [fix folder permissions](/troubleshooting#permission-issues) before the installer can run.
+	{% /aside %}
+
+	If you see the FOSSBilling installer welcome page below, you're ready to proceed.
+	![The FOSSBilling Installer Landing Page](/img/guides/install/installer-landing.png)
+4. **Complete the Setup Wizard**: Follow the on-screen steps to accept the license, enter your database credentials, and create your administrator account.
+5. **Configure Default Currency**: The price format **must** include `{{price}}` as a placeholder. Simply place your currency symbol before or after it - for example: `{{price}} USD` or `$ {{price}}`.
+6. **Install**: Click install. After a few moments, you should see a success page.
+
+	{% aside type="tip" %}
+	  Installation failed? You may need to manually empty the database before trying again.
+	{% /aside %}
+
+## Post-installation Steps
+
+Once the installer completes, there's just one final step: configure the cron job. After that, you're ready to start using FOSSBilling.
+
+### Configuring the Cronjob
+
+FOSSBilling relies on the cronjob to perform important actions such as handling renewals, expired orders, sending emails, and more. Because of this, it's critical that cron is configured correctly, is running reliably, and that it's setup to run frequently enough.
+
+We recommend configuring cron to run once every 5 minutes. If 15 minutes goes past without cron executing, FOSSBilling will display a notification in the administrator panel. If you see this message, you need to resolve the issue as soon as possible.
+![FOSSBilling warning about cron execution](/img/guides/install/cron-warning.png)
+
+#### Option 1: Local Cron Job
+
+{% aside %}
+  The cronjob also needs to be run on a PHP version that FOSSBilling supports. If you are running into errors, you may be experiencing a common issue where your cronjob isn't being run on the same PHP version as your domain is configured for. For troubleshooting steps, please check [this forum post](https://forum.fossbilling.org/d/117-error-in-cron-after-update/3) for some pointers.
+{% /aside %}
+
+FOSSBilling will display the correct cron command to utilize to run it's cronjob both on the installation complete page as well as in the administrator panel.
+If you ever need to find it again, navigate to `Settings` -> `Scheduled Tasks` (/admin/extension/settings/cron).
+
+![Cron settings - correct cron command](/img/guides/install/cron-settings-command.png)
+
+#### Option 2: Remote Cron Service
+
+If you find that you are unable to use a local cronjob to run cron, you may instead use a remote service to call a given URL to execute cron, but first you must enable the functionality.
+To do this navigate to `Settings` -> `Scheduled Tasks` (/admin/extension/settings/cron) and then enable the cron API endpoint and click on "update"
+
+You will then be able to use the URL displayed on the page with an external service to automatically execute the cronjob.
+
+![Cron settings - remote URL](/img/guides/install/cron-settings-remote.png)

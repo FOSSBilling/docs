@@ -1,0 +1,56 @@
+---
+title: Best Practices
+---
+
+Good security starts at the infrastructure level. If your server or network is compromised, application-level security won't matter.
+
+## Server-Level Security
+
+### Keep Everything Updated
+
+- Apply operating system security patches promptly
+- Keep FOSSBilling updated to the latest version
+- Update all server software (web server, database, PHP)
+
+### Access Control
+
+- Don't run services as root — use `sudo` when needed
+- Use SSH keys instead of passwords for server access
+- Disable root login over SSH
+- Use a firewall to close unnecessary ports
+
+### Database Security
+
+- Don't expose your database to the internet unless absolutely necessary
+- Use strong, unique passwords for database accounts
+- Limit database user privileges to what's required
+
+## Application-Level Security
+
+### HTTPS Everywhere
+
+- Always use HTTPS in production
+- Set `force_https` to `true` in your FOSSBilling config
+- Use valid SSL certificates (Let's Encrypt is free and easy)
+
+### Session Security
+
+- Keep `mode` set to `strict` in your security config
+- Don't increase `session_lifespan` unnecessarily
+- Log out when you're done working
+
+### Admin Access
+
+- Use strong, unique passwords for admin accounts
+- Consider restricting admin panel access by IP if possible
+- Regularly review admin activity logs
+
+## What We're Working On
+
+We're constantly improving FOSSBilling's security. Keep an eye on:
+
+- [Security advisories](https://github.com/FOSSBilling/FOSSBilling/security/advisories)
+- Release notes for security-related changes
+- Our [security policy](https://github.com/FOSSBilling/FOSSBilling/security/policy)
+
+See something concerning? [Report it responsibly](/security/report/).

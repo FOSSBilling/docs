@@ -1,0 +1,77 @@
+---
+title: System Requirements
+description: What you need to run FOSSBilling — web servers, PHP extensions, and database setup.
+---
+
+## Web Server
+
+FOSSBilling works with any of these:
+
+- **Apache** (with `mod_rewrite` enabled)
+- **LiteSpeed Web Server**
+- **NGINX** — [see our recommended config](/getting-started/installation#webserver-configurations)
+- **OpenLiteSpeed** — note: may not be ideal if you're *selling* web hosting (FOSSBilling itself runs fine)
+
+**Our recommendation:** Apache or Apache behind an NGINX reverse proxy (handling static files). Most control panels are set up this way by default.
+
+If you're using something else, you'll need to configure URL rewriting manually. Use one of our existing configurations as a reference.
+
+## PHP
+
+### Supported Versions
+
+- **8.2, 8.3, or 8.4**
+
+### Required Extensions
+
+These must be installed:
+
+- `curl`
+- `dom`
+- `iconv`
+- `intl`
+- `json`
+- `openssl`
+- `pdo_mysql`
+- `xml`
+- `zlib`
+
+### Recommended Extensions
+
+Install these for better performance and features:
+
+| Extension | Why You Want It |
+|-----------|-----------------|
+| `mbstring` | Proper handling of multibyte characters |
+| `opcache` | **Highly recommended** — significantly improves performance |
+| `imagick` or `gd` | Image processing for logos and PDFs |
+| `bz2` | Extract `.tar.bz2` archives (module/theme installs) |
+| `simplexml` | Required for the Plesk integration only |
+
+### PHP Configuration
+
+Edit your `php.ini`:
+
+- **`memory_limit`**: At least `64M`. Increase if you run many modules or have high traffic.
+- **`max_execution_time`**: Default `30` seconds is usually fine. Increase to `45`–`60` on shared hosting if needed.
+- **`allow_url_fopen`**: Set to `On` if you need remote images in PDFs or emails.
+
+## Database
+
+{% aside type="tip" %}
+Use `utf8mb4` with `utf8mb4_unicode_ci` collation. Your database user needs full privileges: `SELECT`, `INSERT`, `UPDATE`, `DELETE`, `CREATE`, `DROP`, `INDEX`, `ALTER`.
+{% /aside %}
+
+FOSSBilling requires MySQL-compatible database:
+
+- **MySQL** 8.0 or newer
+- **MariaDB** 10.3 or newer
+
+## Quick Checklist
+
+Before installing, verify:
+
+- [ ] Web server running with rewrite support
+- [ ] PHP 8.2–8.4 installed with required extensions
+- [ ] MySQL 8.0+ or MariaDB 10.3+ available
+- [ ] Database and user created with appropriate privileges

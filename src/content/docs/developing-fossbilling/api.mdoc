@@ -1,0 +1,160 @@
+---
+title: API Reference
+description: Complete reference for the FOSSBilling REST API.
+---
+
+{% aside type="note" %}
+Building a theme or module? Use the [JavaScript wrapper](/developing-fossbilling/javascript/) instead of raw API calls — it's easier and future-proof.
+{% /aside %}
+
+## Overview
+
+FOSSBilling provides a REST API for integrating with external systems or building custom functionality.
+
+{% aside type="tip" %}
+This API reference is evolving. For additional details, you can also refer to the [BoxBilling API documentation](https://docs.boxbilling.org/en/latest/index.html) — there have been no major breaking changes since the fork.
+{% /aside %}
+
+## API Endpoints
+
+Three main entrypoints:
+
+| Endpoint | Access Level | Purpose |
+|----------|--------------|---------|
+| `/api/admin/*` | Admin only | System management |
+| `/api/client/*` | Authenticated clients | Client services |
+| `/api/guest/*` | Public | No authentication needed |
+
+## Request Format
+
+- **Method:** All requests use POST
+- **Format:** JSON for both request and response
+- **Naming:** Lowercase with underscores (`change_password`)
+- **Nulls:** Blank fields are included as `null`, not omitted
+- **Dates:** [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format
+
+## Authentication
+
+Use HTTP Basic Auth with base64 encoding:
+
+- **Username:** `admin` or `client` (depending on endpoint)
+- **Password:** Your API key (found in client profile or admin dashboard)
+
+```http
+Authorization: Basic base64_encode('admin:YOUR_API_KEY')
+```
+
+Most HTTP clients (curl, Postman) handle the encoding automatically.
+
+## Example Requests
+
+{% tabs %}
+{% tabitem label="curl" %}
+```bash
+curl -X POST "https://example.com/api/admin/staff/create" \
+  -H "Authorization: Basic $(echo -n 'admin:YOUR_API_KEY' | base64)" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "hello@fossbilling.org",
+    "password": "Testing123+",
+    "name": "John Doe",
+    "admin_group_id": 1,
+    "status": "active"
+  }'
+```
+{% /tabitem %}
+{% tabitem label="Python" %}
+```python
+import requests
+from requests.auth import HTTPBasicAuth
+
+url = "https://example.com/api/admin/staff/create"
+api_key = "YOUR_API_KEY"
+
+payload = {
+    "email": "hello@fossbilling.org",
+    "password": "Testing123+",
+    "name": "John Doe",
+    "admin_group_id": 1,
+    "status": "active"
+}
+
+auth = HTTPBasicAuth('admin', api_key)
+headers = {"Content-Type": "application/json"}
+
+response = requests.post(url, json=payload, auth=auth)
+print(response.json())
+```
+{% /tabitem %}
+{% tabitem label="JavaScript" %}
+```javascript
+const url = "https://example.com/api/admin/staff/create";
+const apiKey = "YOUR_API_KEY";
+
+const payload = {
+  email: "hello@fossbilling.org",
+  password: "Testing123+",
+  name: "John Doe",
+  admin_group_id: 1,
+  status: "active"
+};
+
+const headers = new Headers();
+headers.set("Content-Type", "application/json");
+headers.set("Authorization", "Basic " + btoa("admin:" + apiKey));
+
+fetch(url, {
+  method: "POST",
+  headers: headers,
+  body: JSON.stringify(payload)
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error("Error:", error));
+```
+{% /tabitem %}
+{% /tabs %}
+
+## Response Format
+
+**Success:**
+```json
+{
+  "result": { ... },
+  "error": null
+}
+```
+
+**Error:**
+```json
+{
+  "result": null,
+  "error": {
+    "message": "Error description",
+    "code": 123
+  }
+}
+```
+
+## Common Patterns
+
+### Endpoint Structure
+
+```
+/api/{role}/{module}/{action}
+```
+
+Examples:
+- `/api/admin/client/get_list`
+- `/api/client/profile/get`
+- `/api/guest/system/version`
+
+### Pagination
+
+List endpoints typically accept:
+- `page` — Page number (starting at 1)
+- `per_page` — Items per page
+
+---
+
+Need help? Join our [Discord](https://fossbilling.org/discord) community.

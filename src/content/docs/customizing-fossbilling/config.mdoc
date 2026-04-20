@@ -1,0 +1,135 @@
+---
+title: Configuration File
+description: Complete reference for FOSSBilling's config.php settings.
+---
+
+Your `config.php` file controls how FOSSBilling runs. Find it in your installation root after setup.
+
+{% aside type="tip" %}
+See the [example config](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/config-sample.php) for inline documentation.
+{% /aside %}
+
+## Configuration Options
+
+### Security Settings
+
+Control security behavior:
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `security.mode` | `strict` | `strict` (recommended) or `regular`. Strict enables `SameSite=Strict` and `HttpOnly` cookies. |
+| `security.force_https` | `true` | Force HTTPS connections. **Recommended for production.** |
+| `security.session_lifespan` | `7200` | Session duration in seconds (default: 2 hours). |
+
+### Encryption Key
+
+- `salt` — Used for reversible encryption. **Keep this secret and don't change it** after installation.
+
+### URLs
+
+- `url` — Your full FOSSBilling URL with trailing slash (e.g., `https://billing.example.com/`)
+- `admin_area_prefix` — Admin panel path (default: `/admin`)
+
+### Debugging
+
+- `debug` — Show detailed error messages. **Disable in production.**
+- `log_stacktrace` — Include stack traces in logs (requires `debug: true`)
+- `stacktrace_length` — Maximum stack trace length
+
+### Updates
+
+- `update_branch` — Which updates to receive:
+  - `"release"` — Stable releases only (recommended for production)
+  - `"preview"` — Development builds (may have bugs)
+
+### Maintenance Mode
+
+Temporarily disable public access:
+
+```php
+'maintenance_mode' => [
+    'enabled' => true,
+    'allowed_urls' => ['/api/guest/*'],  // URLs that stay accessible
+    'allowed_ips' => ['192.168.1.0/24'],   // IPs that bypass maintenance
+],
+```
+
+### Cron Settings
+
+- `disable_auto_cron` — Disable automatic cron execution when admins log in
+
+### Localization
+
+| Setting | Default | Notes |
+|---------|---------|-------|
+| `i18n.locale` | `en_US` | Default language code |
+| `i18n.timezone` | `UTC` | Default timezone |
+| `i18n.date_format` | `medium` | Options: `none`, `short`, `medium`, `long` |
+| `i18n.time_format` | `short` | Options: `none`, `short`, `medium`, `long` |
+| `i18n.datetime_pattern` | — | Custom date/time pattern |
+
+### Data & Logging
+
+| Setting | Description |
+|---------|-------------|
+| `path_data` | Where sensitive data is stored |
+| `path_logs` | Log file location |
+| `log_to_db` | Also log to database (not fully implemented) |
+
+### Database
+
+```php
+'db' => [
+    'type' => 'mysql',
+    'host' => '127.0.0.1',
+    'port' => '3306',
+    'name' => 'fossbilling',
+    'user' => 'fossbilling_user',
+    'password' => 'your_password',
+],
+```
+
+### Twig (Templates)
+
+| Setting | Description |
+|---------|-------------|
+| `twig.debug` | Enable Twig debug mode |
+| `twig.auto_reload` | Auto-reload templates on changes |
+| `twig.cache` | Template cache directory |
+
+### API Settings
+
+Control API access and rate limiting:
+
+```php
+'api' => [
+    'require_referrer_header' => true,  // Must match FOSSBilling URL
+    'allowed_ips' => [],                 // Empty = allow all
+    'rate_span' => 60,                   // Rate limit window (seconds)
+    'rate_limit' => 100,                 // Max requests per window
+    'throttle_delay' => 2,               // Delay when rate limited
+    'rate_span_login' => 60,             // Login rate limit window
+    'rate_limit_login' => 20,            // Max login attempts
+    'CSRFPrevention' => true,            // Enable CSRF protection
+],
+```
+
+## Environment Variables
+
+Some settings can be overridden via environment variables:
+
+```bash
+APP_ENV=dev        # Enable development mode
+APP_DEBUG=true     # Enable debug mode
+```
+
+## Making Changes
+
+1. Edit `config.php` with a text editor
+2. Save the file
+3. Clear the cache: **System → Tools → Clear cache** (or delete `/data/cache/`)
+4. Test your changes
+
+{% aside type="caution" %}
+Always back up `config.php` before making changes. A syntax error will break your installation.
+{% /aside %}

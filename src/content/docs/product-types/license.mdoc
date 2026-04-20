@@ -1,0 +1,143 @@
+---
+title: License
+description: Issue and validate software licenses for your applications.
+---
+
+The license product type lets you create and manage software licenses. Your applications can then validate these licenses against FOSSBilling via the API.
+
+{% aside type="tip" %}
+This is included with FOSSBilling but needs to be enabled from **Extensions** first.
+{% /aside %}
+
+## How It Works
+
+1. Customer purchases a license product
+2. FOSSBilling generates a unique license key
+3. Your application calls FOSSBilling's API to validate the license
+4. FOSSBilling checks the license against your rules (IP, hostname, path, version)
+5. Your application grants or denies access based on the response
+
+## Setting Up License Products
+
+### 1. Enable the Extension
+
+Go to **Extensions** and install "Service License".
+
+### 2. Create a License Product
+
+When creating the product, configure these options:
+
+| Option | Description |
+|--------|-------------|
+| `plugin` | Which validation plugin to use (default: `Simple`) |
+| `prefix` | Optional prefix for license keys (e.g., `MYAPP-`) |
+| `length` | Length of the generated key (default: 25) |
+| `validate_ip` | Check the IP address |
+| `validate_host` | Check the hostname |
+| `validate_path` | Check the installation path |
+| `validate_version` | Check the software version |
+
+### 3. Distribute and Validate
+
+Give customers their license key, then have your application validate it using the API.
+
+## API Endpoints
+
+| Endpoint | Access | Description |
+|----------|--------|-------------|
+| `/admin/servicelicense/plugin_get_pairs` | Admin | List available license plugins |
+| `/admin/servicelicense/update` | Admin | Update license validation rules |
+| `/admin/servicelicense/reset` | Admin | Reset license to defaults |
+| `/guest/servicelicense/check` | Guest | Validate a license |
+
+### Validating a License
+
+Call `/guest/servicelicense/check` with these parameters:
+
+- `license` — the license key
+- `host` — the hostname
+- `version` — the software version
+- `path` — the installation path
+
+{% aside type="tip" %}
+If you disabled validation for certain fields (like `host` or `version`), you can send dummy values for them.
+{% /aside %}
+
+**Success response:**
+
+```json
+{
+  "result": {
+    "licensed_to": "Client Name",
+    "created_at": "2025-01-01 12:00:00",
+    "expires_at": null,
+    "valid": true
+  },
+  "error": null
+}
+```
+
+**Error response:**
+
+```json
+{
+  "result": null,
+  "error": {
+    "message": "Your license key is invalid.",
+    "code": 1005
+  }
+}
+```
+
+## Custom License Plugins
+
+You can create your own license generation and validation logic.
+
+### Creating a Plugin
+
+Place your plugin in `/modules/Servicelicense/Plugin/YourPlugin.php`:
+
+```php
+class License_YourPlugin
+{
+    public function generate(array $data): string
+    {
+        // Generate and return a license key
+        return 'YOUR-KEY-HERE';
+    }
+
+    public function validate(\Model_ServiceLicense $service, array $data): array
+    {
+        // Custom validation logic
+        // Throw LogicException if validation fails
+        if (!$valid) {
+            throw new \LogicException('Validation failed', 1020);
+        }
+
+        // Return extra data to include in the API response
+        return ['extraKey' => 'extraValue'];
+    }
+}
+```
+
+### Plugin Requirements
+
+- Class name must be `License_PluginName`
+- File must be `PluginName.php` in the `Plugin/` directory
+- Must implement a `generate()` method
+- Optional: implement a `validate()` method for custom rules
+
+### The Simple Plugin (Built-in)
+
+The default `Simple` plugin generates keys like:
+
+```
+MYAPP-ABCD1-EFGH2-IJKL3-MNOP4
+```
+
+- 25 characters by default
+- Optional prefix
+- Dashes every 5 characters
+- Uppercase letters and digits 1–9
+
+See `src/modules/Servicelicense/Plugin/Simple.php` for the implementation.

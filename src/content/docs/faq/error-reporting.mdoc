@@ -1,0 +1,61 @@
+---
+title: Error Reporting
+description: How FOSSBilling handles error reporting and what data is collected.
+---
+
+## What Is Error Reporting?
+
+FOSSBilling includes optional error reporting via [Sentry.io](https://sentry.io/welcome/). When enabled, errors are sent to Sentry with [secure, compliant handling](https://sentry.io/security/) and 90-day retention.
+
+## Why Enable It?
+
+Error reporting helps in several ways:
+
+1. **Better support** — We can look up your errors using your instance ID, so you don't need to share logs
+2. **Proactive fixes** — We spot regressions and common errors across all installations
+3. **Privacy** — Sensitive data is automatically scrubbed. No need to share potentially sensitive log files
+4. **Environment insights** — We learn which setups (PHP versions, OS, etc.) have more issues
+
+## What Gets Reported?
+
+Only what's needed to fix bugs:
+
+| Data | Why |
+|------|-----|
+| Request headers & URL | Understand what caused the error |
+| PHP version | Track PHP-specific issues |
+| PHP errors & exceptions | The actual error details |
+| FOSSBilling version | Know if it's a known bug in a specific version |
+| Instance ID | Link errors to your installation for support |
+| Web server type | Identify server-specific problems |
+| Stack trace | See the code path that led to the error |
+| Server OS info | Find OS-specific issues |
+
+Sensitive data is automatically filtered out before sending.
+
+## Error Reporting History
+
+| Version | Changes |
+|---------|---------|
+| 0.6.0 | Initial Sentry.io implementation |
+
+## Instance ID
+
+Your instance ID is a unique, randomly generated identifier (RFC4122 v4). It's safe to share — it doesn't reveal anything about your installation.
+
+**Find it:** Settings → About
+
+![Instance ID location](/img/docs/instance-id.png)
+
+## Enable or Disable Error Reporting
+
+**During installation:** You'll be asked if you want to enable it.
+
+**After installation:**
+
+- Via settings: Go to **Settings → System**
+- Via config: Set `report_errors` in your `config.php`
+
+{% aside type="tip" %}
+We recommend keeping error reporting enabled. It helps us improve FOSSBilling and speeds up support if you need help.
+{% /aside %}

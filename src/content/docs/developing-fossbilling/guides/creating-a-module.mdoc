@@ -1,0 +1,104 @@
+---
+title: Creating a Module
+description: Build custom modules to extend FOSSBilling's functionality.
+---
+
+{% aside type="caution" %}
+FOSSBilling is evolving quickly on the path to 1.0. Expect breaking changes in 0.x releases. We document these in the "breaking changes" section of release notes and add them to our [roadmap](https://github.com/orgs/FOSSBilling/projects/2) for visibility.
+
+These early releases let us modernize the codebase inherited from BoxBilling. Thanks for your patience!
+{% /aside %}
+
+## Quick Overview
+
+- Modules live in `/modules`
+- Product type modules should start with "Service" (e.g., `Servicehosting`)
+- Module IDs must be lowercase
+- Modules can add: API endpoints, templates, product types, cron jobs, hooks, and more
+
+## Directory Structure
+
+Module names start with a capital letter:
+
+✅ **Valid:** `Example`, `Mynewmodule`, `Servicehosting`
+❌ **Invalid:** `example`, `MyNewModule`, `servicehosting`
+
+See the [file structure docs](/developing-fossbilling/file-structure#modules) for the complete layout.
+
+## Example Module
+
+The best way to learn is by example. Our [example module](https://github.com/FOSSBilling/example-module) demonstrates:
+
+- Admin and client area templates
+- Email templates
+- API routes
+- Using the DI container
+- Routes with variables (`/example/user/:id`)
+- Translations
+- Database interaction
+- Event hooks
+
+## Running Scheduled Tasks
+
+Hook into cron using `onBeforeAdminCronRun` or `onAfterAdminCronRun`:
+
+```php
+public static function onBeforeAdminCronRun(\Box_Event $event): void
+{
+    error_log('Cron was called!');
+}
+```
+
+## Module Permissions
+
+Define custom permissions for staff members in your module.
+
+### Setting Up Permissions
+
+```php
+public function getModulePermissions(): array
+{
+    return [
+        'delete_something' => [
+            'type' => 'bool',
+            'display_name' => __trans('Delete something'),
+            'description' => __trans('Allows the staff member to delete "something"'),
+        ],
+        'can_always_access' => true,  // Staff always has basic access
+        'manage_settings' => [],      // Opt-in to settings page restriction
+    ];
+}
+```
+
+### Checking Permissions
+
+**Quick check:**
+```php
+$this->di['mod_service']('Staff')->checkPermissionsAndThrowException('example', 'delete_something');
+```
+
+**Manual check:**
+```php
+$staff_service = $this->di['mod_service']('Staff');
+if (!$staff_service->hasPermission(null, 'example', 'delete_something')) {
+    throw new \FOSSBilling\InformationException(
+        'You do not have permission to perform this action',
+        [],
+        403
+    );
+}
+```
+
+Key points:
+- Pass `null` to check the currently logged-in staff member
+- Use your module ID as the second parameter
+- Permission keys are module-specific (no naming conflicts)
+
+## Getting Started
+
+1. Copy the [example module](https://github.com/FOSSBilling/example-module)
+2. Rename files and update the manifest
+3. Start building your functionality
+4. Test in a development environment
+
+Join our [Discord](https://fossbilling.org/discord) if you need help!

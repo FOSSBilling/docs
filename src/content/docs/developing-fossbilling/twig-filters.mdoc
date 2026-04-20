@@ -1,0 +1,85 @@
+---
+title: Twig Filters & Functions
+description: Available Twig filters and functions for theming and module development.
+---
+
+FOSSBilling uses [Twig](https://twig.symfony.com/) for templating — everything from the front-end themes to email templates and PDFs. Here are the custom filters and functions available to you.
+
+## Standard Twig
+
+FOSSBilling includes all [default Twig filters](https://twig.symfony.com/doc/3.x/filters/index.html), plus the [Intl Extra Extension](https://github.com/twigphp/intl-extra) for internationalization.
+
+## FOSSBilling Custom Filters
+
+These filters are defined in [`/library/Box/TwigExtensions.php`](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/library/Box/TwigExtensions.php):
+
+### Translation & Localization
+
+| Filter | Description |
+|--------|-------------|
+| `trans` | Translate a string using FOSSBilling's translation system. |
+| `timeago` | Show how long ago a date was (e.g., "2 hours ago"). Accepts ISO 8601 format. |
+| `daysleft` | Show days until a date. Accepts ISO 8601 format. |
+| `period_title` | Display a translated period title (e.g., `1M` → "1 Month"). |
+
+### URLs & Links
+
+| Filter | Description |
+|--------|-------------|
+| `alink` | Create a link to the admin panel from a URI. |
+| `link` | Generate a full URL from a URI. |
+| `autolink` | Automatically convert text to HTML links. |
+| `iplookup` | Create a clickable admin panel link to look up an IP address. |
+
+### Assets & Resources
+
+| Filter | Description |
+|--------|-------------|
+| `mod_asset_url` | Get the correct URL for a module asset. |
+| `asset_url` | Get the URL for a theme asset. |
+| `library_url` | Get the URL for the library folder. |
+| `img_tag` | Generate an HTML `<img>` tag. |
+| `script_tag` | Generate an HTML `<script>` tag. |
+| `stylesheet_tag` | Generate an HTML `<link>` tag for CSS. |
+
+### Formatting
+
+| Filter | Description |
+|--------|-------------|
+| `money` | Format a price with currency symbol. |
+| `money_without_currency` | Format a price without the currency symbol. |
+| `money_convert` | Convert and format a price to another currency. |
+| `money_convert_without_currency` | Convert without showing the currency symbol. |
+| `number` | PHP `number_format()` as a filter. |
+| `size` | Convert bytes to human-readable size (KB, MB, GB, etc.). |
+| `truncate` | Truncate a string to a maximum length. |
+
+### Utilities
+
+| Filter | Description |
+|--------|-------------|
+| `gravatar` | Generate a Gravatar image URL from an email. Optional size parameter. |
+| `markdown` | Parse Markdown to HTML. Escapes HTML and removes unsafe links (`javascript:`, `vbscript:`, `file:`, `data:`). Uses CommonMark with GitHub extensions. |
+| `ipcountryname` | Show the country name for an IP address. |
+
+## Usage Examples
+
+```twig
+{# Format money #}
+{{ 29.99 | money }}  {# $29.99 #}
+
+{# Generate Gravatar #}
+<img src="{{ 'user@example.com' | gravatar(64) }}" alt="Avatar">
+
+{# Parse Markdown #}
+{{ product.description | markdown }}
+
+{# Time ago #}
+{{ order.created_at | timeago }}  {# 2 hours ago #}
+
+{# Admin link #}
+<a href="{{ 'client/manage' | alink }}">Manage Client</a>
+
+{# Module asset #}
+<script src="{{ 'myfile.js' | mod_asset_url }}"></script>
+```

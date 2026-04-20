@@ -1,0 +1,91 @@
+---
+title: Localization
+description: Run FOSSBilling in your language and contribute translations.
+---
+
+FOSSBilling speaks multiple languages. Use an existing translation or create your own.
+
+## Installing Languages
+
+FOSSBilling ships with translations that are at least 25% complete. To add more:
+
+1. Download the translation files
+2. Upload to `/locale/` in your FOSSBilling directory
+
+### Translation Structure
+
+```
+/locale/
+└── en_US/
+    └── LC_MESSAGES/
+        ├── messages.mo    ← Compiled translation (required)
+        └── messages.po    ← Source file (optional but helpful)
+```
+
+{% aside type="tip" %}
+Add your language to `/locale/locales.php` to show the native name in language selectors. This file is overwritten on updates, so you'll need to re-add it.
+{% /aside %}
+
+## Contributing Translations
+
+### Existing Languages
+
+1. Go to [translate.fossbilling.org](https://translate.fossbilling.org/)
+2. Create a Crowdin account
+3. Review and translate strings
+
+### New Languages
+
+Don't see your language?
+
+1. Join our [Discord](https://fossbilling.org/discord)
+2. Ask in `#localization` for it to be added
+3. We'll add it to Crowdin
+4. Start translating
+
+### Already Have a Translation?
+
+If you've created a complete translation locally:
+
+1. Submit a pull request to the [locale repository](https://github.com/FOSSBilling/locale)
+2. **Don't include the `.mo` file** — we generate those automatically
+3. We'll add it to Crowdin for community contributions
+
+Need help? Ask in our [Discord](https://fossbilling.org/discord).
+
+## Setting the Default Language
+
+Edit `config.php`:
+
+```php
+'locale' => 'en_US',  // Change to your language code
+```
+
+## Managing Languages
+
+**FOSSBilling 0.6.0+**: Enable/disable languages in the admin panel:
+
+**Extensions → Languages**
+
+See translation completion percentages and toggle languages on/off.
+
+## How Language Selection Works
+
+FOSSBilling automatically detects the visitor's preferred language from their browser settings.
+
+![Language selection flowchart](../../../assets/locale-logic-flow.png)
+
+### Selection Order
+
+1. Use browser's primary preferred language (if FOSSBilling has it)
+2. Fall back to the default locale from `config.php`
+3. Manual language selection overrides both
+
+### What Counts as a Match?
+
+- **Exact match:** `en_US` ↔ `en_US`
+- **Language match:** `en_GB` ↔ `en_US` (same language, different region)
+
+{% aside %}
+Only the browser's first preferred language is checked. Secondary languages in the header are ignored.
+{% /aside %}

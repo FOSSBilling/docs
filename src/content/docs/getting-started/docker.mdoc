@@ -1,0 +1,103 @@
+---
+title: Docker Installation
+description: Run FOSSBilling with Docker for a consistent, isolated environment.
+---
+
+{% aside type="tip" %}
+New to Docker? It packages apps with all their dependencies, so they run the same way everywhere. No more "it works on my machine" problems. [Learn more about containers](https://www.docker.com/resources/what-container/).
+{% /aside %}
+
+## Prerequisites
+
+- [Docker Engine](https://docs.docker.com/engine/install/) installed on your system
+
+## Choose Your Setup
+
+{% aside %}
+We use the `latest` tag for stable releases. Change to `preview` for bleeding-edge versions, or specify a version number like `0.6.0`.
+{% /aside %}
+
+{% tabs %}
+{% tabitem label="Standalone" %}
+Simplest option — runs FOSSBilling alone. You'll need an external database.
+
+```bash
+docker run -d -p 80:80 \
+  -v fossbilling:/var/www/html \
+  --restart=always \
+  fossbilling/fossbilling:latest
+```
+
+Then visit your server IP/hostname in a browser to complete the web installer.
+{% /tabitem %}
+{% tabitem label="Docker Compose" %}
+Complete stack with MySQL included. Best for getting started quickly.
+
+```yaml
+version: "3.9"
+services:
+  fossbilling:
+    image: fossbilling/fossbilling:latest
+    restart: always
+    ports:
+      - 80:80
+    volumes:
+      - fossbilling:/var/www/html
+
+  mysql:
+    image: mysql:8.2
+    restart: always
+    environment:
+      MYSQL_DATABASE: fossbilling
+      MYSQL_USER: fossbilling
+      MYSQL_PASSWORD: fossbilling
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - mysql:/var/lib/mysql
+
+volumes:
+  fossbilling:
+  mysql:
+```
+
+Run it:
+
+```bash
+docker compose up -d
+```
+
+First startup downloads images — this may take a few minutes.
+
+**Database credentials** (if using the example above):
+- Hostname: `mysql`
+- Database: `fossbilling`
+- Username: `fossbilling`
+- Password: `fossbilling`
+
+Access the installer at `http://localhost` (or your server IP/hostname).
+{% /tabitem %}
+{% /tabs %}
+
+## Post-Installation
+
+{% aside type="danger" %}
+**Cron is required.** FOSSBilling won't work properly without it.
+{% /aside %}
+
+After installation, set up the cron job on your host:
+
+```bash
+(crontab -l; echo "*/5 * * * * docker exec <container-name/id> su www-data -s /usr/local/bin/php /var/www/html/cron.php") | awk '!x[$0]++' | crontab -
+```
+
+Find your container name/ID:
+
+```bash
+docker ps
+```
+
+## Next Steps
+
+1. Complete the web installer
+2. Configure the cron job above
+3. [Secure your installation](/security/)

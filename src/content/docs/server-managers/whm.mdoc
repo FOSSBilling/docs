@@ -1,0 +1,61 @@
+---
+title: WHM / cPanel and FOSSBilling
+---
+
+## Configuring WHM / cPanel
+
+FOSSBilling connects to WHM using its API. Here's how to set up an API token:
+
+1. Log in to WHM and go to **Development** → **Manage API Tokens**
+2. Click **Generate Token**
+3. Give the token a friendly name (like "billing")
+4. Review the permissions. Usually the defaults work fine, but make sure you understand what access you're granting
+5. Click **Save**
+6. **Important:** Copy the token now — WHM won't show it to you again
+
+Need more help? See the [WHM API documentation](https://docs.cpanel.net/whm/development/manage-api-tokens-in-whm/).
+
+## Adding a WHM server to FOSSBilling
+
+1. Log in to your FOSSBilling admin panel
+2. Go to **System** → **Hosting plans and servers**
+3. Switch to the **New server** tab
+4. Fill in the name, hostname, IP address, and nameservers
+5. Select **WHM (cPanel)** from the **Server manager** dropdown
+6. Enter the WHM **root** username (not the API token name)
+7. Paste the API token you created earlier
+8. Click **Add server** to save
+
+## Hosting plans with WHM and FOSSBilling
+
+When a customer orders a hosting plan, FOSSBilling first checks if WHM has a package with the same name. If it doesn't find one, it creates the package using the details from FOSSBilling.
+
+### Option 1: Create packages in WHM (Recommended)
+
+This is the simpler approach and ensures packages follow your WHM standards:
+
+1. Create the package in WHM under the account FOSSBilling uses to connect
+2. Configure limits and features as you normally would
+3. Create a matching plan in FOSSBilling with the **exact same name**
+
+Accounts will follow WHM's limits — the FOSSBilling plan details don't matter as long as the name matches.
+
+### Option 2: Let FOSSBilling create packages
+
+If you want FOSSBilling to automatically create packages:
+
+1. Create the hosting plan in FOSSBilling with your desired limits
+2. Add any optional parameters in the **Hosting plan additional parameters** section
+
+{% aside type="note" %}
+FOSSBilling will create the package for you, but changes in FOSSBilling won't sync back to WHM. You'll need to manually update packages in WHM if you need to change limits later.
+{% /aside %}
+
+### Additional Parameters
+
+| Name | Example | Description |
+|------|---------|-------------|
+| `cgi` | `1` or `0` | Enable CGI access |
+| `cpmod` | `jupiter` | cPanel theme |
+| `maxlst` | `unlimited`, `null`, or `250` | Maximum mailing lists |
+| `hasshell` | `1` or `0` | Allow shell access |

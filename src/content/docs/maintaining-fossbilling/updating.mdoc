@@ -1,0 +1,48 @@
+---
+title: Updating FOSSBilling
+description: Keep your FOSSBilling installation up to date with the latest features and security fixes.
+---
+
+{% aside type="danger" %}
+**Always back up first.** Before any update, make full backups of your database and all FOSSBilling files. If something goes wrong, you'll need these to restore your data.
+{% /aside %}
+
+## Automatic Updates (Recommended)
+
+The easiest way to update:
+
+1. Log in to your admin panel
+2. Go to **System** → **Update**
+3. Click to apply the update
+
+FOSSBilling downloads and applies the update automatically. The update uses whichever branch you've configured — `preview` or `release`. You can change this in your [configuration file](/customizing-fossbilling/config).
+
+## Manual Updates
+
+If you prefer to update manually:
+
+1. **Back up your database and files**
+2. [Download the latest release](https://fossbilling.org/downloads/stable)
+3. Extract the files over your existing installation (overwrite existing files)
+4. Delete the `install` folder that came with the new files
+5. Log in to the admin panel and go to **System** → **Update**
+6. Click **Apply Patches & Update Configuration**
+
+## Emergency Recovery
+
+Can't access the admin panel after an update? Use the backup patcher:
+
+1. Visit `yourdomain.com/run-patcher` in your browser
+2. This runs database migrations and config updates automatically
+3. Once complete, try logging in again
+
+{% aside type="tip" %}
+If the patcher doesn't fix the issue, restore from your backup and try the update again. Check the [changelog](/changelog/) for any breaking changes that might require manual steps.
+{% /aside %}
+
+## What Gets Updated
+
+- **Automatic updates**: Core files, database schema, configuration
+- **Patches (manual step)**: Database migrations, config updates
+
+Always run the patches after manually updating files — this ensures your database schema matches the code.

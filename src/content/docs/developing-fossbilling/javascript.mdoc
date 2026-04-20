@@ -1,0 +1,161 @@
+---
+title: JavaScript API Wrapper
+description: Use the JavaScript wrapper for easier, more reliable API calls from themes and modules.
+---
+
+{% aside type="note" %}
+If you're building themes or modules, use this wrapper instead of making raw API calls. It handles authentication, CSRF tokens, and future-proofs your code against API changes.
+{% /aside %}
+
+## Why Use the Wrapper?
+
+- **Automatic CSRF handling** — No need to manage tokens manually
+- **Built-in spinner** — Shows a loading indicator during requests
+- **Future-proof** — If the API changes, we update the wrapper
+- **Cleaner code** — Less boilerplate for you
+
+## Importing the Wrapper
+
+Add this to your template's `<head>`:
+
+```html
+<meta name="csrf-token" content="{{ CSRFToken }}">
+<script src="{{ "Api/API.js?v=#{guest.system_version}" | library_url }}"></script>
+```
+
+What this does:
+1. Creates a meta tag with the CSRF token (the wrapper reads this automatically)
+2. Loads the API wrapper, appending the system version to prevent caching issues
+
+## Making Requests
+
+The wrapper follows this pattern:
+
+```
+API.{role}.{method}(endpoint, params, onSuccess, onError, showSpinner)
+```
+
+| Parameter | Description |
+|-----------|-------------|
+| `role` | `admin`, `client`, or `guest` |
+| `method` | `get` or `post` |
+| `endpoint` | The API endpoint (e.g., `"system/version"`) |
+| `params` | Request parameters (object) |
+| `onSuccess` | Callback function for successful responses |
+| `onError` | Callback function for errors |
+| `showSpinner` | Boolean to show/hide the loading spinner (optional, default: `true`) |
+
+## Examples
+
+### Get System Version (Guest)
+
+```javascript
+API.guest.get(
+  "system/version",
+  {},
+  function(response) {
+    console.log("Version:", response);
+  },
+  function(error) {
+    console.error("Error:", error);
+  }
+);
+```
+
+### Get Client List (Admin)
+
+```javascript
+API.admin.post(
+  "client/get_list",
+  { per_page: 10, page: 1 },
+  function(response) {
+    console.log("Clients:", response.list);
+  },
+  function(error) {
+    console.error("Failed to load clients:", error);
+  }
+);
+```
+
+### Disable the Spinner
+
+```javascript
+API.admin.post(
+  "client/get_list",
+  {},
+  function(response) {
+    // Handle success
+  },
+  function(error) {
+    // Handle error
+  },
+  false  // No spinner
+);
+```
+
+## Loading Spinner
+
+The wrapper automatically shows a spinner for requests taking longer than 250ms. To use it:
+
+1. Include a `.spinner-border` class in your CSS
+2. The wrapper creates and removes the spinner element automatically
+
+```css
+.spinner-border {
+  /* Your spinner styles */
+  animation: spin 1s linear infinite;
+}
+```
+
+![Spinner example](/img/docs/spinner-example.gif)
+
+### Disabling the Spinner
+
+Either:
+- Don't define a `.spinner-border` class in your CSS
+- Pass `false` as the fifth parameter to the API call
+
+## Handling Responses
+
+### Success Response
+
+```javascript
+function(response) {
+  // response contains the API result
+  // Access data like response.result or response.id
+}
+```
+
+### Error Response
+
+```javascript
+function(error) {
+  // error contains error details
+  // Usually: error.message and error.code
+  console.error(error.message);
+}
+```
+
+## Complete Example
+
+```javascript
+// Load client profile
+function loadProfile() {
+  API.client.get(
+    "client/profile",
+    {},
+    function(profile) {
+      document.getElementById('name').textContent = profile.first_name + ' ' + profile.last_name;
+      document.getElementById('email').textContent = profile.email;
+    },
+    function(error) {
+      alert('Failed to load profile: ' + error.message);
+    }
+  );
+}
+
+// Call it when the page loads
+document.addEventListener('DOMContentLoaded', loadProfile);
+```
+
+For more details, see the [API Reference](/developing-fossbilling/api/).

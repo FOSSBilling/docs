@@ -1,0 +1,72 @@
+---
+title: Manually Resetting Your Admin Password
+description: Reset your admin password directly in the database when you can't use the normal reset feature.
+---
+
+{% aside type="danger" %}
+**Back up your database first.** We'll be making direct changes to the database. If something goes wrong, you'll need a backup to restore.
+{% /aside %}
+
+Use this guide when you've lost admin access and can't use the password reset feature. We'll use phpMyAdmin, but you can use any database tool — the steps will just be slightly different.
+
+## Step 1: Log into phpMyAdmin
+
+Log in to phpMyAdmin using your hosting control panel credentials. Not sure how? Contact your hosting provider.
+
+## Step 2: Select Your Database
+
+Choose the database you installed FOSSBilling on. If you're not sure which one, check your `config.php` file:
+
+```php {6}
+'db' => [
+    'type' => 'mysql',
+    'host' => 'localhost',
+    'port' => '3306',
+    'name' => 'fossbilling',  // This is your database name
+    'user' => 'fossbilling_user',
+    'password' => 'fossbilling_password',
+],
+```
+
+![Selecting the database in phpMyAdmin](/img/guides/admin-manual-reset/pma_db.png)
+
+## Step 3: Find the Admin Table
+
+1. Click the **Structure** tab to see all tables
+2. Find and click on the **admin** table
+
+![Selecting the admin table](/img/guides/admin-manual-reset/pma_table.png)
+
+3. Click the **Browse** tab to see all admin accounts
+4. Find your account and click **Edit**
+
+![Clicking the Edit button on your account row](/img/guides/admin-manual-reset/pma_row.png)
+
+## Step 4: Generate a New Password Hash
+
+{% aside type="danger" title="Security Warning" %}
+**Never use your real password** on online hashing websites. Use a temporary password and change it properly once you're back in FOSSBilling. These sites may store passwords and hashes.
+{% /aside %}
+
+The `pass` field needs a bcrypt hash. Generate one using a tool like [browserling.com/tools/bcrypt](https://www.browserling.com/tools/bcrypt):
+
+1. Enter a temporary password (not your real one!)
+2. Copy the generated hash
+
+![Creating a bcrypt hash](/img/guides/admin-manual-reset/bcrypt.png)
+
+3. Paste the hash into the **pass** field
+4. Click **Go** to save
+
+![Pasting the hash and saving](/img/guides/admin-manual-reset/pma_edit.png)
+
+## Step 5: Log In and Change Your Password
+
+You can now log in with your temporary password. **Important:** Change it immediately to something secure:
+
+1. Click your name in the top right corner
+2. Go to **Profile**
+3. Switch to the **Change Password** tab
+4. Set a strong, unique password
+
+Done! Keep your password somewhere safe — ideally a password manager.

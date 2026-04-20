@@ -1,0 +1,71 @@
+---
+title: Company Information
+description: Set up your company details, logo, and branding in FOSSBilling.
+---
+
+Set your business details so they appear throughout FOSSBilling — on invoices, emails, and client pages.
+
+## Where to Configure
+
+**Configuration → Settings → SYSTEM**
+
+![Company settings location](../../../assets/company-info.gif)
+
+## Company Logo
+
+Upload logos for both light and dark modes:
+
+- **Light mode logo** — Main logo shown on light backgrounds
+- **Dark mode logo** — Alternative for dark themes (optional)
+
+### Best Practices
+
+- Store logos in your theme's `assets/` folder
+- Use SVG for crisp display at any size
+- Keep file sizes reasonable (< 500KB)
+
+{% aside type="caution" %}
+Don't edit `themes/huraga/assets/img/logo.svg` directly — it's overwritten on updates. Upload your logo through the settings page instead.
+{% /aside %}
+
+### Logo Not Showing?
+
+1. Clear FOSSBilling cache: **System → Tools → Clear cache**
+2. Clear your browser cache
+3. Check the file path is correct
+
+## Other Company Details
+
+Configure these in the same location:
+
+| Setting | Where It Appears |
+|---------|------------------|
+| Company name | Invoices, emails, PDFs, client area |
+| Address | Invoice PDFs, company profile |
+| Email | System emails, contact forms |
+| Phone | Client area, invoices |
+| VAT/Tax ID | Invoice PDFs, tax calculations |
+| Terms of Service | Checkout page, client agreements |
+
+## Email Signature
+
+Set a default signature used in system emails:
+
+```
+--
+Best regards,
+The Example Company Team
+https://example.com
+```
+
+This appears at the bottom of most automated emails. Individual email templates can override it.
+
+## Currency Settings
+
+Also in **Configuration → Settings → Currency**:
+
+- Default currency
+- Currency format
+- Exchange rate sources
+
+See [Currency Support](/faq/features/#currency-support) for more.

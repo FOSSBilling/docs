@@ -1,0 +1,51 @@
+---
+title: Securing FOSSBilling
+---
+
+## Configuration Options
+
+These settings live in your `config.php` file and control various security features.
+
+### Security Options
+
+| Property | Default | Options | Description |
+|----------|---------|---------|-------------|
+| `mode` | `strict` | `strict` or `regular` | In `strict` mode, cookies use `SameSite=Strict` and `HttpOnly`. `regular` mode uses default cookie properties but still sets `HttpOnly`. |
+| `force_https` | `true` | `bool` | When enabled, FOSSBilling redirects all requests to HTTPS and forces cookies to be sent only over secure connections. |
+| `session_lifespan` | `7200` | `int` | How long sessions remain valid (in seconds). Default is 2 hours. After this, sessions expire and are destroyed. |
+
+```php
+// Example configuration
+'security' => [
+    'mode' => 'strict',
+    'force_https' => true,
+    'session_lifespan' => 7200,
+],
+```
+
+### API Security
+
+| Property | Default | Options | Description |
+|----------|---------|---------|-------------|
+| `CSRFPrevention` | `true` | `bool` | Enables CSRF protection. Keep this enabled unless it's causing specific issues. |
+
+```php
+// Example configuration
+'api' => [
+    'CSRFPrevention' => true,
+],
+```
+
+## Cloudflare
+
+If you're using Cloudflare, enable **IP Geolocation** under your website's **Network** settings. This lets FOSSBilling use the visitor's country (based on IP) to help prevent session hijacking.
+
+## Reverse Proxies
+
+### HTTPS Detection
+
+Reverse proxies often make FOSSBilling think it's being accessed over HTTP, even when the end user is on HTTPS. To fix this, ensure your reverse proxy forwards the `X-Forwarded-Proto` header set to `https`.
+
+### Trusted Proxies
+
+If you're behind a reverse proxy, you may also need to configure trusted proxy settings in FOSSBilling to ensure security features work correctly.

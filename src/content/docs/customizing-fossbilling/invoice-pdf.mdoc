@@ -1,0 +1,108 @@
+---
+title: Customizing Invoice PDFs
+description: Make your invoice PDFs match your brand with custom CSS and HTML templates.
+---
+
+FOSSBilling generates PDFs using [Dompdf](https://github.com/dompdf/dompdf), which converts HTML/CSS to PDF.
+
+## CSS Limitations
+
+Dompdf doesn't support everything. As of version 2.0.3:
+
+| Supported | Not Supported |
+|-----------|---------------|
+| CSS 2.1 and some CSS3 | Flexbox |
+| `@import`, `@media`, `@page` | CSS Grid |
+| Basic positioning | Complex layouts |
+
+{% aside type="tip" %}
+Table cells can't span pages. Keep table rows compact enough to fit on one page.
+{% /aside %}
+
+## Custom CSS
+
+### Creating a Custom Stylesheet
+
+1. Copy `/modules/Invoice/pdf_template/default-pdf.css`
+2. Paste as `/modules/Invoice/pdf_template/custom-pdf.css`
+
+FOSSBilling automatically uses `custom-pdf.css` if it exists.
+
+{% aside type="caution" %}
+Editing `default-pdf.css` directly is overwritten on updates. Always use `custom-pdf.css`.
+{% /aside %}
+
+### CSS Classes Reference
+
+![PDF layout with CSS classes](../../../assets/invoice-layout.png)
+
+Common classes:
+
+- `.invoice-header` — Company and client info
+- `.invoice-details` — Invoice number, date, due date
+- `.invoice-items` — Line items table
+- `.invoice-totals` — Subtotal, tax, total
+- `.invoice-footer` — Terms, notes
+
+## Custom HTML Template
+
+**FOSSBilling 0.6.0+**: Customize the HTML structure.
+
+### Creating a Custom Template
+
+1. Copy `/modules/Invoice/pdf_template/default-pdf.twig`
+2. Paste as `/modules/Invoice/pdf_template/custom-pdf.twig`
+
+FOSSBilling uses `custom-pdf.twig` automatically.
+
+### Template Variables
+
+Available in PDF templates:
+
+| Variable | Description |
+|----------|-------------|
+| `invoice` | Invoice data (id, total, items, etc.) |
+| `client` | Client information |
+| `company` | Your company details |
+| `currency` | Currency code and symbol |
+
+### Example: Add a Custom Header
+
+```twig
+<div class="custom-header">
+  <img src="{{ company.logo_url }}" alt="{{ company.name }}">
+  <h1>INVOICE #{{ invoice.serie_nr }}</h1>
+</div>
+```
+
+### Twig Filters
+
+PDF templates support the same [Twig filters](/developing-fossbilling/twig-filters/) as the front-end:
+
+```twig
+{{ invoice.total | money }}           {# Format as currency #}
+{{ invoice.created_at | timeago }}    {# Show relative time #}
+```
+
+## Testing Changes
+
+1. Make your edits to `custom-pdf.css` or `custom-pdf.twig`
+2. Generate a test invoice
+3. Download the PDF
+4. Review the output
+
+{% aside type="tip" %}
+PDF generation is cached. Clear the cache (**System → Tools → Clear cache**) after template changes.
+{% /aside %}
+
+## Debugging
+
+For complex issues, enable Dompdf debugging in `config.php`:
+
+```php
+'dompdf' => [
+    'debug' => true,
+],
+```
+
+Check PHP error logs for Dompdf messages.

@@ -1,0 +1,100 @@
+---
+title: The "Custom" Payment Gateway
+description: Accept manual payments like bank transfers with configurable instructions.
+---
+
+# The "Custom" Payment Gateway
+
+The Custom gateway is for manual payment methods — bank transfers, cash, checks, or any offline payment you handle yourself.
+
+{% aside type="note" %}
+Want to integrate with an external payment processor like Stripe? See the [Creating a Payment Gateway](/developing-fossbilling/guides/creating-a-payment-gateway/) guide instead.
+{% /aside %}
+
+## How It Works
+
+1. Client selects "Custom" at checkout
+2. FOSSBilling displays your configured instructions
+3. Client follows the instructions to pay you
+4. You receive the payment
+5. You manually mark the invoice as paid in FOSSBilling
+
+## Configuration
+
+Go to **Configuration → Payment gateways → Custom**.
+
+Two template fields:
+
+- **Single payment information** — For one-time payments
+- **Subscription information** — For recurring payments (if supported)
+
+Both support Twig templates and HTML.
+
+{% aside type="caution" %}
+Only trusted administrators should edit these templates. The content renders in the client area, so malicious JavaScript could compromise your customers.
+
+Never paste untrusted code or scripts from unknown sources.
+{% /aside %}
+
+## Available Variables
+
+| Variable | Type | Description |
+|----------|------|-------------|
+| `invoice` | array | Full invoice data: total, currency, line items, buyer info |
+| `_client_id` | int | ID of the paying client |
+
+## Example Templates
+
+### Bank Transfer Instructions
+
+```html
+<div style="padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+    <h3>Bank Transfer Instructions</h3>
+    <p>Please transfer the following amount to our bank account:</p>
+    <ul>
+        <li><strong>Amount:</strong> &#123;&#123; invoice.total &#125;&#125; &#123;&#123; invoice.currency &#125;&#125;</li>
+        <li><strong>Reference:</strong> &#123;&#123; invoice.serie_nr &#125;&#125;</li>
+        <li><strong>Bank:</strong> Example Bank</li>
+        <li><strong>IBAN:</strong> GB00 XXXX 0000 0000 0000 00</li>
+        <li><strong>BIC/SWIFT:</strong> EXAMPLEXX</li>
+    </ul>
+    <p>Your invoice will be marked as paid once we confirm the transfer (1-3 business days).</p>
+</div>
+```
+
+### Conditional by Currency
+
+```html
+&#123;% if invoice.currency == 'EUR' %&#125;
+    <p>Transfer to: DE00 0000 0000 0000 0000 00</p>
+&#123;% elseif invoice.currency == 'USD' %&#125;
+    <p>Transfer to: 1234567890 (Routing: 021000021)</p>
+&#123;% else %&#125;
+    <p>Contact support for &#123;&#123; invoice.currency &#125;&#125; payment instructions.</p>
+&#123;% endif %&#125;
+```
+
+## Debugging
+
+To see all available data in the `invoice` variable, temporarily enable debug mode and add this to your template:
+
+```html
+<pre>
+&#123;&#123; dump(invoice) &#125;&#125;
+</pre>
+```
+
+**Remember to disable debug mode when you're done!**
+
+## Marking Invoices as Paid
+
+After receiving payment:
+
+1. Go to **Invoicing → Invoices**
+2. Find the invoice
+3. Click **"Mark as paid"**
+4. The system activates services and emails the client
+
+## Source Code
+
+The Custom adapter is at [`src/library/Payment/Adapter/Custom.php`](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/library/Payment/Adapter/Custom.php). It's a simple example of how payment adapters work.
