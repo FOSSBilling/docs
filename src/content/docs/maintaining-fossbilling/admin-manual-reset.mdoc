@@ -4,10 +4,10 @@ description: Reset your admin password directly in the database when you can't u
 ---
 
 {% aside type="danger" %}
-**Back up your database first.** We'll be making direct changes to the database. If something goes wrong, you'll need a backup to restore.
+**Back up your database first.** This guide involves making direct changes to the database. If something goes wrong, you will need a backup to restore.
 {% /aside %}
 
-Use this guide when you've lost admin access and can't use the password reset feature. We'll use phpMyAdmin, but you can use any database tool — the steps will just be slightly different.
+Use this guide when you have lost admin access and cannot use the password reset feature. These steps use phpMyAdmin, but any database tool will work — the steps will simply differ slightly.
 
 ## Step 1: Log into phpMyAdmin
 
@@ -62,11 +62,11 @@ The `pass` field needs a bcrypt hash. Generate one using a tool like [browserlin
 
 ## Step 5: Log In and Change Your Password
 
-You can now log in with your temporary password. **Important:** Change it immediately to something secure:
+You can now log in with your temporary password. **Important:** Change it immediately to a secure password:
 
 1. Click your name in the top right corner
 2. Go to **Profile**
 3. Switch to the **Change Password** tab
 4. Set a strong, unique password
 
-Done! Keep your password somewhere safe — ideally a password manager.
+Password reset complete. Store your password securely — ideally in a password manager.
