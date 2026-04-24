@@ -50,7 +50,7 @@ If you are seeing permission-related errors around `config.php`, the cache, uplo
 ### File and folder permissions
 
 - If your control panel has a "fix permissions" button, try that first.
-- Verify files and folders for your website have the correct permissions applied. Usually `755` is correct for folders and 644 for PHP files.
+- Verify files and folders for your website have the correct permissions applied. Usually `755` is correct for folders and `644` for most PHP files, but security-sensitive files such as `config.php` may require stricter permissions (for example `600` or `640`) depending on your server setup.
   - From within your terminal and under the document root, you can manually apply the correct permissions by using the following commands:
     - `find . -type d -exec chmod 755 {} \;` to apply 755 to all folders.
     - `find . -type f -exec chmod 644 {} \;` to apply 644 to all files.
@@ -93,7 +93,7 @@ Subfolder installations are not supported right now. Install FOSSBilling on a de
 If FOSSBilling starts failing after an update, work through these steps:
 
 1. Review the [changelog](/changelog) for any breaking changes or for any manual actions required.
-2. Try the fallback patcher by visiting `example.com/run-patcher` to make sure database and configuration updates finished cleanly.
+2. Try the fallback patcher by visiting `https://example.com/run-patcher` to make sure database and configuration updates finished cleanly.
    - If you need the fallback patcher, there is often an underlying permissions issue interrupting the normal update flow.
 3. If you're still experiencing issues, you can ask for further assistance via our [Discord](https://fossbilling.org/discord), or with a [bug report](https://github.com/FOSSBilling/FOSSBilling/issues).
 
