@@ -1,6 +1,5 @@
 {
 	"name": "docs",
-	"main": "@astrojs/cloudflare/entrypoints/server",
 	"compatibility_date": "2026-04-21",
 	"compatibility_flags": [ "global_fetch_strictly_public" ],
 	"observability": {
@@ -15,7 +14,6 @@
   "preview_urls": true,
   "keep_vars": true,
 	"assets": {
-		"directory": "./dist",
-		"binding": "ASSETS"
+		"directory": "./dist"
 	}
 }

@@ -20,6 +20,8 @@ The site will be available at `http://localhost:4321`.
 | `npm run build`   | Build the production site to `./dist/`       |
 | `npm run preview` | Preview the build locally before deploying   |
 
+For Cloudflare deployments with Wrangler, run `npm run build` first so `./dist/` exists before `wrangler deploy`.
+
 ## Structure
 
 ```
