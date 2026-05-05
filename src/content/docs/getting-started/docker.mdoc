@@ -14,7 +14,7 @@ Docker is useful when you want a predictable local or server setup without insta
 ## Choose a Setup
 
 {% aside %}
-Use the `latest` tag for the current stable release. Switch to `preview` for preview builds, or pin a specific version such as `0.6.0`.
+Use the `latest` tag for the current stable release. For production deployments, pin a specific version such as `0.6.0` and upgrade intentionally after testing.
 {% /aside %}
 
 {% tabs %}
@@ -50,7 +50,7 @@ services:
     environment:
       MYSQL_DATABASE: fossbilling
       MYSQL_USER: fossbilling
-      MYSQL_PASSWORD: fossbilling
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?set-a-strong-database-password}
       MYSQL_RANDOM_ROOT_PASSWORD: '1'
     volumes:
       - mysql:/var/lib/mysql
@@ -68,11 +68,17 @@ docker compose up -d
 
 The first startup downloads container images, so it may take a few minutes.
 
+Before starting the stack, set a strong database password:
+
+```bash
+export MYSQL_PASSWORD="$(openssl rand -base64 32)"
+```
+
 **Database credentials** (if using the example above):
 - Hostname: `mysql`
 - Database: `fossbilling`
 - Username: `fossbilling`
-- Password: `fossbilling`
+- Password: the value of `MYSQL_PASSWORD`
 
 Open `http://localhost` or your server's IP/hostname to continue with the installer.
 {% /tabitem %}

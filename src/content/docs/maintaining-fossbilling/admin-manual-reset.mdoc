@@ -45,16 +45,17 @@ Choose the database you installed FOSSBilling on. If you're not sure which one, 
 ## Step 4: Generate a New Password Hash
 
 {% aside type="danger" title="Security Warning" %}
-**Never use your real password** on online hashing websites. Use a temporary password and change it properly once you're back in FOSSBilling. These sites may store passwords and hashes.
+Generate the hash on a machine you trust. Do not enter admin passwords into online hashing tools; they may store passwords and hashes.
 {% /aside %}
 
-The `pass` field needs a bcrypt hash. Generate one using a tool like [browserling.com/tools/bcrypt](https://www.browserling.com/tools/bcrypt):
+The `pass` field needs a bcrypt hash. Generate one locally:
 
-1. Enter a temporary password (not your real one!)
+```bash
+php -r 'echo password_hash("temporary-password-here", PASSWORD_BCRYPT), PHP_EOL;'
+```
+
+1. Replace `temporary-password-here` with a temporary password
 2. Copy the generated hash
-
-![Creating a bcrypt hash](/img/guides/admin-manual-reset/bcrypt.png)
-
 3. Paste the hash into the **pass** field
 4. Click **Go** to save
 

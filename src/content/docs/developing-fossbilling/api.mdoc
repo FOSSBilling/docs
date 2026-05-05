@@ -86,7 +86,9 @@ response = requests.post(url, json=payload, auth=auth)
 print(response.json())
 ```
 {% /tabitem %}
-{% tabitem label="JavaScript" %}
+{% tabitem label="Node.js" %}
+Run admin API calls from trusted server-side code only. Never expose an admin API key in browser JavaScript.
+
 ```javascript
 const url = "https://example.com/api/admin/staff/create";
 const apiKey = "YOUR_API_KEY";
@@ -101,7 +103,7 @@ const payload = {
 
 const headers = new Headers();
 headers.set("Content-Type", "application/json");
-headers.set("Authorization", "Basic " + btoa("admin:" + apiKey));
+headers.set("Authorization", "Basic " + Buffer.from("admin:" + apiKey).toString("base64"));
 
 fetch(url, {
   method: "POST",
