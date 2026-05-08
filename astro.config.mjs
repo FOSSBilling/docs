@@ -6,10 +6,18 @@ import markdoc from '@astrojs/markdoc';
 // https://astro.build/config
 export default defineConfig({
   integrations: [starlight({
-      title: 'Docs',
+      title: 'FOSSBilling',
+      description: 'Official FOSSBilling documentation for installation, maintenance, customization, and development.',
       logo: {
           light: '/public/img/wordmark-black.png',
           dark: '/public/img/wordmark-white.png',
+          alt: 'FOSSBilling',
+          replacesTitle: true,
+      },
+      customCss: ['/src/styles/fossbilling.css'],
+      components: {
+          Header: './src/components/starlight/Header.astro',
+          Footer: './src/components/starlight/Footer.astro',
       },
       tableOfContents: {
           minHeadingLevel: 2,
@@ -114,6 +122,7 @@ export default defineConfig({
           { icon: 'github', label: 'GitHub', href: 'https://github.com/FOSSBilling/FOSSBilling' },
           { icon: 'discord', label: 'Discord', href: 'https://fossbilling.org/discord' },
       ],
+      lastUpdated: true,
       pagination: true,
     }), markdoc()],
 });

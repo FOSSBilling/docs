@@ -1,0 +1,130 @@
+---
+import LanguageSelect from 'virtual:starlight/components/LanguageSelect';
+import Search from 'virtual:starlight/components/Search';
+import SiteTitle from 'virtual:starlight/components/SiteTitle';
+import SocialIcons from 'virtual:starlight/components/SocialIcons';
+import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
+
+const navLinks = [
+	{ label: 'Documentation', href: '/' },
+	{ label: 'Downloads', href: 'https://fossbilling.org/downloads' },
+	{ label: 'Demo', href: 'https://fossbilling.org/demo' },
+	{ label: 'Translate', href: 'https://translate.fossbilling.org/' },
+	{ label: 'Donate', href: 'https://opencollective.com/fossbilling', cta: true },
+];
+
+const currentPath = Astro.url.pathname.replace(/\/+$/, '') || '/';
+---
+
+<div class="fb-header">
+	<div class="fb-header__brand">
+		<SiteTitle />
+	</div>
+
+	<nav class="fb-header__nav" aria-label="Primary">
+		{
+			navLinks.map(({ label, href, cta }) => (
+				<a
+					href={href}
+					class:list={[
+						'fb-header__link',
+						{
+							'is-active': href === '/' && currentPath.startsWith('/'),
+							'is-cta': cta,
+						},
+					]}
+				>
+					{label}
+				</a>
+			))
+		}
+	</nav>
+
+	<div class="fb-header__search">
+		<Search />
+	</div>
+
+	<div class="fb-header__actions">
+		<div class="fb-header__social">
+			<SocialIcons />
+		</div>
+		<ThemeSelect />
+		<LanguageSelect />
+	</div>
+</div>
+
+<style>
+	.fb-header {
+		display: grid;
+		grid-template-columns: minmax(0, auto) 1fr;
+		align-items: center;
+		gap: 0.75rem 1rem;
+		height: 100%;
+	}
+
+	.fb-header__brand {
+		min-width: 0;
+	}
+
+	.fb-header__search {
+		grid-column: 1 / -1;
+	}
+
+	.fb-header__nav,
+	.fb-header__actions {
+		display: none;
+	}
+
+	.fb-header__social {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+	}
+
+	.fb-header__link {
+		color: var(--sl-color-gray-3);
+		font-size: 0.98rem;
+		font-weight: 500;
+		text-decoration: none;
+		transition: color 0.2s ease;
+	}
+
+	.fb-header__link:hover,
+	.fb-header__link.is-active {
+		color: var(--sl-color-white);
+	}
+
+	.fb-header__link.is-cta {
+		color: var(--sl-color-white);
+	}
+
+	@media (min-width: 50rem) {
+		.fb-header {
+			grid-template-columns: minmax(0, auto) minmax(14rem, 1fr) auto;
+			gap: 1rem;
+		}
+
+		.fb-header__search {
+			grid-column: auto;
+		}
+
+		.fb-header__actions {
+			display: flex;
+			align-items: center;
+			gap: 0.75rem;
+		}
+	}
+
+	@media (min-width: 72rem) {
+		.fb-header {
+			grid-template-columns: minmax(12rem, auto) auto minmax(14rem, 1fr) auto;
+			gap: 1.25rem;
+		}
+
+		.fb-header__nav {
+			display: flex;
+			align-items: center;
+			gap: 1.5rem;
+		}
+	}
+</style>

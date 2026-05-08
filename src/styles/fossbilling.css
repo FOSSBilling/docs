@@ -1,0 +1,134 @@
+@layer starlight.custom {
+	:root,
+	::backdrop {
+		--sl-color-white: hsl(210, 20%, 96%);
+		--sl-color-gray-1: hsl(214, 18%, 86%);
+		--sl-color-gray-2: hsl(214, 14%, 72%);
+		--sl-color-gray-3: hsl(216, 10%, 58%);
+		--sl-color-gray-4: hsl(217, 10%, 42%);
+		--sl-color-gray-5: hsl(220, 12%, 18%);
+		--sl-color-gray-6: hsl(220, 14%, 10%);
+		--sl-color-black: hsl(220, 16%, 7%);
+
+		--sl-color-accent-low: hsl(215, 55%, 18%);
+		--sl-color-accent: hsl(206, 100%, 56%);
+		--sl-color-accent-high: hsl(205, 100%, 70%);
+
+		--sl-color-text: hsl(213, 18%, 84%);
+		--sl-color-text-accent: var(--sl-color-accent);
+		--sl-color-text-invert: hsl(210, 30%, 96%);
+		--sl-color-bg: hsl(220, 16%, 7%);
+		--sl-color-bg-nav: hsl(220, 12%, 9%);
+		--sl-color-bg-sidebar: hsl(220, 14%, 8%);
+		--sl-color-bg-inline-code: hsl(220, 12%, 14%);
+		--sl-color-hairline: hsla(0, 0%, 100%, 0.08);
+		--sl-color-hairline-light: hsla(0, 0%, 100%, 0.08);
+		--sl-color-hairline-shade: hsla(0, 0%, 0%, 0.45);
+		--sl-color-backdrop-overlay: hsla(220, 16%, 5%, 0.72);
+
+		--sl-nav-height: 5.5rem;
+		--sl-sidebar-width: 19rem;
+		--sl-content-width: 52rem;
+		--sl-content-pad-x: 1.5rem;
+		--sl-text-h1: 3.65rem;
+		--sl-text-h2: 2.45rem;
+		--sl-text-body: 1.125rem;
+		--sl-line-height: 1.8;
+	}
+
+	:root[data-theme='light'],
+	[data-theme='light'] ::backdrop {
+		--sl-color-white: hsl(220, 18%, 12%);
+		--sl-color-gray-1: hsl(220, 16%, 18%);
+		--sl-color-gray-2: hsl(220, 12%, 30%);
+		--sl-color-gray-3: hsl(220, 8%, 42%);
+		--sl-color-gray-4: hsl(220, 8%, 58%);
+		--sl-color-gray-5: hsl(220, 16%, 90%);
+		--sl-color-gray-6: hsl(210, 20%, 96%);
+		--sl-color-gray-7: hsl(210, 33%, 98%);
+		--sl-color-black: hsl(0, 0%, 100%);
+
+		--sl-color-accent-low: hsl(206, 100%, 94%);
+		--sl-color-accent: hsl(206, 100%, 46%);
+		--sl-color-accent-high: hsl(206, 100%, 34%);
+
+		--sl-color-text: hsl(220, 16%, 22%);
+		--sl-color-text-accent: var(--sl-color-accent);
+		--sl-color-text-invert: hsl(0, 0%, 100%);
+		--sl-color-bg: hsl(0, 0%, 100%);
+		--sl-color-bg-nav: hsl(210, 33%, 98%);
+		--sl-color-bg-sidebar: hsl(210, 25%, 97%);
+		--sl-color-bg-inline-code: hsl(220, 18%, 94%);
+		--sl-color-hairline: hsl(220, 16%, 90%);
+		--sl-color-hairline-light: hsl(220, 16%, 90%);
+		--sl-color-hairline-shade: hsl(220, 16%, 90%);
+		--sl-color-backdrop-overlay: hsla(220, 20%, 20%, 0.2);
+	}
+
+	[data-has-sidebar] .header {
+		border-bottom: 1px solid var(--sl-color-hairline);
+		background: var(--sl-color-bg-nav);
+		backdrop-filter: blur(16px);
+	}
+
+	.sidebar-pane {
+		border-inline-end: 1px solid var(--sl-color-hairline);
+		background:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.015), rgba(255, 255, 255, 0)),
+			var(--sl-color-bg-sidebar);
+	}
+
+	.right-sidebar-container {
+		border-inline-start: 1px solid var(--sl-color-hairline);
+	}
+
+	.site-title img {
+		height: 2.5rem;
+	}
+
+	.sl-markdown-content {
+		font-size: var(--sl-text-body);
+	}
+
+	.sl-markdown-content :is(h1, h2, h3) {
+		letter-spacing: -0.03em;
+	}
+
+	.sl-markdown-content p {
+		max-width: 42rem;
+	}
+
+	.sl-markdown-content a {
+		text-underline-offset: 0.18em;
+	}
+
+	.sl-markdown-content .starlight-aside {
+		border-radius: 1rem;
+		border-color: color-mix(in srgb, var(--sl-color-accent) 65%, transparent);
+		background: color-mix(in srgb, var(--sl-color-accent) 14%, transparent);
+	}
+
+	.sl-markdown-content .starlight-aside__title,
+	.sl-markdown-content .starlight-aside a {
+		color: var(--sl-color-accent-high);
+	}
+
+	.sl-markdown-content ul {
+		padding-inline-start: 1.25rem;
+	}
+
+	.content-panel + .content-panel {
+		padding-top: 0.25rem;
+	}
+
+	.pagination-links a,
+	.pagination-links span {
+		border-radius: 1rem;
+	}
+
+	@media (min-width: 72rem) {
+		:root {
+			--sl-content-pad-x: 2rem;
+		}
+	}
+}
