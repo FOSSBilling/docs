@@ -20,9 +20,12 @@ export default defineConfig({
       },
       sidebar: [
           {
+            label: 'Introduction',
+            link: '/',
+          },
+          {
               label: 'Getting Started',
               items: [
-                  { label: 'Introduction', link: '/getting-started/' },
                   { label: 'System Requirements', link: '/getting-started/requirements' },
                   { label: 'Standard Installation', link: '/getting-started/installation' },
                   { label: 'Docker Installation', link: '/getting-started/docker' },
@@ -32,7 +35,6 @@ export default defineConfig({
           {
               label: 'Maintaining FOSSBilling',
               items: [
-                  { label: 'Introduction', link: '/maintaining-fossbilling/' },
                   { label: 'Updating FOSSBilling', link: '/maintaining-fossbilling/updating/' },
                   { label: 'Manual Password Reset', link: '/maintaining-fossbilling/admin-manual-reset/' },
               ],
@@ -40,7 +42,6 @@ export default defineConfig({
           {
               label: 'Customizing FOSSBilling',
               items: [
-                  { label: 'Introduction', link: '/customizing-fossbilling/' },
                   { label: 'Configuration File', link: '/customizing-fossbilling/config' },
                   { label: 'Email Templates', link: '/customizing-fossbilling/email-templates' },
                   { label: 'Localization', link: '/customizing-fossbilling/localization' },
@@ -51,7 +52,6 @@ export default defineConfig({
           {
               label: 'Developing FOSSBilling',
               items: [
-                  { label: 'Introduction', link: '/developing-fossbilling/' },
                   { label: 'API Reference', link: '/developing-fossbilling/api/' },
                   { label: 'File Structure', link: '/developing-fossbilling/file-structure/' },
                   { label: 'JavaScript Wrapper', link: '/developing-fossbilling/javascript/' },
@@ -74,7 +74,6 @@ export default defineConfig({
           {
               label: 'Product Types',
               items: [
-                  { label: 'Introduction', link: '/product-types/' },
                   { label: 'Hosting', link: '/product-types/hosting/' },
                   { label: 'Domains', link: '/product-types/domains/' },
                   { label: 'Downloadable', link: '/product-types/downloadable/' },
@@ -85,7 +84,6 @@ export default defineConfig({
           {
               label: 'Server Managers',
               items: [
-                  { label: 'Introduction', link: '/server-managers/' },
                   { label: 'CWP', link: '/server-managers/cwp/' },
                   { label: 'HestiaCP', link: '/server-managers/hestiacp/' },
                   { label: 'WHM/cPanel', link: '/server-managers/whm/' },
@@ -95,7 +93,6 @@ export default defineConfig({
           {
               label: 'Security',
               items: [
-                  { label: 'Introduction', link: '/security/' },
                   { label: 'Securing FOSSBilling', link: '/security/securing-fossbilling/' },
                   { label: 'Best Practices', link: '/security/best-practices/' },
                   { label: 'Reporting a Vulnerability', link: '/security/report/' },
