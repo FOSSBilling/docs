@@ -1,3 +1,5 @@
+// Starlight's virtual component modules resolve at build time, but `astro check`
+// does not pick up their declarations in this project without a local shim.
 declare module 'virtual:starlight/components/EditLink' {
   const EditLink: typeof import('@astrojs/starlight/components/EditLink.astro').default;
   export default EditLink;

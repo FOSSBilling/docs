@@ -11,16 +11,29 @@ npm run dev
 
 The site will be available at `http://localhost:4321`.
 
+Before opening a PR, run:
+
+```bash
+npm run format
+npm run check
+npm run build
+```
+
 ## Commands
 
 | Command           | Action                                       |
 | :---------------- | :------------------------------------------- |
 | `npm install`     | Install dependencies                         |
 | `npm run dev`     | Start local dev server at `localhost:4321`   |
+| `npm run check`   | Run Astro checks against the project         |
 | `npm run build`   | Build the production site to `./dist/`       |
 | `npm run preview` | Preview the build locally before deploying   |
+| `npm run format`  | Format Astro, CSS, TS, JS, and JSON files    |
+| `npm run format:check` | Verify formatting without writing changes |
 
 For Cloudflare deployments with Wrangler, run `npm run build` first so `./dist/` exists before `wrangler deploy`.
+
+Pull requests to `main` are also validated in CI with formatting checks, `astro check`, and a production build.
 
 ## Structure
 
