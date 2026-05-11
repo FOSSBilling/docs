@@ -5,6 +5,7 @@ import markdoc from '@astrojs/markdoc';
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://docs.fossbilling.org',
   integrations: [
     starlight({
       title: 'FOSSBilling',
