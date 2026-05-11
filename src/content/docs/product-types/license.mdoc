@@ -102,20 +102,16 @@ class License_YourPlugin
 {
     public function generate(array $data): string
     {
-        // Generate and return a license key
         return 'YOUR-KEY-HERE';
     }
 
     public function validate(\Model_ServiceLicense $service, array $data): array
     {
-        // Custom validation logic
-        // Throw LogicException if validation fails
-        if (!$valid) {
-            throw new \LogicException('Validation failed', 1020);
+        if (empty($data['host'])) {
+            throw new \LogicException('Host is required', 1020);
         }
 
-        // Return extra data to include in the API response
-        return ['extraKey' => 'extraValue'];
+        return ['host' => $data['host']];
     }
 }
 ```

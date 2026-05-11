@@ -46,13 +46,13 @@ Control security behavior:
 
 ### Maintenance Mode
 
-Temporarily disable public access:
+Temporarily disable public access. Use `allowed_urls` for endpoints that must stay reachable and `allowed_ips` for trusted networks that should bypass maintenance mode.
 
 ```php
 'maintenance_mode' => [
     'enabled' => true,
-    'allowed_urls' => ['/api/guest/*'],  // URLs that stay accessible
-    'allowed_ips' => ['192.168.1.0/24'],   // IPs that bypass maintenance
+    'allowed_urls' => ['/api/guest/*'],
+    'allowed_ips' => ['192.168.1.0/24'],
 ],
 ```
 
@@ -101,18 +101,18 @@ Temporarily disable public access:
 
 ### API Settings
 
-Control API access and rate limiting:
+Control API access and rate limiting. Use `require_referrer_header` to lock browser-originated requests to your install URL, `allowed_ips` for explicit allowlists, and the `rate_*` values to tune throttling.
 
 ```php
 'api' => [
-    'require_referrer_header' => true,  // Must match FOSSBilling URL
-    'allowed_ips' => [],                 // Empty = allow all
-    'rate_span' => 60,                   // Rate limit window (seconds)
-    'rate_limit' => 100,                 // Max requests per window
-    'throttle_delay' => 2,               // Delay when rate limited
-    'rate_span_login' => 60,             // Login rate limit window
-    'rate_limit_login' => 20,            // Max login attempts
-    'CSRFPrevention' => true,            // Enable CSRF protection
+    'require_referrer_header' => true,
+    'allowed_ips' => [],
+    'rate_span' => 60,
+    'rate_limit' => 100,
+    'throttle_delay' => 2,
+    'rate_span_login' => 60,
+    'rate_limit_login' => 20,
+    'CSRFPrevention' => true,
 ],
 ```
 

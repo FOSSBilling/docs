@@ -64,11 +64,13 @@ public function getModulePermissions(): array
             'display_name' => __trans('Delete something'),
             'description' => __trans('Allows the staff member to delete "something"'),
         ],
-        'can_always_access' => true,  // Staff always has basic access
-        'manage_settings' => [],      // Opt-in to settings page restriction
+        'can_always_access' => true,
+        'manage_settings' => [],
     ];
 }
 ```
+
+`can_always_access` grants baseline access to the module, while `manage_settings` limits the settings page to the listed permissions.
 
 ### Checking Permissions
 

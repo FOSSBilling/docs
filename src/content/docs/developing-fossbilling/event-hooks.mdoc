@@ -187,13 +187,11 @@ class Service
     public static function onAfterAdminOrderCreate(\Box_Event $event): void
     {
         $order = $event->getSubject();
-        // Do something with the new order
         error_log('New order created: ' . $order->id);
     }
 
     public static function onBeforeAdminCronRun(\Box_Event $event): void
     {
-        // Run before cron executes
     }
 }
 ```
