@@ -5,86 +5,88 @@ import Pagination from 'virtual:starlight/components/Pagination';
 
 const year = new Date().getFullYear();
 const footerLinks = [
-	{ label: 'hello@fossbilling.org', href: 'mailto:hello@fossbilling.org' },
-	{ label: 'Discord', href: 'https://fossbilling.org/discord' },
-	{ label: 'Mastodon', href: 'https://fosstodon.org/@fossbilling' },
-	{ label: 'X (Twitter)', href: 'https://twitter.com/FOSSBilling' },
-	{ label: 'Status page', href: 'https://status.fossbilling.org/' },
+  { label: 'hello@fossbilling.org', href: 'mailto:hello@fossbilling.org' },
+  { label: 'Discord', href: 'https://fossbilling.org/discord' },
+  { label: 'Mastodon', href: 'https://fosstodon.org/@fossbilling' },
+  { label: 'X (Twitter)', href: 'https://twitter.com/FOSSBilling' },
+  { label: 'Status page', href: 'https://status.fossbilling.org/' },
 ];
 ---
 
 <footer class="fb-footer">
-	<div class="fb-footer__meta">
-		<EditLink />
-		<LastUpdated />
-	</div>
+  <div class="fb-footer__meta">
+    <EditLink />
+    <LastUpdated />
+  </div>
 
-	<Pagination />
+  <Pagination />
 
-	<div class="fb-footer__site">
-		<div class="fb-footer__links">
-			{
-				footerLinks.map(({ label, href }) => (
-					<a href={href} class="fb-footer__link">
-						{label}
-					</a>
-				))
-			}
-		</div>
+  <div class="fb-footer__site">
+    <div class="fb-footer__links">
+      {
+        footerLinks.map(({ label, href }) => (
+          <a href={href} class="fb-footer__link">
+            {label}
+          </a>
+        ))
+      }
+    </div>
 
-		<p class="fb-footer__copy">
-			&copy; {year}, The FOSSBilling project. Content licensed under the{' '}
-			<a href="https://github.com/FOSSBilling/fossbilling.org/blob/main/LICENSE">Apache 2.0 license</a>.
-		</p>
-	</div>
+    <p class="fb-footer__copy">
+      &copy; {year}, The FOSSBilling project. Content licensed under the{' '}
+      <a href="https://github.com/FOSSBilling/fossbilling.org/blob/main/LICENSE"
+        >Apache 2.0 license</a
+      >.
+    </p>
+  </div>
 </footer>
 
 <style>
-	.fb-footer {
-		display: flex;
-		flex-direction: column;
-		gap: 1.5rem;
-		padding-top: 1rem;
-	}
+  .fb-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-top: 1rem;
+  }
 
-	.fb-footer__meta {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: space-between;
-		gap: 0.75rem 2rem;
-		margin-top: 2rem;
-		color: var(--sl-color-gray-3);
-		font-size: var(--sl-text-sm);
-	}
+  .fb-footer__meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+    margin-top: 2rem;
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-sm);
+  }
 
-	.fb-footer__site {
-		border-top: 1px solid var(--sl-color-hairline);
-		padding-top: 1.5rem;
-	}
+  .fb-footer__site {
+    border-top: 1px solid var(--sl-color-hairline);
+    padding-top: 1.5rem;
+  }
 
-	.fb-footer__links {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.75rem 1.25rem;
-	}
+  .fb-footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+  }
 
-	.fb-footer__link {
-		color: var(--sl-color-gray-2);
-		text-decoration: none;
-	}
+  .fb-footer__link {
+    color: var(--sl-color-gray-2);
+    text-decoration: none;
+  }
 
-	.fb-footer__link:hover,
-	.fb-footer__copy a:hover {
-		color: var(--sl-color-white);
-	}
+  .fb-footer__link:hover,
+  .fb-footer__copy a:hover {
+    color: var(--sl-color-white);
+  }
 
-	.fb-footer__copy {
-		margin: 1rem 0 0;
-		color: var(--sl-color-gray-3);
-		font-size: var(--sl-text-sm);
-	}
+  .fb-footer__copy {
+    margin: 1rem 0 0;
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-sm);
+  }
 
-	.fb-footer__copy a {
-		color: var(--sl-color-gray-2);
-	}
- </style>
+  .fb-footer__copy a {
+    color: var(--sl-color-gray-2);
+  }
+</style>
