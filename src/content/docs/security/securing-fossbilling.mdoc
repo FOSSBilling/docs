@@ -18,7 +18,6 @@ These settings live in your `config.php` file and control FOSSBilling's built-in
 | `session_lifespan` | `7200` | `int` | How long sessions remain valid (in seconds). Default is 2 hours. After this, sessions expire and are destroyed. |
 
 ```php
-// Example configuration
 'security' => [
     'mode' => 'strict',
     'force_https' => true,
@@ -33,7 +32,6 @@ These settings live in your `config.php` file and control FOSSBilling's built-in
 | `CSRFPrevention` | `true` | `bool` | Enables CSRF protection. Keep this enabled unless it's causing specific issues. |
 
 ```php
-// Example configuration
 'api' => [
     'CSRFPrevention' => true,
 ],

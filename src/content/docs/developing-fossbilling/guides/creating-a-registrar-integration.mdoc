@@ -65,14 +65,12 @@ class Registrar_Adapter_YourRegistrar extends Registrar_AdapterAbstract
 
     public function isAvailable($domain): bool
     {
-        // Check if domain is available for registration
         $response = $this->apiRequest('check', ['domain' => $domain]);
         return $response['available'] ?? false;
     }
 
     public function register($domain, array $contact): bool
     {
-        // Register the domain
         $params = [
             'domain' => $domain,
             'period' => $this->getPeriod(),
@@ -85,7 +83,6 @@ class Registrar_Adapter_YourRegistrar extends Registrar_AdapterAbstract
 
     private function apiRequest($action, array $params = []): array
     {
-        // Your API communication logic
         $ch = curl_init($this->config['api_url'] . '/' . $action);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));

@@ -84,12 +84,12 @@ API.admin.post(
   "client/get_list",
   {},
   function(response) {
-    // Handle success
+    console.log(response.list);
   },
   function(error) {
-    // Handle error
+    console.error(error.message);
   },
-  false  // No spinner
+  false
 );
 ```
 
@@ -102,7 +102,7 @@ The wrapper automatically shows a spinner for requests taking longer than 250ms.
 
 ```css
 .spinner-border {
-  /* Your spinner styles */
+  display: inline-block;
   animation: spin 1s linear infinite;
 }
 ```
@@ -119,19 +119,20 @@ Either:
 
 ### Success Response
 
+The success callback receives the decoded API response object:
+
 ```javascript
 function(response) {
-  // response contains the API result
-  // Access data like response.result or response.id
+  console.log(response.result);
 }
 ```
 
 ### Error Response
 
+The error callback receives the API error payload:
+
 ```javascript
 function(error) {
-  // error contains error details
-  // Usually: error.message and error.code
   console.error(error.message);
 }
 ```
@@ -139,7 +140,6 @@ function(error) {
 ## Complete Example
 
 ```javascript
-// Load client profile
 function loadProfile() {
   API.client.get(
     "client/profile",
@@ -154,7 +154,6 @@ function loadProfile() {
   );
 }
 
-// Call it when the page loads
 document.addEventListener('DOMContentLoaded', loadProfile);
 ```
 

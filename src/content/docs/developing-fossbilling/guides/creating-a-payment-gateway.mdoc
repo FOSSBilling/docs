@@ -109,7 +109,6 @@ class Payment_Adapter_MyGateway implements FOSSBilling\InjectionAwareInterface
         $invoiceId = $data['get']['invoice_id'] ?? $data['post']['invoice_id'];
         $invoice = $this->di['db']->getExistingModelById('Invoice', $invoiceId);
 
-        // Verify with your gateway's API
         $paymentId = $data['post']['payment_id'];
         $payment = $this->verifyPaymentWithGateway($paymentId);
 
