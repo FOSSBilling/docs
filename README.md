@@ -55,7 +55,7 @@ public/
 
 ## Licensing
 
-Unless otherwise noted below, code, configuration, and build tooling in this repository are licensed under the GNU Affero General Public License v3.0 or later. See [LICENSE](./LICENSE).
+Code, configuration, and build tooling in this repository are licensed under the GNU Affero General Public License v3.0 or later. See [LICENSE](./LICENSE).
 
 Documentation content is licensed under Creative Commons Attribution-ShareAlike 4.0 International. See [LICENSE-docs](./LICENSE-docs).
 
