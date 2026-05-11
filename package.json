@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@astrojs/markdoc": "^1.0.3",
-    "@astrojs/starlight": "^0.38.3",
+    "@astrojs/starlight": "^0.39.0",
     "@astrojs/starlight-markdoc": "^0.6.0",
     "@markdoc/markdoc": "^0.5.7",
     "astro": "^6.1.8",
