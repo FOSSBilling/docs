@@ -3,15 +3,29 @@ title: Twig Filters & Functions
 description: Available Twig filters and functions for theming and module development.
 ---
 
-FOSSBilling uses [Twig](https://twig.symfony.com/) across themes, email templates, and PDFs. This page lists the project-specific filters and functions you can rely on while building against it.
+FOSSBilling uses [Twig](https://twig.symfony.com/) across themes, email templates, and PDFs. This page lists the filters and functions you can rely on while building against it.
 
 ## Standard Twig
 
-FOSSBilling includes all [default Twig filters](https://twig.symfony.com/doc/3.x/filters/index.html), plus the [Intl Extra Extension](https://github.com/twigphp/intl-extra) for internationalization.
+FOSSBilling includes the [default Twig filters](https://twig.symfony.com/doc/3.x/filters/index.html), plus the [Intl Extra Extension](https://github.com/twigphp/intl-extra) and [Markdown Extra Extension](https://github.com/twigphp/markdown-extra).
+
+Common bundled filters include:
+
+| Filter | Description |
+|--------|-------------|
+| `format_currency` | Format a number as currency, for example `{{ 29.99 | format_currency('USD') }}`. |
+| `format_date` | Format a date using the configured locale and date format. |
+| `format_datetime` | Format a date and time using the configured locale and time zone. |
+| `markdown_to_html` | Convert Markdown to HTML with FOSSBilling's safe CommonMark renderer. |
 
 ## FOSSBilling Custom Filters
 
-These filters are defined in [`/library/Box/TwigExtensions.php`](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/library/Box/TwigExtensions.php):
+Project-specific filters and functions are defined in these classes:
+
+- [`FOSSBilling\Twig\Extension\ApiExtension`](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/library/FOSSBilling/Twig/Extension/ApiExtension.php)
+- [`FOSSBilling\Twig\Extension\FOSSBillingExtension`](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/library/FOSSBilling/Twig/Extension/FOSSBillingExtension.php)
+- [`FOSSBilling\Twig\Extension\LegacyExtension`](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/library/FOSSBilling/Twig/Extension/LegacyExtension.php)
+- [`FOSSBilling\Twig\Extension\DebugBarExtension`](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/library/FOSSBilling/Twig/Extension/DebugBarExtension.php)
 
 ### Translation & Localization
 
@@ -21,65 +35,64 @@ These filters are defined in [`/library/Box/TwigExtensions.php`](https://github.
 | `timeago` | Show how long ago a date was (e.g., "2 hours ago"). Accepts ISO 8601 format. |
 | `daysleft` | Show days until a date. Accepts ISO 8601 format. |
 | `period_title` | Display a translated period title (e.g., `1M` → "1 Month"). |
+| `ip_country_name` | Show the country name for an IP address. |
 
 ### URLs & Links
 
 | Filter | Description |
 |--------|-------------|
-| `alink` | Create a link to the admin panel from a URI. |
-| `link` | Generate a full URL from a URI. |
-| `autolink` | Automatically convert text to HTML links. |
-| `iplookup` | Create a clickable admin panel link to look up an IP address. |
+| `url` | Generate a URL for the current area, or pass `area: 'admin'` / `area: 'client'`. |
+| `api_url` | Generate a URL for an API endpoint. Pass `role: 'admin'`, `role: 'client'`, or `role: 'guest'` when needed. |
 
 ### Assets & Resources
 
 | Filter | Description |
 |--------|-------------|
-| `mod_asset_url` | Get the correct URL for a module asset. |
 | `asset_url` | Get the URL for a theme asset. |
 | `library_url` | Get the URL for the library folder. |
-| `img_tag` | Generate an HTML `<img>` tag. |
+| `mod_asset_url` | Get the URL for a module asset. Use the asset path as the filtered value and the module name as the argument. |
 | `script_tag` | Generate an HTML `<script>` tag. |
 | `stylesheet_tag` | Generate an HTML `<link>` tag for CSS. |
-
-### Formatting
-
-| Filter | Description |
-|--------|-------------|
-| `money` | Format a price with currency symbol. |
-| `money_without_currency` | Format a price without the currency symbol. |
-| `money_convert` | Convert and format a price to another currency. |
-| `money_convert_without_currency` | Convert without showing the currency symbol. |
-| `number` | PHP `number_format()` as a filter. |
-| `size` | Convert bytes to human-readable size (KB, MB, GB, etc.). |
-| `truncate` | Truncate a string to a maximum length. |
 
 ### Utilities
 
 | Filter | Description |
 |--------|-------------|
-| `gravatar` | Generate a Gravatar image URL from an email. Optional size parameter. |
-| `markdown` | Parse Markdown to HTML. Escapes HTML and removes unsafe links (`javascript:`, `vbscript:`, `file:`, `data:`). Uses CommonMark with GitHub extensions. |
-| `ipcountryname` | Show the country name for an IP address. |
+| `file_size` | Convert bytes to a human-readable size (KB, MB, GB, etc.). |
+| `hash` | Hash a value. Defaults to `xxh128`; pass another PHP-supported algorithm if needed. |
+| `truncate` | Truncate a string to a maximum length. |
+
+## FOSSBilling Custom Functions
+
+| Function | Description |
+|----------|-------------|
+| `fb_api` | Render `data-fb-api` attributes from a configuration array. |
+| `fb_api_form` | Render API form attributes, or a full `<form>` tag when configured with `tag: 'form'`. |
+| `fb_api_link` | Render API link/button attributes, or a full `<a>` tag when configured with `tag: 'a'`. |
+| `render_widgets` | Render widgets registered for a slot. |
+| `svg_sprite` | Render the current theme's SVG icon sprite when available. |
+| `has_permission` | Check whether the logged-in admin has a module permission. |
+| `antispam_honeypot` | Return honeypot field configuration from the Antispam module. |
+| `debug_bar_render_head` | Render debug bar head assets in development/debug contexts. |
+| `debug_bar_render` | Render the debug bar in development/debug contexts. |
 
 ## Usage Examples
 
 ```twig
-{# Format money #}
-{{ 29.99 | money }}  {# $29.99 #}
+{# Format currency #}
+{{ 29.99 | format_currency('USD') }} {# $29.99 #}
 
-{# Generate Gravatar #}
-<img src="{{ 'user@example.com' | gravatar(64) }}" alt="Avatar">
+{# Generate client and admin URLs #}
+<a href="{{ 'invoice' | url }}">Invoices</a>
+<a href="{{ 'client/manage' | url(area: 'admin') }}">Manage Client</a>
 
 {# Parse Markdown #}
-{{ product.description | markdown }}
+{{ product.description | markdown_to_html }}
 
 {# Time ago #}
 {{ order.created_at | timeago }}  {# 2 hours ago #}
 
-{# Admin link #}
-<a href="{{ 'client/manage' | alink }}">Manage Client</a>
-
-{# Module asset #}
-<script src="{{ 'myfile.js' | mod_asset_url }}"></script>
+{# Theme and module assets #}
+<link rel="stylesheet" href="{{ 'css/theme.css'|asset_url }}">
+<script src="{{ 'js/widget.js'|mod_asset_url('Example') }}"></script>
 ```

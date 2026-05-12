@@ -11,8 +11,8 @@ FOSSBilling is evolving quickly on the path to 1.0. Expect breaking changes in 0
 
 FOSSBilling uses [Twig](https://twig.symfony.com/) for templating. Themes work by overriding the templates shipped by modules:
 
-1. Module provides a default template (`modules/example/html_client/template.twig`)
-2. Your theme provides an override (`themes/mytheme/html/template.twig`)
+1. Module provides a default template (`modules/Example/templates/client/mod_example_index.html.twig`)
+2. Your theme provides an override with the same filename (`themes/mytheme/html/mod_example_index.html.twig`)
 3. FOSSBilling uses your theme's version
 
 ## Template Priority Order
@@ -21,7 +21,7 @@ FOSSBilling loads templates in this order (highest priority first):
 
 1. `themes/mytheme/html_custom/` — User customizations
 2. `themes/mytheme/html/` — Your theme files
-3. `modules/example/html_client/` — Module defaults
+3. `modules/Example/templates/client/` or `modules/Example/templates/admin/` — Module defaults for the current area
 
 ## Theme Structure
 
@@ -34,13 +34,11 @@ themes/mytheme/
 ├── config/
 │   └── settings.html.twig      # Theme settings UI (optional)
 ├── html/                       # Your templates
-│   ├── layouts/
-│   │   └── default.twig        # Base layout
-│   ├── partials/
-│   │   ├── header.twig
-│   │   └── footer.twig
-│   └── index.twig              # Homepage
-├── html_custom/                  # For user customizations (leave empty)
+│   ├── layout_default.html.twig # Base layout
+│   ├── layout_public.html.twig  # Public pages layout
+│   ├── partial_menu.html.twig   # Shared partial
+│   └── mod_index_dashboard.html.twig # Optional module override
+├── html_custom/                 # For user customizations (leave empty)
 └── manifest.json               # Theme metadata
 ```
 
@@ -48,7 +46,6 @@ themes/mytheme/
 
 ```json
 {
-    "id": "mytheme",
     "name": "My Theme",
     "description": "A custom FOSSBilling theme",
     "version": "1.0.0",
@@ -68,8 +65,8 @@ All API calls need a CSRF token. Access it in templates as `CSRFToken`:
 ```
 
 **In a link:**
-```html
-<a href="{{ 'api/admin/client/group_delete'|link({ 'id': group.id, 'CSRFToken': CSRFToken }) }}">
+```twig
+<a href="{{ 'client/group_delete'|api_url(query: { 'id': group.id, 'CSRFToken': CSRFToken }, role: 'admin') }}">
     Delete
 </a>
 ```
@@ -103,11 +100,11 @@ Access API endpoints directly in Twig (no CSRF token needed):
 FOSSBilling provides [custom filters](/developing-fossbilling/twig-filters) for themes:
 
 ```twig
-{{ price | money }}                    {# Format currency #}
-{{ 'client/manage' | alink }}          {# Admin panel link #}
-{{ 'theme.css' | asset_url }}          {# Theme asset URL #}
-{{ date | timeago }}                   {# "2 hours ago" #}
-{{ content | markdown }}               {# Parse Markdown #}
+{{ price | format_currency(currency.code) }} {# Format currency #}
+{{ 'client/manage' | url(area: 'admin') }}   {# Admin panel link #}
+{{ 'css/theme.css' | asset_url }}            {# Theme asset URL #}
+{{ date | timeago }}                         {# "2 hours ago" #}
+{{ content | markdown_to_html }}             {# Parse Markdown #}
 ```
 
 ## Security Best Practices
