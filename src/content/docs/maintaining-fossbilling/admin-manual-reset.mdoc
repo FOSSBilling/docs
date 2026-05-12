@@ -1,34 +1,21 @@
 ---
-title: Manually Resetting Your Admin Password
+title: Manual Admin Password Reset
 description: Reset your admin password directly in the database when you can't use the normal reset feature.
 ---
 
-{% aside type="danger" %}
-**Back up your database first.** This guide involves making direct changes to the database. If something goes wrong, you will need a backup to restore.
-{% /aside %}
-
 Use this guide when you have lost admin access and cannot use the password reset feature. These steps use phpMyAdmin, but any database tool will work — the steps will simply differ slightly.
+
+{% aside type="danger" title="Back Up Your Database First" %}
+Before making any direct database changes, create a full backup of your database. If you edit the wrong value in the `admin` row or make a mistake while saving changes, you could cause irreversible data loss or lock yourself out completely.
+{% /aside %}
 
 ## Step 1: Log into phpMyAdmin
 
-Log in to phpMyAdmin using your hosting control panel credentials. Not sure how? Contact your hosting provider.
+Log in to phpMyAdmin. Not sure how? Contact your hosting provider.
 
 ## Step 2: Select Your Database
 
-Choose the database you installed FOSSBilling on. If you're not sure which one, check your `config.php` file:
-
-```php {6}
-'db' => [
-    'type' => 'mysql',
-    'host' => 'localhost',
-    'port' => '3306',
-    'name' => 'fossbilling',
-    'user' => 'fossbilling_user',
-    'password' => 'fossbilling_password',
-],
-```
-
-![Selecting the database in phpMyAdmin](/img/guides/admin-manual-reset/pma_db.png)
+Choose the database you installed FOSSBilling on. If you're not sure which one, check your `config.php` file.
 
 ## Step 3: Find the Admin Table
 
@@ -42,7 +29,7 @@ Choose the database you installed FOSSBilling on. If you're not sure which one, 
 
 ![Clicking the Edit button on your account row](/img/guides/admin-manual-reset/pma_row.png)
 
-## Step 4: Generate a New Password Hash
+## Step 4: Generate New Password Hash
 
 {% aside type="danger" title="Security Warning" %}
 Generate the hash on a machine you trust. Do not enter admin passwords into online hashing tools; they may store passwords and hashes.

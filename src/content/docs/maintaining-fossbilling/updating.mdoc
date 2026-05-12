@@ -28,21 +28,4 @@ If you prefer to manage files yourself:
 5. Log in to the admin panel and go to **System** → **Update**
 6. Click **Apply Patches & Update Configuration**
 
-## Emergency Recovery
-
-If you cannot access the admin panel after updating, use the fallback patcher:
-
-1. Visit `example.com/run-patcher` in your browser
-2. This runs database migrations and configuration updates automatically
-3. Once complete, try logging in again
-
-{% aside type="tip" %}
-If the patcher doesn't fix the issue, restore from your backup and try the update again. Check the [changelog](/changelog/) for any breaking changes that might require manual steps.
-{% /aside %}
-
-## What Gets Updated
-
-- **Automatic updates**: Core files, database schema, configuration
-- **Patches (manual step)**: Database migrations, config updates
-
 Always run the patches after copying in new files so the database schema and configuration stay in sync with the codebase.
