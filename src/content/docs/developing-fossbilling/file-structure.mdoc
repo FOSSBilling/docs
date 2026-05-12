@@ -35,7 +35,6 @@ Core API files including the JavaScript wrapper (`API.js`). [See the wrapper doc
 Legacy classes inherited from BoxBilling. Contains:
 - Translation utilities
 - Exception handling
-- Twig extensions
 - Various tools
 
 These are gradually being modernized.
@@ -43,6 +42,8 @@ These are gradually being modernized.
 #### `/src/library/FOSSBilling`
 
 New or rewritten classes specific to FOSSBilling. This is where active development happens.
+
+Twig setup and project-specific Twig extensions live under `/src/library/FOSSBilling/Twig`. See [Twig Filters & Functions](/developing-fossbilling/twig-filters/) for the template-facing API.
 
 #### `/src/library/Model`
 
@@ -112,7 +113,7 @@ theme-name/
 ├── config/
 │   └── settings.html.twig   # Theme settings UI
 ├── html/               # Twig templates
-│   └── layouts/        # Base layouts
+│   └── layout_default.html.twig # Base layout
 ├── html_custom/        # User overrides (not for theme files)
 └── manifest.json       # Theme metadata
 ```
