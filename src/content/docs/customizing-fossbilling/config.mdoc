@@ -101,7 +101,10 @@ Temporarily disable public access. Use `allowed_urls` for endpoints that must st
 
 ### API Settings
 
-Control API access. Use `require_referrer_header` to lock browser-originated requests to your install URL, and `allowed_ips` for explicit allowlists.
+Control API access.
+
+- Use `require_referrer_header` to lock browser-originated requests to your install URL, and `allowed_ips` for explicit allowlists.
+- Keep `CSRFPrevention` enabled. The bundled JavaScript API wrapper handles CSRF tokens for session-authenticated browser calls.
 
 ```php
 'api' => [

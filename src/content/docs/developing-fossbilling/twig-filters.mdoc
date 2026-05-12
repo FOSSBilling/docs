@@ -42,7 +42,7 @@ Project-specific filters and functions are defined in these classes:
 | Filter | Description |
 |--------|-------------|
 | `url` | Generate a URL for the current area, or pass `area: 'admin'` / `area: 'client'`. |
-| `api_url` | Generate a URL for an API endpoint. Pass `role: 'admin'`, `role: 'client'`, or `role: 'guest'` when needed. |
+| `api_url` | Generate a URL for an API endpoint. Defaults to the current area; pass `role: 'admin'`, `role: 'client'`, or `role: 'guest'` when needed. |
 
 ### Assets & Resources
 
@@ -66,9 +66,9 @@ Project-specific filters and functions are defined in these classes:
 
 | Function | Description |
 |----------|-------------|
-| `fb_api` | Render `data-fb-api` attributes from a configuration array. |
-| `fb_api_form` | Render API form attributes, or a full `<form>` tag when configured with `tag: 'form'`. |
-| `fb_api_link` | Render API link/button attributes, or a full `<a>` tag when configured with `tag: 'a'`. |
+| `fb_api` | Render a `data-fb-api` attribute from a configuration array. |
+| `fb_api_form` | Render `method="post"` and `data-fb-api` attributes for JavaScript API forms, or a full `<form>` tag when configured with `tag: 'form'`. |
+| `fb_api_link` | Render `data-fb-api` link/button attributes, or a full `<a>` tag when configured with `tag: 'a'`. |
 | `render_widgets` | Render widgets registered for a slot. |
 | `svg_sprite` | Render the current theme's SVG icon sprite when available. |
 | `has_permission` | Check whether the logged-in admin has a module permission. |
@@ -86,6 +86,10 @@ Project-specific filters and functions are defined in these classes:
 <a href="{{ 'invoice' | url }}">Invoices</a>
 <a href="{{ 'client/manage' | url(area: 'admin') }}">Manage Client</a>
 
+{# Generate API URLs #}
+{{ 'profile/update' | api_url }}
+{{ 'client/login' | api_url(role: 'guest') }}
+
 {# Parse Markdown #}
 {{ product.description | markdown_to_html }}
 
@@ -95,4 +99,18 @@ Project-specific filters and functions are defined in these classes:
 {# Theme and module assets #}
 <link rel="stylesheet" href="{{ 'css/theme.css'|asset_url }}">
 <script src="{{ 'js/widget.js'|mod_asset_url('Example') }}"></script>
+
+{# API form handled by Api/API.js #}
+<form action="{{ 'profile/update'|api_url }}" {{ fb_api_form({ message: 'Saved'|trans }) }}>
+  <input type="text" name="first_name">
+  <button type="submit">{{ 'Save'|trans }}</button>
+</form>
+
+{# API link with a confirmation modal #}
+<a href="{{ 'client/delete'|api_url(query: { id: client.id }, role: 'admin') }}"
+   {{ fb_api_link({ modal: { type: 'confirm', title: 'Are you sure?'|trans }, reload: true }) }}>
+  {{ 'Delete'|trans }}
+</a>
 ```
+
+See [JavaScript API Wrapper](/developing-fossbilling/javascript/) for the `data-fb-api` options and CSRF behavior.

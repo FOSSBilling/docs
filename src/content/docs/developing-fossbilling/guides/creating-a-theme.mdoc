@@ -55,25 +55,44 @@ themes/mytheme/
 }
 ```
 
-## CSRF Protection
+## API URLs and CSRF
 
-All API calls need a CSRF token. Access it in templates as `CSRFToken`:
+Use `api_url` to build browser API URLs and `fb_api_form` or `fb_api_link` to let the JavaScript API wrapper handle submissions.
 
-**In a form:**
-```html
-<input type="hidden" name="CSRFToken" value="{{ CSRFToken }}"/>
+```twig
+<form action="{{ 'profile/update'|api_url }}" {{ fb_api_form({ message: 'Profile updated'|trans }) }}>
+  <input type="text" name="first_name" value="{{ profile.first_name }}">
+  <button type="submit">{{ 'Save'|trans }}</button>
+</form>
 ```
 
-**In a link:**
+For links that trigger API actions:
+
 ```twig
-<a href="{{ 'client/group_delete'|api_url(query: { 'id': group.id, 'CSRFToken': CSRFToken }, role: 'admin') }}">
-    Delete
+<a href="{{ 'client/group_delete'|api_url(query: { id: group.id }, role: 'admin') }}"
+   {{ fb_api_link({
+     modal: { type: 'confirm', title: 'Are you sure?'|trans },
+     reload: true
+   }) }}>
+  {{ 'Delete'|trans }}
 </a>
 ```
 
-## Calling the API from Templates
+Session-authenticated `client` and `admin` browser API calls require CSRF protection. The wrapper reads the `csrf_token` cookie and sends the token automatically.
 
-Access API endpoints directly in Twig (no CSRF token needed):
+Use `role: 'guest'` for public actions such as login, signup, and password reset:
+
+```twig
+<form action="{{ 'client/login'|api_url(role: 'guest') }}" {{ fb_api_form({ redirect: '/'|url }) }}>
+  <input type="email" name="email" required>
+  <input type="password" name="password" required>
+  <button type="submit">{{ 'Login'|trans }}</button>
+</form>
+```
+
+## Server-Side API Globals
+
+The `guest`, `client`, and `admin` Twig globals call FOSSBilling APIs during server-side template rendering. They are not browser HTTP requests and do not use CSRF tokens.
 
 ### Guest API (always available)
 
@@ -111,7 +130,8 @@ FOSSBilling provides [custom filters](/developing-fossbilling/twig-filters) for 
 
 - Use `htmlspecialchars` when outputting user data
 - Validate all inputs
-- Include CSRF tokens in forms
+- Use `fb_api_form` and `fb_api_link` for browser API actions
+- Include CSRF tokens manually for raw requests that do not use the wrapper
 - See the [security docs](/security/securing-fossbilling) for more
 
 ## Testing Your Theme
