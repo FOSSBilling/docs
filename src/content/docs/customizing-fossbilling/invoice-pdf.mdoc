@@ -7,13 +7,14 @@ FOSSBilling generates invoice PDFs with [Dompdf](https://github.com/dompdf/dompd
 
 ## CSS Limitations
 
-Dompdf doesn't support everything. As of version 2.0.3:
+Dompdf is not a complete PDF engine. FOSSBilling uses Dompdf 3.x, which supports many print-friendly CSS features but still has layout limitations:
 
 | Supported | Not Supported |
 |-----------|---------------|
 | CSS 2.1 and some CSS3 | Flexbox |
 | `@import`, `@media`, `@page` | CSS Grid |
-| Basic positioning | Complex layouts |
+| CSS custom properties and math functions such as `calc()` | Browser-style complex layouts |
+| Basic positioning and table layouts | Splitting table rows or cells across pages |
 
 {% aside type="tip" %}
 Table cells can't span pages. Keep table rows compact enough to fit on one page.
@@ -23,37 +24,41 @@ Table cells can't span pages. Keep table rows compact enough to fit on one page.
 
 ### Creating a Custom Stylesheet
 
-1. Copy `/modules/Invoice/pdf_template/default-pdf.css`
-2. Paste as `/modules/Invoice/pdf_template/custom-pdf.css`
+1. Copy `/modules/Invoice/templates/pdf/default-invoice.css`
+2. Paste as `/modules/Invoice/templates/pdf/custom-invoice.css`
 
-FOSSBilling automatically uses `custom-pdf.css` if it exists.
+FOSSBilling automatically uses `custom-invoice.css` if it exists.
 
 {% aside type="caution" %}
-Editing `default-pdf.css` directly is overwritten on updates. Always use `custom-pdf.css`.
+Editing `default-invoice.css` directly is overwritten on updates. Always use `custom-invoice.css`.
 {% /aside %}
 
 ### CSS Classes Reference
 
 ![PDF layout with CSS classes](../../../assets/invoice-layout.png)
 
-Common classes include:
+The default stylesheet uses these classes:
 
-- `.invoice-header` — Company and client info
-- `.invoice-details` — Invoice number, date, due date
-- `.invoice-items` — Line items table
-- `.invoice-totals` — Subtotal, tax, total
-- `.invoice-footer` — Terms, notes
+- `.CompanyLogo` — Company logo image
+- `.TopSectionDivider` — Divider below the header area
+- `.InvoiceInfo` — Invoice number, dates, and status
+- `.CompanyInfo` — Seller/company heading and details
+- `.ClientInfo` — Client heading and details
+- `.Breakdown` — Line items, tax, discount, and total table
+- `.InvoiceText` — Custom invoice text blocks
+- `.InvoiceFooter` — Payment details, company footer, and signature
+- `.muted-text` — Muted footer signature text
 
 ## Custom HTML Template
 
-**FOSSBilling 0.6.0+**: Customize the HTML structure.
+Customize the HTML structure by adding a custom Twig template.
 
 ### Creating a Custom Template
 
-1. Copy `/modules/Invoice/pdf_template/default-pdf.twig`
-2. Paste as `/modules/Invoice/pdf_template/custom-pdf.twig`
+1. Copy `/modules/Invoice/templates/pdf/default-invoice.twig`
+2. Paste as `/modules/Invoice/templates/pdf/custom-invoice.twig`
 
-FOSSBilling uses `custom-pdf.twig` automatically.
+FOSSBilling uses `custom-invoice.twig` automatically.
 
 ### Template Variables
 
@@ -61,17 +66,24 @@ Available in PDF templates:
 
 | Variable | Description |
 |----------|-------------|
-| `invoice` | Invoice data (id, total, items, etc.) |
-| `client` | Client information |
-| `company` | Your company details |
-| `currency` | Currency code and symbol |
+| `currency_code` | Invoice currency code for `format_currency`. |
+| `css` | Contents of `custom-invoice.css` or `default-invoice.css`, inserted into the template's `<style>` block. |
+| `logo_source` | Resolved company logo source. This can be a local path, a remote URL, an SVG data URI, or an empty string. |
+| `seller` | Display-ready seller/company lines keyed by labels such as `Name`, `Address 1`, `Phone`, and `VAT Number`. |
+| `seller_lines` | Number of seller lines used by the default template for layout calculations. |
+| `footer` | Company footer details, including company name, bank details, address fields, email, phone, VAT/company number, website, and signature. |
+| `buyer` | Display-ready buyer/client lines keyed by labels such as `Company`, `Name`, `Address`, `City`, `Country`, `Phone`, and `VAT Number`. |
+| `buyer_lines` | Number of buyer lines used by the default template for layout calculations. |
+| `invoice` | Full invoice API array. Line items are in `invoice.lines`; raw buyer, seller, and client data are in `invoice.buyer`, `invoice.seller`, and `invoice.client`. |
+
+The PDF renderer does not provide top-level `client`, `company`, or `currency` variables. Use `invoice.client`, `seller`/`footer`, and `currency_code` instead.
 
 ### Example: Add a Custom Header
 
 ```twig
 <div class="custom-header">
   <img src="{{ company.logo_url }}" alt="{{ company.name }}">
-  <h1>INVOICE #{{ invoice.serie_nr }}</h1>
+  <h1>{{ 'Invoice'|trans }} #{{ invoice.serie_nr }}</h1>
 </div>
 ```
 
@@ -80,29 +92,30 @@ Available in PDF templates:
 PDF templates support the same [Twig filters](/developing-fossbilling/twig-filters/) available elsewhere in FOSSBilling:
 
 ```twig
-{{ invoice.total | money }}           {# Format as currency #}
-{{ invoice.created_at | timeago }}    {# Show relative time #}
+{{ invoice.total|format_currency(currency_code) }}  {# Format as currency #}
+{{ invoice.created_at|format_date }}                {# Format the invoice date #}
+{{ invoice.text_1|default('')|markdown_to_html }}   {# Render invoice text as HTML #}
 ```
 
 ## Testing Changes
 
-1. Make your edits to `custom-pdf.css` or `custom-pdf.twig`
+1. Make your edits to `custom-invoice.css` or `custom-invoice.twig`
 2. Generate a test invoice
 3. Download the PDF
 4. Review the output
 
 {% aside type="tip" %}
-PDF generation is cached. Clear the cache (**System → Tools → Clear cache**) after template changes.
+Twig templates may be cached. Clear the cache (**System → Tools → Clear cache**) if template changes do not appear.
 {% /aside %}
 
 ## Debugging
 
-For complex issues, enable Dompdf debugging in `config.php`:
+For complex issues, enable FOSSBilling debug mode in `config.php`:
 
 ```php
-'dompdf' => [
+'debug_and_monitoring' => [
     'debug' => true,
 ],
 ```
 
-Then review your PHP error logs for Dompdf-related messages.
+Then review your PHP or FOSSBilling logs for Dompdf-related messages.
