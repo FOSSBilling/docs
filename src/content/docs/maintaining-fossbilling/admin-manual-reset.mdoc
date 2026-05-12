@@ -5,6 +5,10 @@ description: Reset your admin password directly in the database when you can't u
 
 Use this guide when you have lost admin access and cannot use the password reset feature. These steps use phpMyAdmin, but any database tool will work — the steps will simply differ slightly.
 
+{% aside type="danger" title="Back Up Your Database First" %}
+Before making any direct database changes, create a full backup of your database. If you edit the wrong value in the `admin` row or make a mistake while saving changes, you could cause irreversible data loss or lock yourself out completely.
+{% /aside %}
+
 ## Step 1: Log into phpMyAdmin
 
 Log in to phpMyAdmin. Not sure how? Contact your hosting provider.
