@@ -38,6 +38,10 @@ export default defineConfig({
           label: 'Getting Started',
           items: [
             {
+              label: 'Overview',
+              link: '/getting-started/',
+            },
+            {
               label: 'System Requirements',
               link: '/getting-started/requirements',
             },

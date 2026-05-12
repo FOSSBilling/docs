@@ -22,8 +22,8 @@ Apache usually requires no extra application-specific configuration. The templat
 {% /aside %}
 
 {% tabs %}
-  {% tabitem label="Apache / LiteSpeed / OpenLiteSpeed" %}
-	FOSSBilling includes a ready-to-use `.htaccess` file for Apache, LiteSpeed, and OpenLiteSpeed. Set up your domain as you normally would, then proceed with installation.
+  {% tabitem label="Apache & LiteSpeed / OpenLiteSpeed" %}
+	FOSSBilling includes a ready-to-use `.htaccess` file for Apache and LiteSpeed / OpenLiteSpeed. Set up your domain as you normally would, then proceed with installation.
 
 	**OpenLiteSpeed users:** After installation, remember to reload the web server so it picks up the new `.htaccess` file.
   {% /tabitem %}
@@ -115,9 +115,9 @@ server {
 
 ## Pre-installation Steps
 
-1. **Download FOSSBilling**: Download the latest [stable release](https://fossbilling.org/downloads) from our downloads page. Preview builds are for testing, not production.
+1. **Download FOSSBilling**: Download the latest [stable release](https://fossbilling.org/downloads) from our downloads page.
 2. **Prepare your database**: Create a new MySQL database and a dedicated user for this installation. Keep the credentials handy for the installer.
-3. **Set up SSL**: If you plan to use HTTPS, and you should, configure and verify your certificate *before* you start the installer. That avoids redirect and mixed-URL issues later.
+3. **Set up SSL**: If you plan to use HTTPS, and you should, configure and verify your certificate *before* you start the installer.
 4. **Configure reverse-proxy headers**: If you run behind a reverse proxy, forward the `X-Forwarded-Host` and `X-Forwarded-Proto` headers so FOSSBilling can generate the correct URLs and enforce HTTPS properly.
 
 ## Installation Steps
@@ -157,29 +157,17 @@ If installation fails, you may need to manually empty the database before retryi
 
 ## Post-installation Steps
 
-Once the installer finishes, configure the cron job before you begin using the system in earnest.
+Once the installer finishes, configure the cron job before you begin using the system as soon as possible.
 
 ### Configuring the Cronjob
 
 FOSSBilling relies on cron to handle renewals, expired orders, email delivery, background checks, and other scheduled work. It needs to be configured correctly, run consistently, and execute often enough to keep the platform healthy.
 
-We recommend running cron every five minutes. If more than 15 minutes pass without a run, FOSSBilling will show a warning in the admin panel. Treat that warning as urgent.
+We recommend running cron every five minutes. If more than 15 minutes pass without a run, FOSSBilling will show a warning in the admin panel. Treat the warning as urgent.
 ![FOSSBilling warning about cron execution](/img/guides/install/cron-warning.png)
 
-#### Option 1: Local Cron Job
-
-{% aside %}
-  The cronjob also needs to be run on a PHP version that FOSSBilling supports. If you are running into errors, you may be experiencing a common issue where your cronjob isn't being run on the same PHP version as your domain is configured for. For troubleshooting steps, please check [this forum post](https://forum.fossbilling.org/d/117-error-in-cron-after-update/3) for some pointers.
-{% /aside %}
+#### Local Cron Job
 
 FOSSBilling shows the correct cron command on the installation-complete screen and again in the admin panel. If you need to find it later, go to `Settings` -> `Scheduled Tasks` (`/admin/extension/settings/cron`).
 
 ![Cron settings - correct cron command](/img/guides/install/cron-settings-command.png)
-
-#### Option 2: Remote Cron Service
-
-If you cannot run cron locally, you can use a remote service to call a URL instead. First, go to `Settings` -> `Scheduled Tasks` (`/admin/extension/settings/cron`), enable the cron API endpoint, and click **Update**.
-
-After that, you can give the displayed URL to an external cron service so it can trigger scheduled tasks for you.
-
-![Cron settings - remote URL](/img/guides/install/cron-settings-remote.png)

@@ -3,10 +3,6 @@ title: Docker Installation
 description: Run FOSSBilling with Docker for a consistent, isolated environment.
 ---
 
-{% aside type="tip" %}
-Docker is useful when you want a predictable local or server setup without installing FOSSBilling's runtime dependencies directly on the host.
-{% /aside %}
-
 ## Prerequisites
 
 - [Docker Engine](https://docs.docker.com/engine/install/) installed on your system
@@ -14,7 +10,7 @@ Docker is useful when you want a predictable local or server setup without insta
 ## Choose a Setup
 
 {% aside %}
-Use the `latest` tag for the current stable release. For production deployments, pin a specific version such as `0.6.0` and upgrade intentionally after testing.
+Use the `latest` tag for the current stable release.
 {% /aside %}
 
 {% tabs %}
@@ -86,24 +82,8 @@ Open `http://localhost` or your server's IP/hostname to continue with the instal
 
 ## Post-Installation
 
-{% aside type="danger" %}
-**Cron is required.** FOSSBilling won't work properly without it.
-{% /aside %}
-
 After installation, set up the cron job on your host:
 
 ```bash
 (crontab -l; echo "*/5 * * * * docker exec <container-name/id> su www-data -s /usr/local/bin/php /var/www/html/cron.php") | awk '!x[$0]++' | crontab -
 ```
-
-Find your container name/ID:
-
-```bash
-docker ps
-```
-
-## Next Steps
-
-1. Complete the web installer
-2. Configure the cron job shown above
-3. [Secure your installation](/security/)
