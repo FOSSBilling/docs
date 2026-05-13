@@ -13,7 +13,7 @@ Common bundled filters include:
 
 | Filter | Description |
 |--------|-------------|
-| `format_currency` | Format a number as currency, for example `{{ 29.99 | format_currency('USD') }}`. |
+| `format_currency` | Format a number as currency, for example `{{ 29.99 \| format_currency('USD') }}`. |
 | `format_date` | Format a date using the configured locale and date format. |
 | `format_datetime` | Format a date and time using the configured locale and time zone. |
 | `markdown_to_html` | Convert Markdown to HTML with FOSSBilling's safe CommonMark renderer. |
@@ -66,15 +66,12 @@ Project-specific filters and functions are defined in these classes:
 
 | Function | Description |
 |----------|-------------|
-| `fb_api` | Render a `data-fb-api` attribute from a configuration array. |
-| `fb_api_form` | Render `method="post"` and `data-fb-api` attributes for JavaScript API forms, or a full `<form>` tag when configured with `tag: 'form'`. |
-| `fb_api_link` | Render `data-fb-api` link/button attributes, or a full `<a>` tag when configured with `tag: 'a'`. |
+| `fb_api` | Refer to [JavaScript Wrapper](/developing-fossbilling/javascript/#api-forms-and-links) for documentation. |
+| `fb_api_form` | Refer to [JavaScript Wrapper](/developing-fossbilling/javascript/#api-forms-and-links) for documentation. |
+| `fb_api_link` | Refer to [JavaScript Wrapper](/developing-fossbilling/javascript/#api-forms-and-links) for documentation. |
 | `render_widgets` | Render widgets registered for a slot. |
 | `svg_sprite` | Render the current theme's SVG icon sprite when available. |
 | `has_permission` | Check whether the logged-in admin has a module permission. |
-| `antispam_honeypot` | Return honeypot field configuration from the Antispam module. |
-| `debug_bar_render_head` | Render debug bar head assets in development/debug contexts. |
-| `debug_bar_render` | Render the debug bar in development/debug contexts. |
 
 ## Usage Examples
 
