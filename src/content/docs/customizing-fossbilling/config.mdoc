@@ -117,9 +117,9 @@ Control API access.
 ### Rate Limiter
 FOSSBilling includes a built-in rate limiter which depends on Symfony's [rate limiter](https://symfony.com/doc/current/rate_limiter.html) component.
 
-`policies` is an empty array by default and inherits sensible defaults from [`FOSSBilling\Security\RateLimiter::getDefaultConfig()`](https://github.com/FOSSBilling/FOSSBilling/blob/9acf34ec12f908e01e516b7d54839e155b990b9d/src/library/FOSSBilling/Security/RateLimiter.php#L37).
+`policies` is an empty array by default and inherits sensible defaults from [`FOSSBilling\Security\RateLimiter::getDefaultConfig()`](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/library/FOSSBilling/Security/RateLimiter.php#L37).
 
-Any policy you explicitly set in the `policies` array will override the default one. We have included an example below. You can refer to their documentation on creating rate limiter policies.
+Any policy you explicitly set in the `policies` array will override the default one. We have included an example below. You can refer to Symfony's documentation on creating rate limiter policies.
 
 ```php
 'rate_limiter' => [
