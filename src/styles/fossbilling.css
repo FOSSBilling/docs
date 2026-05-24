@@ -1,14 +1,16 @@
 @layer starlight.custom {
   :root,
   ::backdrop {
-    --sl-color-white: hsl(210, 20%, 96%);
+    --sl-color-white: hsl(0, 0%, 100%);
     --sl-color-gray-1: hsl(214, 18%, 86%);
     --sl-color-gray-2: hsl(214, 14%, 72%);
     --sl-color-gray-3: hsl(216, 10%, 58%);
     --sl-color-gray-4: hsl(217, 10%, 42%);
     --sl-color-gray-5: hsl(220, 12%, 18%);
     --sl-color-gray-6: hsl(220, 14%, 10%);
-    --sl-color-black: hsl(220, 16%, 7%);
+    --sl-color-black: hsl(0, 0%, 0%);
+    --sl-color-fg-strong: var(--sl-color-white);
+    --sl-color-bg-strong: var(--sl-color-black);
 
     --sl-color-accent-low: hsl(215, 55%, 18%);
     --sl-color-accent: hsl(206, 100%, 56%);
@@ -46,7 +48,9 @@
     --sl-color-gray-5: hsl(220, 16%, 90%);
     --sl-color-gray-6: hsl(210, 20%, 96%);
     --sl-color-gray-7: hsl(210, 33%, 98%);
-    --sl-color-black: hsl(0, 0%, 100%);
+    --sl-color-black: hsl(220, 16%, 7%);
+    --sl-color-fg-strong: var(--sl-color-white);
+    --sl-color-bg-strong: var(--sl-color-black);
 
     --sl-color-accent-low: hsl(206, 100%, 94%);
     --sl-color-accent: hsl(206, 100%, 46%);
@@ -69,6 +73,50 @@
     border-bottom: 1px solid var(--sl-color-hairline);
     background: var(--sl-color-bg-nav);
     backdrop-filter: blur(16px);
+  }
+
+  .fb-header__search {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .fb-header__search site-search {
+    display: block !important;
+  }
+
+  .fb-header__search button[data-open-modal] {
+    width: var(--sl-menu-button-size);
+    height: var(--sl-menu-button-size);
+    padding: 0;
+    justify-content: center;
+    font-size: 1rem;
+  }
+
+  @media (min-width: 50rem) {
+    .fb-header__search {
+      display: block !important;
+    }
+
+    .fb-header__search site-search {
+      display: contents !important;
+    }
+
+    .fb-header__search button[data-open-modal] {
+      width: 100%;
+      height: 2.5rem;
+      padding-inline-start: 0.75rem;
+      padding-inline-end: 0.5rem;
+      justify-content: flex-start;
+      color: var(--sl-color-gray-2);
+      font-size: var(--sl-text-sm);
+    }
+
+    .fb-header__search button[data-open-modal]:hover,
+    .fb-header__search button[data-open-modal]:focus-visible {
+      background: var(--sl-color-black);
+      color: var(--sl-color-white);
+    }
   }
 
   .sidebar-pane {
