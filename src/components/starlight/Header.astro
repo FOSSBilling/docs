@@ -30,11 +30,11 @@ import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
 <style>
   .fb-header {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
-    gap: 0.75rem;
-    height: auto;
+    gap: var(--sl-nav-gap);
+    height: 100%;
   }
 
   .fb-header__brand {
@@ -42,7 +42,7 @@ import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
     align-items: center;
     gap: 0.875rem;
     min-width: 0;
-    width: 100%;
+    flex: 1 1 auto;
     overflow: clip;
     padding: 0.25rem;
     margin: -0.25rem;
@@ -62,24 +62,83 @@ import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
   }
 
   .fb-header__tools {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0.75rem;
-    width: 100%;
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
   }
 
   .fb-header__search {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     min-width: 0;
+  }
+
+  :global(.fb-header__search site-search) {
+    display: block;
+  }
+
+  :global(.fb-header__search button[data-open-modal]) {
+    border-radius: 0.55rem;
+    color: var(--sl-color-gray-2);
+  }
+
+  :global(.fb-header__search button[data-open-modal]:hover),
+  :global(.fb-header__search button[data-open-modal]:focus-visible) {
+    background: color-mix(
+      in srgb,
+      var(--sl-color-accent) 12%,
+      var(--sl-color-bg-nav)
+    );
+    color: var(--sl-color-white);
   }
 
   .fb-header__social {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.15rem;
   }
 
   .fb-header__actions {
     display: none;
+  }
+
+  :global(.fb-header__social a) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    margin: 0;
+    padding: 0;
+    border-radius: 0.55rem;
+    color: var(--sl-color-accent);
+    transition:
+      background-color 160ms ease,
+      color 160ms ease,
+      transform 160ms ease;
+  }
+
+  :global(.fb-header__social a:hover),
+  :global(.fb-header__social a:focus-visible) {
+    background: color-mix(
+      in srgb,
+      var(--sl-color-accent) 12%,
+      var(--sl-color-bg-nav)
+    );
+    color: var(--sl-color-accent-high);
+    transform: translateY(-1px);
+  }
+
+  :global(.fb-header__social a:focus-visible) {
+    outline: 2px solid
+      color-mix(in srgb, var(--sl-color-accent) 68%, transparent);
+    outline-offset: 2px;
+  }
+
+  :global(.fb-header__social svg) {
+    width: 1.05rem;
+    height: 1.05rem;
   }
 
   @media (min-width: 50rem) {
@@ -90,13 +149,37 @@ import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
       height: 100%;
     }
 
+    .fb-header__brand {
+      width: 100%;
+    }
+
     .fb-header__tools {
+      display: grid;
       grid-template-columns: minmax(14rem, 22rem) auto;
+      gap: 0.75rem;
       align-items: center;
       justify-content: end;
       justify-self: end;
       width: auto;
       max-width: 100%;
+    }
+
+    .fb-header__search {
+      display: block;
+    }
+
+    :global(.fb-header__search site-search) {
+      display: contents;
+    }
+
+    :global(.fb-header__search button[data-open-modal]) {
+      color: var(--sl-color-gray-2);
+    }
+
+    :global(.fb-header__search button[data-open-modal]:hover),
+    :global(.fb-header__search button[data-open-modal]:focus-visible) {
+      background: var(--sl-color-black);
+      color: var(--sl-color-white);
     }
 
     .fb-header__actions {

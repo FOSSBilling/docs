@@ -20,7 +20,6 @@ export default defineConfig({
       customCss: ['/src/styles/fossbilling.css'],
       components: {
         Header: './src/components/starlight/Header.astro',
-        Footer: './src/components/starlight/Footer.astro',
       },
       tableOfContents: {
         minHeadingLevel: 2,
