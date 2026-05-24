@@ -67,7 +67,7 @@ If the wrong owner is assigned to the files, correct permission bits alone will 
 If you are using a RHEL-derived Linux distribution such as RHEL, CentOS, Rocky Linux, or AlmaLinux, SELinux may still block file creation even when Unix permissions look correct. Try the following:
 
 - Configure SELinux to allow PHP (Recommended)
-  1. Ensure you have the `policycoreutils-python` package installed.
+  1. Ensure the correct package is installed for your OS version: use `policycoreutils-python` on RHEL/CentOS 7-era systems, or `policycoreutils-python-utils` on RHEL/Rocky/Alma/CentOS Stream 8+.
   2. Set the proper context for the document root
      - Note: Please check the paths in the below code snippets before executing them. Your actual paths may differ.
      1. `semanage fcontext -a -t httpd_sys_content_t '/var/www/html(/.*)?'`
@@ -75,8 +75,7 @@ If you are using a RHEL-derived Linux distribution such as RHEL, CentOS, Rocky L
   3. Configure SELinux rules.
      1. `setsebool -P httpd_can_network_connect on`
      2. `setsebool -P httpd_can_sendmail on`
-     3. Install the `selinux-policy-devel` package
-     4. `setsebool -P httpd_can_network_connect_db on`
+     3. `setsebool -P httpd_can_network_connect_db on`
   4. Restart the server
 - Disable SELinux (Discouraged)
   - Edit `/etc/selinux/config`
