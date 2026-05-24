@@ -5,7 +5,7 @@ description: Common installation, update, permission, and cron problems in FOSSB
 
 ## Common Problems and Solutions
 
-When troubleshooting, you will usually need the FOSSBilling log files. Their location is covered in the [FAQ](/faq#where-are-the-logs).
+When troubleshooting, you will usually need the FOSSBilling log files. Their location is covered in [Support](/support#where-are-the-logs).
 
 ## HTTP Error 404 / Can only access client dashboard
 
@@ -91,7 +91,7 @@ Subfolder installations are not supported right now. Install FOSSBilling on a de
 
 If FOSSBilling starts failing after an update, work through these steps:
 
-1. Review the [changelog](/changelog) for any breaking changes or for any manual actions required.
+1. Review the [changelog](/maintenance/changelog/) for any breaking changes or for any manual actions required.
 2. Try the fallback patcher by visiting `https://example.com/run-patcher` to make sure database and configuration updates finished cleanly.
    - If you need the fallback patcher, there is often an underlying permissions issue interrupting the normal update flow.
 3. If you're still experiencing issues, you can ask for further assistance via our [Discord](https://fossbilling.org/discord), or with a [bug report](https://github.com/FOSSBilling/FOSSBilling/issues).
@@ -101,7 +101,7 @@ If FOSSBilling starts failing after an update, work through these steps:
 If you see a warning like this in the FOSSBilling dashboard, cron has not run for at least 15 minutes. That is a real problem because many core tasks depend on it.
 ![FOSSBilling warning about cron execution](/img/guides/install/cron-warning.png)
 
-1. Check the FOSSBilling [logs](/faq#where-are-the-logs) for any PHP or application errors.
+1. Check the FOSSBilling [logs](/support#where-are-the-logs) for any PHP or application errors.
 2. Confirm that cron is configured to run every five minutes. FOSSBilling shows a crontab example with the correct path for your installation under the cron settings (`/admin/extension/settings/cron`).
 3. If you're using a control panel with multiple users, log into your user account via the CLI and enter `php -v` to see what the default PHP version is under your account. If it's less than FOSSBilling's minimum PHP version, follow the below steps to correct it.
 
@@ -121,7 +121,7 @@ These steps may help you resolve this issue:
 ## Administrator account login issues
 
 - Verify that you are using the administrator login page. The client and admin areas are separate, and the default admin prefix is `/admin` (`https://example.com/admin`).
-- [Manually reset your admin password](/maintaining-fossbilling/admin-manual-reset).
+- [Manually reset your admin password](/maintenance/admin-manual-reset).
 
 ## `curl_multi_exec` errors
 

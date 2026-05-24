@@ -1,0 +1,166 @@
+---
+title: FOSSBilling File Structure
+description: Understanding how FOSSBilling organizes its code and where things live.
+---
+
+FOSSBilling's structure can feel unusual if you are coming from modern frameworks like Laravel or Symfony. This guide shows where the main pieces live and what each directory is responsible for.
+
+## Source Code
+
+All source code lives in the `/src` directory.
+
+### `/src/data`
+
+Runtime data storage:
+- **Cache** — Compiled templates, API responses
+- **Logs** — Application logs and error logs
+- **Uploads** — User-uploaded files (`/data/uploads`)
+
+This directory should be writable by the web server.
+
+### `/src/install`
+
+The installation wizard. Automatically deleted after installation unless `APP_ENV=dev` is set.
+
+### `/src/library`
+
+Core PHP classes and business logic.
+
+#### `/src/library/Api`
+
+Core API files including the JavaScript wrapper (`API.js`). [See the wrapper docs](/extensions-and-development/javascript/).
+
+#### `/src/library/Box`
+
+Legacy classes inherited from BoxBilling. Some have been migrated to `FOSSBilling/`:
+
+| File | Status |
+|------|--------|
+| `Box/Exception.php` | Removed |
+| `Box/Mod.php` | Removed — replaced by `FOSSBilling/Module.php` |
+| `Box/Paginator.php` | Removed — replaced by `FOSSBilling/Paginator.php` |
+| `Box/TwigExtensions.php` | Removed — replaced by `FOSSBilling/Twig/` |
+| `Box/TwigLoader.php` | Removed — replaced by `FOSSBilling/Twig/` |
+| `Box/Translate.php` | Still present |
+
+#### `/src/library/FOSSBilling`
+
+New or rewritten classes specific to FOSSBilling. Subdirectories reflect the growing architecture:
+
+| Subdirectory | Purpose |
+|-------------|---------|
+| `Doctrine/` | Doctrine DBAL and ORM factory classes (pairs with RedBean for a dual-ORM approach) |
+| `Http/` | `RequestFactory`, `CsvResponseFactory`, HTTP exception handling |
+| `Security/` | `RateLimiter`, `RateLimitResult`, `AuthenticationRequiredException`, `RandomizedTimeFloor` |
+| `Sanitizer/` | `BrowserHtmlSanitizer` (HTML sanitization via Symfony) |
+| `Twig/` | `TwigFactory`, `TwigLoader`, `SandboxedStringRenderer`, custom Twig extensions and filters |
+| `Validation/` | API validation utilities |
+
+Key standalone files:
+- `Module.php` — Base class for modules (replaces `Box_Mod`)
+- `Paginator.php` — Pagination utility (replaces `Box_Paginator`)
+- `PaginationOptions.php` — Pagination configuration value object
+- `Interfaces/ApiArrayInterface.php`
+- `Interfaces/SecurityCheckInterface.php`
+- `Interfaces/TimestampInterface.php`
+- `Interfaces/WidgetProviderInterface.php`
+
+#### `/src/library/Model`
+
+Database models. Some models have been moved to their respective modules or removed:
+
+| Model | Status |
+|-------|--------|
+| `Model/ApiRequest.php` | Removed |
+| `Model/ClientPasswordResetTable.php` | Removed |
+| `Model/Currency.php` | Moved to Currency module |
+| `Model/EmailTemplate.php` | Moved to Email module |
+| `Model/MassmailerMessage.php` | Moved to Massmailer module |
+| `Model/Post.php` | Moved to Post module |
+| `Model/ProductMembership.php` | Removed |
+| `Model/ServiceMembership.php` | Removed |
+
+#### `/src/library/Payment`
+
+Payment gateway adapters. If you're building a payment gateway, look in `/src/library/Payment/Adapter/`.
+
+[Guide: Creating a Payment Gateway](/extensions-and-development/guides/creating-a-payment-gateway/)
+
+#### `/src/library/Registrar`
+
+Domain registrar adapters for domain reselling. Check `/src/library/Registrar/Adapter/`.
+
+[Guide: Creating a Registrar Integration](/extensions-and-development/guides/creating-a-registrar-integration/)
+
+#### `/src/library/Server`
+
+Server manager adapters for hosting control panels (cPanel, Plesk, HestiaCP, etc.).
+
+{% aside type="note" %}
+These are for shared hosting control panels. For VPS or game servers, consider creating a product module instead.
+{% /aside %}
+
+[Guide: Creating a Server Manager](/extensions-and-development/guides/creating-a-server-manager/)
+
+### `/src/locale`
+
+Translations as a Git submodule. Pointing to [github.com/FOSSBilling/locale](https://github.com/FOSSBilling/locale).
+
+### `/src/modules`
+
+All modules live here. Each module is a self-contained unit of functionality.
+
+A typical module structure:
+
+```
+ModuleName/
+├── Api/
+│   ├── Admin.php       # Admin API endpoints
+│   ├── Client.php      # Client API endpoints
+│   └── Guest.php       # Guest/public API endpoints
+├── Controller/
+│   ├── Admin.php       # Admin routes/controllers
+│   ├── Client.php      # Client routes/controllers
+│   └── Guest.php       # Guest routes/controllers
+├── templates/          # Module templates (was html_* in 0.7.x)
+│   ├── admin/          # Admin panel templates
+│   ├── client/         # Client area templates
+│   └── email/          # Email templates
+├── manifest.json       # Module metadata
+└── Service.php         # Business logic (not exposed via API)
+```
+
+{% aside type="caution" %}
+The old `html_admin/`, `html_client/`, and `html_email/` directories have been removed. Custom modules **must** use the `templates/{admin,client,email}/` structure.
+{% /aside %}
+
+[Guide: Creating a Module](/extensions-and-development/guides/creating-a-module/)
+
+### `/src/themes`
+
+All installed themes.
+
+Theme structure:
+
+```
+theme-name/
+├── assets/                 # CSS, JS, images (built via esbuild, not webpack)
+├── config/
+│   └── settings.html.twig       # Theme settings UI
+├── templates/              # Twig templates (was html/ in 0.7.x)
+│   └── layouts/            # Base layouts
+├── templates/client_custom/     # User overrides (was html_custom/ in 0.7.x)
+└── manifest.json           # Theme metadata
+```
+
+The `templates/client_custom/` folder lets users override templates without editing the theme directly.
+
+{% aside type="caution" %}
+The old `html/` and `html_custom/` directories have been removed. Custom themes **must** use `templates/` and `templates/client_custom/`.
+{% /aside %}
+
+[Guide: Creating a Theme](/extensions-and-development/guides/creating-a-theme/)
+
+---
+
+For assistance, join our [Discord community](https://fossbilling.org/discord).

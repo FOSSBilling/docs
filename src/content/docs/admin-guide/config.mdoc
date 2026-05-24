@@ -22,6 +22,29 @@ Control security behavior:
 | `security.mode` | `strict` | `strict` (recommended) or `regular`. Strict enables `SameSite=Strict` and `HttpOnly` cookies. |
 | `security.force_https` | `true` | Force HTTPS connections. **Recommended for production.** |
 | `security.session_lifespan` | `7200` | Session duration in seconds (default: 2 hours). |
+| `security.session_regeneration_grace_period` | `300` | Grace period in seconds before a regenerated session ID takes full effect. |
+| `security.perform_session_fingerprinting` | `true` | Verify browser fingerprint on each request to help prevent session hijacking. |
+| `security.debug_fingerprint` | `false` | Log fingerprint checks for debugging (enable temporarily only). |
+
+### Trusted Proxies
+
+Configure reverse-proxy support so FOSSBilling correctly detects the visitor's IP and protocol:
+
+```php
+'security' => [
+    'trusted_proxies' => [
+        'enabled' => false,
+        'proxies' => [],
+        'headers' => 'x_forwarded',
+    ],
+],
+```
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `trusted_proxies.enabled` | `false` | Enable trusted proxy detection |
+| `trusted_proxies.proxies` | `[]` | List of trusted proxy IPs or CIDR ranges |
+| `trusted_proxies.headers` | `x_forwarded` | Header type: `x_forwarded` (standard) or `forwarded` (RFC 7239) |
 
 ### Encryption Key
 
@@ -29,7 +52,7 @@ Control security behavior:
 
 ### URLs
 
-- `url` — Your full FOSSBilling URL with trailing slash (e.g., `https://billing.example.com/`)
+- `url` — Your FOSSBilling URL with trailing slash (e.g., `https://billing.example.com/`). The protocol prefix is stripped before storage.
 - `admin_area_prefix` — Admin panel path (default: `/admin`)
 
 ### Debugging
@@ -69,6 +92,7 @@ Temporarily disable public access. Use `allowed_urls` for endpoints that must st
 | `i18n.date_format` | `medium` | Options: `none`, `short`, `medium`, `long` |
 | `i18n.time_format` | `short` | Options: `none`, `short`, `medium`, `long` |
 | `i18n.datetime_pattern` | — | Custom date/time pattern |
+| `i18n.auto_detect_locale` | `true` | Automatically detect visitor's preferred language from browser settings |
 
 ### Data & Logging
 
@@ -82,7 +106,7 @@ Temporarily disable public access. Use `allowed_urls` for endpoints that must st
 
 ```php
 'db' => [
-    'type' => 'mysql',
+    'driver' => 'pdo_mysql',
     'host' => '127.0.0.1',
     'port' => '3306',
     'name' => 'fossbilling',
@@ -90,6 +114,10 @@ Temporarily disable public access. Use `allowed_urls` for endpoints that must st
     'password' => 'your_password',
 ],
 ```
+
+| Setting | Change from 0.7.x | Notes |
+|---------|--------------------|-------|
+| `db.driver` | Renamed from `db.type` | Value changed from `'mysql'` to `'pdo_mysql'` |
 
 ### Twig (Templates)
 
@@ -101,20 +129,37 @@ Temporarily disable public access. Use `allowed_urls` for endpoints that must st
 
 ### API Settings
 
-Control API access and rate limiting. Use `require_referrer_header` to lock browser-originated requests to your install URL, `allowed_ips` for explicit allowlists, and the `rate_*` values to tune throttling.
+Control API access. Use `require_referrer_header` to lock browser-originated requests to your install URL, `allowed_ips` for explicit allowlists, and `CSRFPrevention` for cross-site request forgery protection.
 
 ```php
 'api' => [
-    'require_referrer_header' => true,
+    'require_referrer_header' => false,
     'allowed_ips' => [],
-    'rate_span' => 60,
-    'rate_limit' => 100,
-    'throttle_delay' => 2,
-    'rate_span_login' => 60,
-    'rate_limit_login' => 20,
     'CSRFPrevention' => true,
 ],
 ```
+
+{% aside type="caution" %}
+Disabling `CSRFPrevention` opens your instance to a known vulnerability. Only disable it for backward compatibility if absolutely necessary.
+{% /aside %}
+
+### Rate Limiter
+
+Rate limiting is now configured under the `rate_limiter` block (replaces the old `api.rate_span`, `api.rate_limit`, `api.throttle_delay`, `api.rate_span_login`, `api.rate_limit_login`, and `api.rate_limit_whitelist` settings):
+
+```php
+'rate_limiter' => [
+    'enabled' => true,
+    'whitelist_ips' => [],
+    'policies' => [],
+],
+```
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `rate_limiter.enabled` | `true` | Enable or disable the rate limiter entirely |
+| `rate_limiter.whitelist_ips` | `[]` | IPs that bypass rate limiting |
+| `rate_limiter.policies` | `[]` | Custom rate-limit policies (advanced). Leave empty for sensible defaults covering login and API endpoints. |
 
 ## Environment Variables
 
@@ -123,6 +168,11 @@ Some settings can be overridden via environment variables:
 ```bash
 APP_ENV=dev        # Enable development mode
 APP_DEBUG=true     # Enable debug mode
+DB_HOST=db.example.com   # Override database host
+DB_NAME=fossbilling      # Override database name
+DB_USER=myuser           # Override database user
+DB_PASS=mypass           # Override database password
+DB_PORT=3306             # Override database port
 ```
 
 ## Making Changes

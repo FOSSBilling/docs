@@ -18,14 +18,13 @@ Use this page as a quick reference for what is available today, what is in progr
 
 ## Security & Anti-Spam
 
-{% aside type="tip" %}
-Many of these features require the "SpamChecker" module. Configure it in **Settings → SpamChecker**.
-{% /aside %}
+The `Antispam` module (replaces the old `Spamchecker` module in 0.8.0) provides built-in spam protection. Configure it under **Extensions → Antispam**.
 
 | Feature | Status | Notes |
 |---------|--------|-------|
 | IP blocking | ✅ | Block problematic IPs |
 | reCAPTCHA | ✅ | v2 supported. More providers coming. |
+| Honeypot fields | ✅ | Invisible anti-bot fields (new in 0.8.0) |
 | Stop Forum Spam | ✅ | Community-driven spam prevention |
 | Disposable email blocking | ✅ | Uses [FakeFilter](https://fakefilter.net) |
 | MFA/2FA | 🚧 | Planned before 1.0 release |
@@ -68,6 +67,7 @@ Many of these features require the "SpamChecker" module. Configure it in **Setti
 |---------|--------|-------|
 | Network interface selection | ✅ | Modules must respect this. FOSSBilling official ones do. |
 | Theming | ✅ | Custom themes supported |
+| Widget system | ✅ | New in 0.8.0 — modules can register renderable dashboard widgets |
 | Email | ✅ | One outgoing address only |
 | Invoicing | ✅ | |
 | Usage-based pricing | 🚧 | Planned |

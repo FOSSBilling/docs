@@ -39,16 +39,16 @@ Templates can use any variables passed by the module. Common ones include:
 Send a test email to see which variables are available for that template. The **Variables** tab shows values from the last sent email.
 {% /aside %}
 
-See [Twig Filters & Functions](/developing-fossbilling/twig-filters/) for all available filters.
+See [Twig Filters & Functions](/extensions-and-development/twig-filters/) for all available filters.
 
 ## Template Examples
 
 ### Markdown Format
 
-Default templates use Markdown for simple formatting. Wrap your content with the `apply markdown` filter:
+Default templates use Markdown for simple formatting. Wrap your content with the `apply markdown_to_html` filter:
 
 ```twig
-\{% apply markdown %\}
+\{% apply markdown_to_html %\}
 Hi \{\{ staff.name \}\},
 
 If you are reading this email, FOSSBilling is **configured properly** and is **able to send emails**.
@@ -108,7 +108,7 @@ For full control, use HTML:
 
 Templates exist in two places:
 
-1. **Module source** — `modules/{Module}/html_email/`
+1. **Module source** — `modules/{Module}/templates/email/` (was `html_email/` in 0.7.x)
 2. **Database** — `email_template` table (copied there when module is installed)
 
 After installation, edit templates through the admin panel or directly in the database. Changes made only to the module files will not apply until you regenerate the templates.
@@ -121,4 +121,4 @@ After installation, edit templates through the admin panel or directly in the da
 
 ## Example Module
 
-See the [example module](https://github.com/FOSSBilling/example-module/tree/main/html_email) for more template examples.
+See the [example module](https://github.com/FOSSBilling/example-module/tree/main/templates/email) for more template examples.

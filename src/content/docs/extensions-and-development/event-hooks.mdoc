@@ -26,18 +26,20 @@ Hook names follow this pattern:
 - `onAfterAdminActivateExtension`
 - `onBeforeAdminDeactivateExtension`
 - `onAfterAdminDeactivateExtension`
+- `onBeforeAdminExtensionConfigSave`
+- `onAfterAdminExtensionConfigSave`
 - `onBeforeAdminInstallExtension`
 - `onAfterAdminInstallExtension`
 - `onBeforeAdminUninstallExtension`
 - `onAfterAdminUninstallExtension`
 - `onBeforeAdminUpdateExtension`
 - `onAfterAdminUpdateExtension`
-- `onAfterAdminExtensionConfigSave`
 
 ### Clients
 
 - `onBeforeAdminCreateClient`
 - `onAfterAdminCreateClient`
+- `onBeforeAdminClientDelete`
 - `onAfterAdminClientDelete`
 - `onBeforeAdminClientPasswordChange`
 - `onAfterAdminClientPasswordChange`
@@ -64,7 +66,10 @@ Hook names follow this pattern:
 - `onAfterAdminOrderUnsuspend`
 - `onBeforeAdminOrderUpdate`
 - `onAfterAdminOrderUpdate`
+- `onBeforeAdminBatchSuspendOrders`
 - `onAfterAdminBatchSuspendOrders`
+- `onBeforeAdminBatchCancelSuspendedOrders`
+- `onAfterAdminBatchCancelSuspendedOrders`
 
 ### Invoices
 
@@ -81,6 +86,9 @@ Hook names follow this pattern:
 - `onAfterAdminInvoiceUpdate`
 - `onBeforeAdminGenerateRenewalInvoice`
 - `onAfterAdminGenerateRenewalInvoice`
+- `onAfterAdminInvoicePaymentReceived`
+- `onAfterAdminSubscriptionCreate`
+- `onAfterAdminSubscriptionDelete`
 - `onEventBeforeInvoiceIsDue`
 - `onEventAfterInvoiceIsDue`
 
@@ -110,6 +118,8 @@ Hook names follow this pattern:
 - `onAfterAdminStaffProfileUpdate`
 - `onBeforeAdminStaffProfilePasswordChange`
 - `onAfterAdminStaffProfilePasswordChange`
+- `onBeforePasswordResetStaff`
+- `onAfterPasswordResetStaff`
 
 ### System
 
@@ -128,6 +138,9 @@ Hook names follow this pattern:
 - `onAfterAdminNotificationAdd`
 - `onBeforeAdminUpdateCore`
 - `onAfterAdminUpdateCore`
+- `onBeforeAdminManualUpdate`
+- `onAfterAdminManualUpdate`
+- `onBeforeThemeSettingsSave`
 
 ### Authentication
 
@@ -148,6 +161,9 @@ Hook names follow this pattern:
 - `onAfterClientProfileUpdate`
 - `onBeforeClientProfilePasswordChange`
 - `onAfterClientProfilePasswordChange`
+- `onBeforePasswordResetClient`
+- `onBeforeClientProfilePasswordReset`
+- `onAfterClientProfilePasswordReset`
 
 ### Orders
 
@@ -176,6 +192,11 @@ Hook names follow this pattern:
 - `onAfterGuestPublicTicketClose`
 - `onAfterGuestPublicTicketReply`
 - `onBeforeGuestPasswordResetRequest`
+
+## Service License Hooks
+
+- `onBeforeServicelicenseReset`
+- `onAfterServicelicenseReset`
 
 ## Using Hooks in Your Module
 

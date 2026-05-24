@@ -55,9 +55,13 @@ For assistance, ask in our [Discord](https://fossbilling.org/discord).
 
 ## Setting the Default Language
 
-Set the default locale in your `config.php` file. If you are unsure which key to change, check the [configuration reference](/customizing-fossbilling/config/).
+Set the default locale in your `config.php` file. If you are unsure which key to change, check the [configuration reference](/admin-guide/config/).
 
 Use a locale code such as `en_US`, `fr_FR`, or `de_DE`.
+
+{% aside type="tip" %}
+FOSSBilling 0.8.0+ includes the `i18n.auto_detect_locale` config option (default: `true`). When enabled, the visitor's browser language preference is used automatically. Set it to `false` to always use the default locale.
+{% /aside %}
 
 ## Managing Languages
 

@@ -1,6 +1,6 @@
 ---
 title: Securing FOSSBilling
-description: Configure FOSSBilling's built-in security settings for HTTPS, sessions, API access, and reverse-proxy deployments.
+description: Configure FOSSBilling's built-in security settings for HTTPS, sessions, API access, rate limiting, and reverse-proxy deployments.
 ---
 
 This page covers the application-level settings you should review after installation. Pair these with the broader infrastructure guidance in [Best Practices](/security/best-practices/).
@@ -16,14 +16,40 @@ These settings live in your `config.php` file and control FOSSBilling's built-in
 | `mode` | `strict` | `strict` or `regular` | In `strict` mode, cookies use `SameSite=Strict` and `HttpOnly`. `regular` mode uses default cookie properties but still sets `HttpOnly`. |
 | `force_https` | `true` | `bool` | When enabled, FOSSBilling redirects all requests to HTTPS and forces cookies to be sent only over secure connections. |
 | `session_lifespan` | `7200` | `int` | How long sessions remain valid (in seconds). Default is 2 hours. After this, sessions expire and are destroyed. |
+| `session_regeneration_grace_period` | `300` | `int` | Grace period (seconds) before a regenerated session ID takes full effect. |
+| `perform_session_fingerprinting` | `true` | `bool` | Verify browser fingerprint on each request to help prevent session hijacking. |
+| `debug_fingerprint` | `false` | `bool` | Log fingerprint checks for debugging (enable temporarily only). |
 
 ```php
 'security' => [
     'mode' => 'strict',
     'force_https' => true,
     'session_lifespan' => 7200,
+    'session_regeneration_grace_period' => 300,
+    'perform_session_fingerprinting' => true,
+    'debug_fingerprint' => false,
 ],
 ```
+
+### Trusted Proxies
+
+Configure reverse-proxy support so FOSSBilling correctly detects the visitor's IP and protocol:
+
+```php
+'security' => [
+    'trusted_proxies' => [
+        'enabled' => false,
+        'proxies' => [],
+        'headers' => 'x_forwarded',
+    ],
+],
+```
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `trusted_proxies.enabled` | `false` | Enable trusted proxy detection |
+| `trusted_proxies.proxies` | `[]` | List of trusted proxy IPs or CIDR ranges |
+| `trusted_proxies.headers` | `x_forwarded` | Header type: `x_forwarded` (standard) or `forwarded` (RFC 7239) |
 
 ### API Security
 
@@ -37,6 +63,28 @@ These settings live in your `config.php` file and control FOSSBilling's built-in
 ],
 ```
 
+### Rate Limiter
+
+Rate limiting is configured under the `rate_limiter` block, replacing the old `api.rate_*` keys:
+
+```php
+'rate_limiter' => [
+    'enabled' => true,
+    'whitelist_ips' => [],
+    'policies' => [],
+],
+```
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `rate_limiter.enabled` | `true` | Enable or disable the rate limiter entirely |
+| `rate_limiter.whitelist_ips` | `[]` | IPs that bypass rate limiting |
+| `rate_limiter.policies` | `[]` | Custom rate-limit policies (advanced). Leave empty for sensible defaults covering login and API endpoints. |
+
+## Antispam
+
+The `Antispam` module (replaces the old `Spamchecker` module) provides built-in spam protection including honeypot fields. Configure it under **Extensions → Antispam**.
+
 ## Cloudflare
 
 If you're using Cloudflare, enable **IP Geolocation** under your site's **Network** settings. This allows FOSSBilling to use the visitor's country information to strengthen some session checks.
@@ -49,4 +97,4 @@ Reverse proxies often make FOSSBilling think it is being accessed over HTTP even
 
 ### Trusted Proxies
 
-If you are running behind a reverse proxy, review any trusted-proxy settings in your deployment as well so request metadata is interpreted correctly.
+If you are running behind a reverse proxy, configure the `trusted_proxies` setting in your config (see above) so request metadata is interpreted correctly.

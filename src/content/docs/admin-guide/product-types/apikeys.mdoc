@@ -111,13 +111,13 @@ curl -X POST "https://your-fossbilling.com/api/guest/serviceapikey/get_info" \
 
 ## Rate Limiting
 
-FOSSBilling includes basic rate limiting on all API requests. This prevents brute-force attacks on your `/check` endpoints.
+FOSSBilling includes rate limiting on all API requests (configured via the `rate_limiter` config block in 0.8.0+). This prevents brute-force attacks on your `/check` endpoints.
 
 {% aside type="tip" %}
 Cache validation results in your application for a few minutes. This avoids hitting rate limits and reduces server load.
 {% /aside %}
 
-You can adjust rate limits in the [configuration](/customizing-fossbilling/config#api-configuration).
+You can adjust rate limiting in the [configuration](/admin-guide/config#rate-limiter).
 
 ## Security Considerations
 

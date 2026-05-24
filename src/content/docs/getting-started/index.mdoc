@@ -3,16 +3,20 @@ title: Getting Started
 description: Choose the right setup path for FOSSBilling and work through the essentials before going live.
 ---
 
-Use this section if you are setting up FOSSBilling for the first time, evaluating installation methods, or preparing a development environment.
+Use this section if you are setting up FOSSBilling for the first time, comparing installation methods, or preparing a development environment.
+
+If you are installing FOSSBilling for production, start with [Requirements](/getting-started/requirements/), then follow [Standard Installation](/getting-started/installation/). Use [Docker Installation](/getting-started/docker/) if you prefer a containerized setup. Use [Building from Source](/getting-started/building/) when you are developing, contributing, or preparing custom packages.
+
+## Setup paths
 
 {% cardgrid %}
   {% linkcard
-    title="System Requirements"
+    title="Requirements"
     href="/getting-started/requirements/"
     description="Check supported web servers, PHP versions, extensions, and database requirements."
   /%}
   {% linkcard
-    title="Installing FOSSBilling"
+    title="Standard Installation"
     href="/getting-started/installation/"
     description="Set up FOSSBilling on a standard web server stack with the full installation guide."
   /%}
@@ -22,8 +26,12 @@ Use this section if you are setting up FOSSBilling for the first time, evaluatin
     description="Run FOSSBilling in containers for a predictable and isolated setup."
   /%}
   {% linkcard
-    title="Building FOSSBilling"
+    title="Building from Source"
     href="/getting-started/building/"
     description="Build from source for development, contributing, or custom packaging."
   /%}
 {% /cardgrid %}
+
+## Before you go live
+
+After installation, review the [Admin Guide](/admin-guide/config/) for configuration and customization, then check [Security](/security/securing-fossbilling/) before exposing a production instance.

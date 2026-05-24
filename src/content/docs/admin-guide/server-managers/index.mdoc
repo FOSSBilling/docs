@@ -1,0 +1,33 @@
+---
+title: Server Managers
+description: Connect FOSSBilling to hosting control panels and provisioning systems.
+---
+
+Server managers let FOSSBilling create, suspend, unsuspend, and manage hosting accounts through external control panels or provisioning backends.
+
+Review your control panel's supported actions before relying on automatic provisioning in production.
+
+## Supported integrations
+
+{% cardgrid %}
+  {% linkcard
+    title="WHM/cPanel"
+    href="/admin-guide/server-managers/whm/"
+    description="Provision and manage hosting accounts through WHM and cPanel."
+  /%}
+  {% linkcard
+    title="HestiaCP"
+    href="/admin-guide/server-managers/hestiacp/"
+    description="Connect FOSSBilling to Hestia Control Panel."
+  /%}
+  {% linkcard
+    title="CWP"
+    href="/admin-guide/server-managers/cwp/"
+    description="Use CentOS Web Panel / Control Web Panel with FOSSBilling."
+  /%}
+  {% linkcard
+    title="Other Server Managers"
+    href="/admin-guide/server-managers/others/"
+    description="Review other integration options and custom server manager guidance."
+  /%}
+{% /cardgrid %}

@@ -18,6 +18,22 @@ FOSSBilling publishes release notes and tagged versions on GitHub. Use the links
 
 For the latest changes, start with the [most recent release](https://github.com/FOSSBilling/FOSSBilling/releases/latest).
 
+### Version 0.8.0
+
+| Area | Summary |
+|------|---------|
+| **PHP** | Minimum version raised to 8.3 |
+| **Database** | Charset migrated to `utf8mb4`; DB config key renamed from `db.type` to `db.driver` |
+| **Configuration** | New `rate_limiter` block replaces old `api.rate_*` keys; new `trusted_proxies` and `auto_detect_locale` settings |
+| **Modules** | `Antispam` replaces `Spamchecker`; `Servicemembership`, `Paidsupport`, `Wysiwyg` removed; new `Widgets` module |
+| **Templates** | All module templates moved from `html_*` to `templates/{admin,client,email}/` |
+| **Build** | Front-end asset build migrated from webpack to esbuild |
+| **Library** | New Doctrine ORM layer alongside RedBean; Symfony Rate Limiter, Uid, Sanitizer, Serializer, PropertyAccess components added; `Box_Mod`, `Box_Paginator`, `Box_TwigExtensions` removed |
+| **Patcher** | Extended through patch 63 (was 43) |
+| **Uploads** | Moved from `/uploads` to `/data/uploads` |
+
+[View the full 0.8.0 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/latest) for the complete list of changes.
+
 ## Breaking Changes
 
 Before updating, review the release notes for any breaking changes or manual follow-up steps. We call these out in each release whenever they apply.
