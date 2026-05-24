@@ -76,17 +76,15 @@ The bundled `.htaccess` is updated automatically with the new release. If you ma
 
 ### Template Directory Restructure
 
-All module templates have been moved from the old `html_*` directory names to a `templates/` structure:
+Module templates have been moved from the old `html_*` directory names to a `templates/` structure. Theme directories (`html/` and `html_custom/`) are unchanged.
 
 | Old path | New path |
 |----------|----------|
 | `modules/{Module}/html_admin/` | `modules/{Module}/templates/admin/` |
 | `modules/{Module}/html_client/` | `modules/{Module}/templates/client/` |
 | `modules/{Module}/html_email/` | `modules/{Module}/templates/email/` |
-| `themes/{Theme}/html/` | `themes/{Theme}/templates/` |
-| `themes/{Theme}/html_custom/` | `themes/{Theme}/templates/client_custom/` |
 
-The patcher removes the old `html_*` directories. If you have custom themes or modules, **update your file structure before applying the patches**, or the old directories will be deleted and you will lose your changes.
+The patcher removes the old `html_*` directories from modules. If you have custom modules, **update your file structure before applying the patches**, or the old directories will be deleted and you will lose your changes.
 
 ### Encryption Format Update
 
@@ -97,5 +95,5 @@ Custom payment adapters or modules that store encrypted data using FOSSBilling's
 - [ ] Review spam/anti-spam settings (`Antispam` module replaces `Spamchecker`)
 - [ ] Review active membership orders migrated to custom products
 - [ ] Update web-server rules if you have custom NGINX/Apache configs
-- [ ] Verify custom themes and modules use the new `templates/` directory structure
+- [ ] Verify custom modules use the new `templates/` directory structure (custom themes are unaffected)
 - [ ] Clear the cache: **System → Tools → Clear cache**

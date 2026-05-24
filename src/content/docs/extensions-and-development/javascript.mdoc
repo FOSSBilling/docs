@@ -20,12 +20,12 @@ Add this to your template's `<head>`:
 
 ```html
 <meta name="csrf-token" content="{{ CSRFToken }}">
-<script src="{{ "Api/API.js?v=#{guest.system_version}" | library_url }}"></script>
+{{ "Api/API.js" | library_url | script_tag }}
 ```
 
 What this does:
 1. Creates a meta tag with the CSRF token (the wrapper reads this automatically)
-2. Loads the API wrapper, appending the system version to prevent caching issues
+2. Loads the API wrapper, rendered as a `<script>` tag with cache-busting
 
 ## Making Requests
 

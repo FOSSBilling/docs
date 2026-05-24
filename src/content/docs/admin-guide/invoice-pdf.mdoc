@@ -80,8 +80,8 @@ Available in PDF templates:
 PDF templates support the same [Twig filters](/extensions-and-development/twig-filters/) available elsewhere in FOSSBilling:
 
 ```twig
-{{ invoice.total | money }}           {# Format as currency #}
-{{ invoice.created_at | timeago }}    {# Show relative time #}
+{{ invoice.total | format_currency(currency.code) }}  {# Format as currency #}
+{{ invoice.created_at | timeago }}                     {# Show relative time #}
 ```
 
 ## Testing Changes

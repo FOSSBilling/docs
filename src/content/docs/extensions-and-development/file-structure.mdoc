@@ -147,17 +147,13 @@ theme-name/
 ├── assets/                 # CSS, JS, images (built via esbuild, not webpack)
 ├── config/
 │   └── settings.html.twig       # Theme settings UI
-├── templates/              # Twig templates (was html/ in 0.7.x)
+├── html/                   # Twig templates
 │   └── layouts/            # Base layouts
-├── templates/client_custom/     # User overrides (was html_custom/ in 0.7.x)
+├── html_custom/            # User overrides (overrides take priority)
 └── manifest.json           # Theme metadata
 ```
 
-The `templates/client_custom/` folder lets users override templates without editing the theme directly.
-
-{% aside type="caution" %}
-The old `html/` and `html_custom/` directories have been removed. Custom themes **must** use `templates/` and `templates/client_custom/`.
-{% /aside %}
+The `html_custom/` folder lets users override templates without editing the theme directly.
 
 [Guide: Creating a Theme](/extensions-and-development/guides/creating-a-theme/)
 
