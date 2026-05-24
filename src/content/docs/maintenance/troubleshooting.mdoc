@@ -112,7 +112,7 @@ Because cron runs as a server command, it is not tied to the PHP version configu
 These steps may help you resolve this issue:
 
 1. If your control panel provides a PHP selector for cron, choose a version that meets FOSSBilling's requirements.
-2. Try specifying a different PHP binary in the cron command, for example `php8.2` or `/usr/bin/php8.2` instead of just `php`.
+2. Try specifying a different PHP binary in the cron command, for example `php8.3` or `/usr/bin/php8.3` instead of just `php`.
 3. Remove unsupported PHP versions if they keep being selected by default.
 4. Ask your hosting or control-panel provider how to set a different PHP version for cron jobs.
 5. As a last resort, use the [cron API endpoint](/getting-started/installation#option-2-remote-cron-service) with `wget` or an external cron service.

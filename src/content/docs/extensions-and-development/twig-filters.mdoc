@@ -3,17 +3,15 @@ title: Twig Filters & Functions
 description: Available Twig filters and functions for theming and module development.
 ---
 
-FOSSBilling uses [Twig](https://twig.symfony.com/) across themes, email templates, and PDFs. This page lists the project-specific filters and functions you can rely on while building against it.
+FOSSBilling uses [Twig](https://twig.symfony.com/) across themes, email templates, and PDFs. This page lists the project-specific and third-party filters and functions you can rely on while building against it.
 
 ## Standard Twig
 
-FOSSBilling includes all [default Twig filters](https://twig.symfony.com/doc/3.x/filters/index.html), plus the [Intl Extra Extension](https://github.com/twigphp/intl-extra) for internationalization.
+FOSSBilling includes all [default Twig filters](https://twig.symfony.com/doc/3.x/filters/index.html), plus the [Intl Extra Extension](https://github.com/twigphp/intl-extra) for internationalization and the [Markdown Extra Extension](https://github.com/twigphp/markdown-extra) for Markdown rendering.
 
-## FOSSBilling Custom Filters
+## Custom Filters
 
-These filters are defined in [`/library/FOSSBilling/Twig/`](https://github.com/FOSSBilling/FOSSBilling/tree/main/src/library/FOSSBilling/Twig) (migrated from the old `Box/TwigExtensions.php` in 0.7.x):
-
-### Translation & Localization
+These are defined in [`/library/FOSSBilling/Twig/`](https://github.com/FOSSBilling/FOSSBilling/tree/main/src/library/FOSSBilling/Twig) (migrated from the old `Box/TwigExtensions.php` in 0.7.x):
 
 | Filter | Description |
 |--------|-------------|
@@ -21,65 +19,94 @@ These filters are defined in [`/library/FOSSBilling/Twig/`](https://github.com/F
 | `timeago` | Show how long ago a date was (e.g., "2 hours ago"). Accepts ISO 8601 format. |
 | `daysleft` | Show days until a date. Accepts ISO 8601 format. |
 | `period_title` | Display a translated period title (e.g., `1M` → "1 Month"). |
-
-### URLs & Links
-
-| Filter | Description |
-|--------|-------------|
-| `alink` | Create a link to the admin panel from a URI. |
-| `link` | Generate a full URL from a URI. |
-| `autolink` | Automatically convert text to HTML links. |
-| `iplookup` | Create a clickable admin panel link to look up an IP address. |
-
-### Assets & Resources
-
-| Filter | Description |
-|--------|-------------|
-| `mod_asset_url` | Get the correct URL for a module asset. |
+| `url` | Generate a URL for a path. Accepts optional `area` (admin/client) parameter. Replaces the old `alink` and `link` filters. |
+| `api_url` | Generate a URL to an API endpoint. |
 | `asset_url` | Get the URL for a theme asset. |
 | `library_url` | Get the URL for the library folder. |
-| `img_tag` | Generate an HTML `<img>` tag. |
-| `script_tag` | Generate an HTML `<script>` tag. |
-| `stylesheet_tag` | Generate an HTML `<link>` tag for CSS. |
-
-### Formatting
-
-| Filter | Description |
-|--------|-------------|
-| `money` | Format a price with currency symbol. |
-| `money_without_currency` | Format a price without the currency symbol. |
-| `money_convert` | Convert and format a price to another currency. |
-| `money_convert_without_currency` | Convert without showing the currency symbol. |
-| `number` | PHP `number_format()` as a filter. |
-| `size` | Convert bytes to human-readable size (KB, MB, GB, etc.). |
+| `mod_asset_url` | Get the correct URL for a module asset. |
+| `script_tag` | Generate an HTML `<script>` tag with cache-busting. |
+| `stylesheet_tag` | Generate an HTML `<link>` tag for CSS with cache-busting. |
 | `truncate` | Truncate a string to a maximum length. |
+| `file_size` | Convert bytes to human-readable size (KB, MB, GB, etc.). |
+| `hash` | Hash a value. Defaults to xxh128. |
+| `ip_country_name` | Show the country name for an IP address. |
+| `ip_country_code` | Show the ISO 2-letter country code for an IP address. |
 
-### Utilities
+## Custom Functions
+
+| Function | Description |
+|----------|-------------|
+| `fb_api` | Generate a `data-fb-api` attribute for API-driven elements. |
+| `fb_api_form` | Generate a form with a `data-fb-api` attribute. |
+| `fb_api_link` | Generate a link with a `data-fb-api` attribute. |
+| `render_widgets` | Render registered slot widgets. |
+| `svg_sprite` | Read the theme's SVG icon sprite. |
+| `has_permission` | Check if the current admin has a given module permission. |
+| `antispam_honeypot` | Return the antispam honeypot configuration array. |
+| `debug_bar_render` | Render the debug toolbar (development mode only). |
+| `debug_bar_render_head` | Render debug toolbar assets in `<head>` (development mode only). |
+
+## Third-Party Extensions
+
+### Markdown
+
+The `twig/markdown-extra` package provides a `markdown_to_html` filter, replacing the old custom `markdown` filter. The underlying renderer uses `league/commonmark` with GitHub-Flavored Markdown, HTML escaping, and unsafe-link removal.
+
+```twig
+{{ content | markdown_to_html }}
+```
+
+### Internationalization
+
+The `twig/intl-extra` package provides locale-aware formatting filters:
 
 | Filter | Description |
 |--------|-------------|
-| `gravatar` | Generate a Gravatar image URL from an email. Optional size parameter. |
-| `markdown` | Parse Markdown to HTML. Escapes HTML and removes unsafe links (`javascript:`, `vbscript:`, `file:`, `data:`). Uses CommonMark with GitHub extensions. |
-| `ipcountryname` | Show the country name for an IP address. |
+| `format_currency` | Format a number as currency (replaces the old `money` family of filters). |
+| `format_number` | Format a number with locale-aware grouping. |
+| `format_date` | Format a date. |
+| `format_datetime` | Format a date and time. |
+| `format_time` | Format a time. |
+| `currency_name` | Show the currency name. |
+| `currency_symbol` | Show the currency symbol. |
+| `country_name` | Show the localized country name. |
+
+{% aside type="tip" %}
+Use `format_currency` instead of the removed `money`, `money_without_currency`, `money_convert`, or `money_convert_without_currency` filters.
+{% /aside %}
 
 ## Usage Examples
 
 ```twig
 {# Format money #}
-{{ 29.99 | money }}  {# $29.99 #}
+{{ 29.99 | format_currency('USD') }}  {# $29.99 #}
 
-{# Generate Gravatar #}
-<img src="{{ 'user@example.com' | gravatar(64) }}" alt="Avatar">
+{# Generate URL #}
+<a href="{{ 'client/manage' | url }}">Manage</a>          {# client area #}
+<a href="{{ 'client/manage' | url({area: 'admin'}) }}">Manage</a>  {# admin area #}
+
+{# Generate API URL #}
+{{ 'guest/system/version' | api_url }}
+
+{# Hash #}
+{{ 'hello' | hash }}  {# xxh128 hash #}
+
+{# File size #}
+{{ 1048576 | file_size }}  {# 1 MB #}
 
 {# Parse Markdown #}
-{{ product.description | markdown }}
+{{ product.description | markdown_to_html }}
 
 {# Time ago #}
 {{ order.created_at | timeago }}  {# 2 hours ago #}
 
-{# Admin link #}
-<a href="{{ 'client/manage' | alink }}">Manage Client</a>
-
 {# Module asset #}
 <script src="{{ 'myfile.js' | mod_asset_url }}"></script>
+
+{# Country from IP #}
+{{ '8.8.8.8' | ip_country_name }}  {# United States #}
+{{ '8.8.8.8' | ip_country_code }}  {# US #}
+
+{# Country names #}
+{{ country_names() }}
 ```
