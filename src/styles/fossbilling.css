@@ -1,14 +1,16 @@
 @layer starlight.custom {
   :root,
   ::backdrop {
-    --sl-color-white: hsl(210, 20%, 96%);
+    --sl-color-white: hsl(0, 0%, 100%);
     --sl-color-gray-1: hsl(214, 18%, 86%);
     --sl-color-gray-2: hsl(214, 14%, 72%);
     --sl-color-gray-3: hsl(216, 10%, 58%);
     --sl-color-gray-4: hsl(217, 10%, 42%);
     --sl-color-gray-5: hsl(220, 12%, 18%);
     --sl-color-gray-6: hsl(220, 14%, 10%);
-    --sl-color-black: hsl(220, 16%, 7%);
+    --sl-color-black: hsl(0, 0%, 0%);
+    --sl-color-fg-strong: var(--sl-color-white);
+    --sl-color-bg-strong: var(--sl-color-black);
 
     --sl-color-accent-low: hsl(215, 55%, 18%);
     --sl-color-accent: hsl(206, 100%, 56%);
@@ -46,7 +48,9 @@
     --sl-color-gray-5: hsl(220, 16%, 90%);
     --sl-color-gray-6: hsl(210, 20%, 96%);
     --sl-color-gray-7: hsl(210, 33%, 98%);
-    --sl-color-black: hsl(0, 0%, 100%);
+    --sl-color-black: hsl(220, 16%, 7%);
+    --sl-color-fg-strong: var(--sl-color-white);
+    --sl-color-bg-strong: var(--sl-color-black);
 
     --sl-color-accent-low: hsl(206, 100%, 94%);
     --sl-color-accent: hsl(206, 100%, 46%);
