@@ -91,7 +91,7 @@ Subfolder installations are not supported right now. Install FOSSBilling on a de
 
 If FOSSBilling starts failing after an update, work through these steps:
 
-1. Review the [changelog](/changelog) for any breaking changes or for any manual actions required.
+1. Review the [updating guide](/maintaining-fossbilling/updating/) and [changelog](/changelog) for any breaking changes or manual actions required.
 2. Try the fallback patcher by visiting `https://example.com/run-patcher` to make sure database and configuration updates finished cleanly.
    - If you need the fallback patcher, there is often an underlying permissions issue interrupting the normal update flow.
 3. If you're still experiencing issues, you can ask for further assistance via our [Discord](https://fossbilling.org/discord), or with a [bug report](https://github.com/FOSSBilling/FOSSBilling/issues).
@@ -112,7 +112,7 @@ Because cron runs as a server command, it is not tied to the PHP version configu
 These steps may help you resolve this issue:
 
 1. If your control panel provides a PHP selector for cron, choose a version that meets FOSSBilling's requirements.
-2. Try specifying a different PHP binary in the cron command, for example `php8.2` or `/usr/bin/php8.2` instead of just `php`.
+2. Try specifying a different PHP binary in the cron command, for example `php8.3` or `/usr/bin/php8.3` instead of just `php`.
 3. Remove unsupported PHP versions if they keep being selected by default.
 4. Ask your hosting or control-panel provider how to set a different PHP version for cron jobs.
 5. As a last resort, use the [cron API endpoint](/getting-started/installation#option-2-remote-cron-service) with `wget` or an external cron service.

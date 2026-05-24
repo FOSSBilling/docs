@@ -20,8 +20,8 @@ These early releases let us modernize the codebase inherited from BoxBilling whi
 
 Module names start with a capital letter:
 
-✅ **Valid:** `Example`, `Mynewmodule`, `Servicehosting`
-❌ **Invalid:** `example`, `MyNewModule`, `servicehosting`
+- ✅ **Valid:** `Example`, `Mynewmodule`, `Servicehosting`
+- ❌ **Invalid:** `example`, `MyNewModule`, `servicehosting`
 
 See the [file structure docs](/developing-fossbilling/file-structure#modules) for the complete layout.
 
@@ -32,11 +32,13 @@ The best way to learn is by example. Our [example module](https://github.com/FOS
 - Admin and client area templates
 - Email templates
 - API routes
-- Using the DI container
+- Using the dependency injection container
 - Routes with variables (`/example/user/:id`)
 - Translations
-- Database interaction
+- Interacting with the database
 - Event hooks
+
+For template-specific helpers, see [Twig Filters & Functions](/developing-fossbilling/twig-filters/). For browser-side API forms and links, see the [JavaScript API Wrapper](/developing-fossbilling/javascript/).
 
 ## Running Scheduled Tasks
 
@@ -48,6 +50,8 @@ public static function onBeforeAdminCronRun(\Box_Event $event): void
     error_log('Cron was called!');
 }
 ```
+
+See [Event Hooks](/developing-fossbilling/event-hooks/) for the full list of hook names.
 
 ## Module Permissions
 
@@ -91,10 +95,22 @@ if (!$staff_service->hasPermission(null, 'example', 'delete_something')) {
 }
 ```
 
+**Twig templates:**
+```twig
+{\% if has_permission('example', 'delete_something') %}
+    <button type="button">{{ 'Delete something'|trans }}</button>
+{\% endif %}
+```
+
+Remove the backslashes when using this in your actual template.
+
+Use the `has_permission(module, permission = null)` Twig function in admin templates to check whether the logged-in staff member has access to a module or module permission. Omit the second argument to check module access only, for example `has_permission('example')`. The function returns `false` when no admin is logged in or the permission check fails.
+
 Key points:
 - Pass `null` to check the currently logged-in staff member
 - Use your module ID as the second parameter
 - Permission keys are module-specific (no naming conflicts)
+- Use `has_permission` to conditionally render admin UI, but keep enforcing permissions in PHP/API handlers
 
 ## Getting Started
 
