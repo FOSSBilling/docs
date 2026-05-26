@@ -80,28 +80,12 @@ export default defineConfig({
       sidebar: [
         {
           label: 'Introduction',
-          link: '/',
+          slug: '',
         },
         {
           label: 'Getting Started',
           items: [
-            {
-              label: 'Overview',
-              link: '/getting-started/',
-            },
-            {
-              label: 'Requirements',
-              link: '/getting-started/requirements/',
-            },
-            {
-              label: 'Standard Installation',
-              link: '/getting-started/installation/',
-            },
-            { label: 'Docker Installation', link: '/getting-started/docker/' },
-            {
-              label: 'Building from Source',
-              link: '/getting-started/building/',
-            },
+            { autogenerate: { directory: 'getting-started' } },
           ],
         },
         {
@@ -109,75 +93,44 @@ export default defineConfig({
           items: [
             {
               label: 'Overview',
-              link: '/admin-guide/',
+              slug: 'admin-guide',
             },
             {
               label: 'Configuration',
-              link: '/admin-guide/config/',
+              slug: 'admin-guide/config',
             },
             {
               label: 'Company Information',
-              link: '/admin-guide/company/',
+              slug: 'admin-guide/company',
             },
             {
               label: 'Email Templates',
-              link: '/admin-guide/email-templates/',
+              slug: 'admin-guide/email-templates',
             },
             {
               label: 'Localization',
-              link: '/admin-guide/localization/',
+              slug: 'admin-guide/localization',
             },
             {
               label: 'Invoice PDFs',
-              link: '/admin-guide/invoice-pdf/',
+              slug: 'admin-guide/invoice-pdf',
             },
             {
               label: 'Custom Payment Gateway',
-              link: '/admin-guide/custom-payment-gateway/',
+              slug: 'admin-guide/custom-payment-gateway',
             },
             {
               label: 'Product Types',
+              collapsed: true,
               items: [
-                { label: 'Overview', link: '/admin-guide/product-types/' },
-                {
-                  label: 'Hosting',
-                  link: '/admin-guide/product-types/hosting/',
-                },
-                {
-                  label: 'Domains',
-                  link: '/admin-guide/product-types/domains/',
-                },
-                {
-                  label: 'Downloadable Products',
-                  link: '/admin-guide/product-types/downloadable/',
-                },
-                {
-                  label: 'Licenses',
-                  link: '/admin-guide/product-types/license/',
-                },
-                {
-                  label: 'API Keys',
-                  link: '/admin-guide/product-types/apikeys/',
-                },
+                { autogenerate: { directory: 'admin-guide/product-types' } },
               ],
             },
             {
               label: 'Server Managers',
+              collapsed: true,
               items: [
-                { label: 'Overview', link: '/admin-guide/server-managers/' },
-                {
-                  label: 'WHM/cPanel',
-                  link: '/admin-guide/server-managers/whm/',
-                },
-                {
-                  label: 'HestiaCP',
-                  link: '/admin-guide/server-managers/hestiacp/',
-                },
-                { label: 'CWP', link: '/admin-guide/server-managers/cwp/' },
-                {
-                  label: 'Other Server Managers',
-                  link: '/admin-guide/server-managers/others/',
-                },
+                { autogenerate: { directory: 'admin-guide/server-managers' } },
               ],
             },
           ],
@@ -185,36 +138,13 @@ export default defineConfig({
         {
           label: 'Maintenance',
           items: [
-            {
-              label: 'Overview',
-              link: '/maintenance/',
-            },
-            {
-              label: 'Updating',
-              link: '/maintenance/updating/',
-            },
-            {
-              label: 'Manual Password Reset',
-              link: '/maintenance/admin-manual-reset/',
-            },
-            { label: 'Troubleshooting', link: '/maintenance/troubleshooting/' },
-            { label: 'Error Reporting', link: '/maintenance/error-reporting/' },
-            { label: 'Changelog', link: '/maintenance/changelog/' },
+            { autogenerate: { directory: 'maintenance' } },
           ],
         },
         {
           label: 'Security',
           items: [
-            {
-              label: 'Overview',
-              link: '/security/',
-            },
-            {
-              label: 'Securing FOSSBilling',
-              link: '/security/securing-fossbilling/',
-            },
-            { label: 'Best Practices', link: '/security/best-practices/' },
-            { label: 'Reporting a Vulnerability', link: '/security/report/' },
+            { autogenerate: { directory: 'security' } },
           ],
         },
         {
@@ -222,54 +152,40 @@ export default defineConfig({
           items: [
             {
               label: 'Overview',
-              link: '/extensions-and-development/',
+              slug: 'extensions-and-development',
             },
             {
               label: 'Extensions',
-              link: '/extensions-and-development/extensions/',
+              slug: 'extensions-and-development/extensions',
             },
             {
               label: 'API Reference',
-              link: '/extensions-and-development/api/',
+              slug: 'extensions-and-development/api',
             },
             {
               label: 'JavaScript Wrapper',
-              link: '/extensions-and-development/javascript/',
+              slug: 'extensions-and-development/javascript',
             },
             {
               label: 'Event Hooks',
-              link: '/extensions-and-development/event-hooks/',
+              slug: 'extensions-and-development/event-hooks',
             },
             {
               label: 'Twig Filters & Functions',
-              link: '/extensions-and-development/twig-filters/',
+              slug: 'extensions-and-development/twig-filters',
             },
             {
               label: 'File Structure',
-              link: '/extensions-and-development/file-structure/',
+              slug: 'extensions-and-development/file-structure',
             },
             {
               label: 'Guides',
+              collapsed: true,
               items: [
                 {
-                  label: 'Creating a Module',
-                  link: '/extensions-and-development/guides/creating-a-module/',
-                },
-                {
-                  label: 'Creating a Payment Gateway',
-                  link: '/extensions-and-development/guides/creating-a-payment-gateway/',
-                },
-                {
-                  label: 'Creating a Registrar Integration',
-                  link: '/extensions-and-development/guides/creating-a-registrar-integration/',
-                },
-                {
-                  label: 'Creating a Server Manager',
-                  link: '/extensions-and-development/guides/creating-a-server-manager/',
-                },
-                {
-                  label: 'Creating a Theme',
-                  link: '/extensions-and-development/guides/creating-a-theme/',
+                  autogenerate: {
+                    directory: 'extensions-and-development/guides',
+                  }
                 },
               ],
             },
@@ -278,9 +194,7 @@ export default defineConfig({
         {
           label: 'Support',
           items: [
-            { label: 'Overview', link: '/support/' },
-            { label: 'Features & Functionality', link: '/support/features/' },
-            { label: 'Frequently Asked Questions', link: '/support/faq/' },
+            { autogenerate: { directory: 'support' } },
           ],
         },
       ],
