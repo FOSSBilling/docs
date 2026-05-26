@@ -1,0 +1,75 @@
+---
+title: Frequently Asked Questions
+description: Answers to common questions about FOSSBilling, support, features, production use, and contributing.
+---
+
+## Is FOSSBilling stable?
+
+FOSSBilling is actively developed and still moving toward a 1.0 release. It is already usable, but you should treat production deployments with the same care you would apply to any billing system: keep backups, test updates in staging, and avoid running unreleased code unless you understand the risk.
+
+Use the latest stable release from the [FOSSBilling downloads page](https://fossbilling.org/downloads) or [GitHub releases](https://github.com/FOSSBilling/FOSSBilling/releases). You can follow longer-term project progress on the [GitHub roadmap](https://github.com/orgs/FOSSBilling/projects/2/views/8).
+
+## When will FOSSBilling support a specific feature?
+
+FOSSBilling cannot include every possible billing, hosting, or automation feature in core. The current focus is keeping the basics stable, secure, and maintainable.
+
+If the feature you need is not available in core, check [Features & Functionality](/support/features/) and search the [existing feature requests](https://github.com/FOSSBilling/FOSSBilling/issues?q=is%3Aopen+is%3Aissue+label%3A%22feature+request%22). FOSSBilling is designed to be extended, so some features may be better handled by modules, themes, server managers, payment gateways, or registrar integrations.
+
+## Does FOSSBilling work with Pterodactyl?
+
+FOSSBilling does not provide an official Pterodactyl integration, and the core project does not currently plan to build or maintain one.
+
+The community is free to build and maintain an integration. See [Other Server Managers](/admin-guide/server-managers/others/) for the current project stance and related server manager guidance.
+
+## Do I need to pay for FOSSBilling?
+
+No. The core FOSSBilling software is free and open source.
+
+Third parties may build commercial extensions, themes, or integrations, but the core project remains free to use, study, modify, and redistribute under its license.
+
+## How can I contribute to FOSSBilling?
+
+FOSSBilling depends on community involvement. You can contribute code, improve documentation, test releases, report issues, help other users, translate strings, or take part in feature discussions.
+
+Start with the [contributing guide](https://github.com/FOSSBilling/FOSSBilling/blob/main/CONTRIBUTING.md). If you want to work on extensions or integrations, see [Extensions & Development](/extensions-and-development/).
+
+## How can I sponsor or donate to FOSSBilling?
+
+You can support the project through [GitHub Sponsors](https://github.com/sponsors/FOSSBilling) or [Open Collective](https://opencollective.com/fossbilling).
+
+Funds collected through GitHub Sponsors are regularly paid into Open Collective so project finances stay centralized and transparent.
+
+## What is donated money used for?
+
+Donations help cover tools, services, infrastructure, and other costs that support the project. Most hosting and project services are provided for free or donated, so spending is usually focused on resources that directly help development and maintenance.
+
+Funds may also be used to pay contributors for specific project work when needed. Open Collective records project expenses publicly.
+
+## I installed FOSSBilling and it does not work. What should I do?
+
+Start with [Troubleshooting](/maintenance/troubleshooting/). Many installation problems are caused by web server configuration, file permissions, PHP extensions, or rewrite rules.
+
+If you still need help, search the [Discord community](https://fossbilling.org/discord) before asking a new question. Include your FOSSBilling version, PHP version, web server, database, relevant logs, and the steps needed to reproduce the problem.
+
+If you believe the problem is a FOSSBilling bug, open an issue on [GitHub](https://github.com/FOSSBilling/FOSSBilling/issues) with enough detail for someone else to reproduce it.
+
+## Where can I find error logs?
+
+FOSSBilling writes logs under the `data/log` directory inside the installation directory.
+
+The main PHP error log is usually:
+
+```text
+data/log/php_error.log
+```
+
+FOSSBilling also creates separate log directories for specific channels. These logs may include errors, warnings, general information, and alerts. Logs are rotated automatically.
+
+## Does FOSSBilling work in an IPv6-only environment?
+
+Somewhat, but not every external service used by FOSSBilling or its ecosystem fully supports IPv6.
+
+- Automatic updates depend on GitHub releases for downloads, and GitHub does not fully support IPv6-only access for all required release assets.
+- Error reporting uses Sentry, which may not be reachable from every IPv6-only environment.
+
+If you run IPv6-only infrastructure, test updates, extension installation, and error reporting before relying on them in production.

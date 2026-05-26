@@ -5,7 +5,7 @@ description: Common installation, update, permission, and cron problems in FOSSB
 
 ## Common Problems and Solutions
 
-When troubleshooting, you will usually need the FOSSBilling log files. Their location is covered in [Support](/support#where-are-the-logs).
+When troubleshooting, you will usually need the FOSSBilling log files. Their location is covered in [Support](/support/faq/#where-can-i-find-error-logs).
 
 ## HTTP Error 404 / Can only access client dashboard
 
@@ -101,7 +101,7 @@ If FOSSBilling starts failing after an update, work through these steps:
 If you see a warning like this in the FOSSBilling dashboard, cron has not run for at least 15 minutes. That is a real problem because many core tasks depend on it.
 ![FOSSBilling warning about cron execution](/img/guides/install/cron-warning.png)
 
-1. Check the FOSSBilling [logs](/support#where-are-the-logs) for any PHP or application errors.
+1. Check the FOSSBilling [logs](/support/faq/#where-can-i-find-error-logs) for any PHP or application errors.
 2. Confirm that cron is configured to run every five minutes. FOSSBilling shows a crontab example with the correct path for your installation under the cron settings (`/admin/extension/settings/cron`).
 3. If you're using a control panel with multiple users, log into your user account via the CLI and enter `php -v` to see what the default PHP version is under your account. If it's less than FOSSBilling's minimum PHP version, follow the below steps to correct it.
 

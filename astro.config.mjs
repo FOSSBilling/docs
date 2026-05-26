@@ -6,6 +6,55 @@ import markdoc from '@astrojs/markdoc';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://docs.fossbilling.org',
+  redirects: {
+    // fossbilling.org docs redirects
+    '/maintaining-fossbilling/updating': '/maintenance/updating/',
+    '/maintaining-fossbilling/admin-manual-reset':
+      '/maintenance/admin-manual-reset/',
+    '/changelog': '/maintenance/changelog/',
+    '/customizing-fossbilling/config': '/admin-guide/config/',
+    '/customizing-fossbilling/localization': '/admin-guide/localization/',
+    '/customizing-fossbilling/company': '/admin-guide/company/',
+    '/customizing-fossbilling/invoice-pdf': '/admin-guide/invoice-pdf/',
+    '/customizing-fossbilling/email-templates': '/admin-guide/email-templates/',
+    '/developing-fossbilling/api': '/extensions-and-development/api/',
+    '/developing-fossbilling/guides/creating-a-module':
+      '/extensions-and-development/guides/creating-a-module/',
+    '/developing-fossbilling/guides/creating-a-payment-gateway':
+      '/extensions-and-development/guides/creating-a-payment-gateway/',
+    '/developing-fossbilling/guides/custom-gateway':
+      '/admin-guide/custom-payment-gateway/',
+    '/developing-fossbilling/guides/creating-a-registrar-integration':
+      '/extensions-and-development/guides/creating-a-registrar-integration/',
+    '/developing-fossbilling/guides/creating-a-server-manager':
+      '/extensions-and-development/guides/creating-a-server-manager/',
+    '/developing-fossbilling/guides/creating-a-theme':
+      '/extensions-and-development/guides/creating-a-theme/',
+    '/developing-fossbilling/code-of-conduct':
+      'https://github.com/FOSSBilling/FOSSBilling/blob/main/CODE_OF_CONDUCT.md',
+    '/developing-fossbilling/event-hooks':
+      '/extensions-and-development/event-hooks/',
+    '/developing-fossbilling/file-structure':
+      '/extensions-and-development/file-structure/',
+    '/developing-fossbilling/javascript':
+      '/extensions-and-development/javascript/',
+    '/developing-fossbilling/twig-filters':
+      '/extensions-and-development/twig-filters/',
+    '/extensions': '/extensions-and-development/extensions/',
+    '/faq': '/support/faq/',
+    '/faq/error-reporting': '/maintenance/error-reporting/',
+    '/faq/features': '/support/features/',
+    '/product-types/apikeys': '/admin-guide/product-types/apikeys/',
+    '/product-types/domains': '/admin-guide/product-types/domains/',
+    '/product-types/downloadable': '/admin-guide/product-types/downloadable/',
+    '/product-types/hosting': '/admin-guide/product-types/hosting/',
+    '/product-types/license': '/admin-guide/product-types/license/',
+    '/troubleshooting': '/maintenance/troubleshooting/',
+    '/server-managers/cwp': '/admin-guide/server-managers/cwp/',
+    '/server-managers/hestiacp': '/admin-guide/server-managers/hestiacp/',
+    '/server-managers/others': '/admin-guide/server-managers/others/',
+    '/server-managers/whm': '/admin-guide/server-managers/whm/',
+  },
   integrations: [
     starlight({
       title: 'FOSSBilling',
@@ -42,16 +91,16 @@ export default defineConfig({
             },
             {
               label: 'Requirements',
-              link: '/getting-started/requirements',
+              link: '/getting-started/requirements/',
             },
             {
               label: 'Standard Installation',
-              link: '/getting-started/installation',
+              link: '/getting-started/installation/',
             },
-            { label: 'Docker Installation', link: '/getting-started/docker' },
+            { label: 'Docker Installation', link: '/getting-started/docker/' },
             {
               label: 'Building from Source',
-              link: '/getting-started/building',
+              link: '/getting-started/building/',
             },
           ],
         },
@@ -64,23 +113,27 @@ export default defineConfig({
             },
             {
               label: 'Configuration',
-              link: '/admin-guide/config',
+              link: '/admin-guide/config/',
             },
             {
               label: 'Company Information',
-              link: '/admin-guide/company',
+              link: '/admin-guide/company/',
             },
             {
               label: 'Email Templates',
-              link: '/admin-guide/email-templates',
+              link: '/admin-guide/email-templates/',
             },
             {
               label: 'Localization',
-              link: '/admin-guide/localization',
+              link: '/admin-guide/localization/',
             },
             {
               label: 'Invoice PDFs',
-              link: '/admin-guide/invoice-pdf',
+              link: '/admin-guide/invoice-pdf/',
+            },
+            {
+              label: 'Custom Payment Gateway',
+              link: '/admin-guide/custom-payment-gateway/',
             },
             {
               label: 'Product Types',
@@ -144,9 +197,9 @@ export default defineConfig({
               label: 'Manual Password Reset',
               link: '/maintenance/admin-manual-reset/',
             },
-            { label: 'Troubleshooting', link: '/maintenance/troubleshooting' },
-            { label: 'Error Reporting', link: '/support/error-reporting/' },
-            { label: 'Changelog', link: '/maintenance/changelog' },
+            { label: 'Troubleshooting', link: '/maintenance/troubleshooting/' },
+            { label: 'Error Reporting', link: '/maintenance/error-reporting/' },
+            { label: 'Changelog', link: '/maintenance/changelog/' },
           ],
         },
         {
@@ -173,7 +226,7 @@ export default defineConfig({
             },
             {
               label: 'Extensions',
-              link: '/extensions-and-development/extensions',
+              link: '/extensions-and-development/extensions/',
             },
             {
               label: 'API Reference',
@@ -226,8 +279,8 @@ export default defineConfig({
           label: 'Support',
           items: [
             { label: 'Overview', link: '/support/' },
-            { label: 'Error Reporting', link: '/support/error-reporting/' },
             { label: 'Features & Functionality', link: '/support/features/' },
+            { label: 'Frequently Asked Questions', link: '/support/faq/' },
           ],
         },
       ],
