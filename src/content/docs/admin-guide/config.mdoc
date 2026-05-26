@@ -129,7 +129,10 @@ Temporarily disable public access. Use `allowed_urls` for endpoints that must st
 
 ### API Settings
 
-Control API access. Use `require_referrer_header` to lock browser-originated requests to your install URL, `allowed_ips` for explicit allowlists, and `CSRFPrevention` for cross-site request forgery protection.
+Control API access.
+
+- Use `require_referrer_header` to lock browser-originated requests to your install URL, and `allowed_ips` for explicit allowlists.
+- Keep `CSRFPrevention` enabled. The bundled [JavaScript API wrapper](/extensions-and-development/javascript/) handles CSRF tokens for session-authenticated browser calls.
 
 ```php
 'api' => [
@@ -139,27 +142,22 @@ Control API access. Use `require_referrer_header` to lock browser-originated req
 ],
 ```
 
-{% aside type="caution" %}
-Disabling `CSRFPrevention` opens your instance to a known vulnerability. Only disable it for backward compatibility if absolutely necessary.
-{% /aside %}
-
 ### Rate Limiter
+FOSSBilling includes a built-in rate limiter which depends on Symfony's [rate limiter](https://symfony.com/doc/current/rate_limiter.html) component.
 
-Rate limiting is now configured under the `rate_limiter` block (replaces the old `api.rate_span`, `api.rate_limit`, `api.throttle_delay`, `api.rate_span_login`, `api.rate_limit_login`, and `api.rate_limit_whitelist` settings):
+`policies` is an empty array by default and inherits sensible defaults from [`FOSSBilling\Security\RateLimiter::getDefaultConfig()`](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/library/FOSSBilling/Security/RateLimiter.php#L37).
+
+Any policy you explicitly set in the `policies` array will override the default one. We have included an example below. You can refer to Symfony's documentation on creating rate limiter policies.
 
 ```php
 'rate_limiter' => [
     'enabled' => true,
-    'whitelist_ips' => [],
-    'policies' => [],
+    'whitelist_ips' => [], // Array of whitelisted IP addresses and CIDRs
+    'policies' => [
+        'client_signup' => ['policy' => 'fixed_window', 'limit' => 5, 'interval' => '1 hour'],
+    ],
 ],
 ```
-
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `rate_limiter.enabled` | `true` | Enable or disable the rate limiter entirely |
-| `rate_limiter.whitelist_ips` | `[]` | IPs that bypass rate limiting |
-| `rate_limiter.policies` | `[]` | Custom rate-limit policies (advanced). Leave empty for sensible defaults covering login and API endpoints. |
 
 ## Environment Variables
 

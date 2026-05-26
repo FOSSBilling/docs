@@ -4,7 +4,7 @@ description: Complete reference for the FOSSBilling REST API.
 ---
 
 {% aside type="note" %}
-Building a theme or module? Use the [JavaScript wrapper](/extensions-and-development/javascript/) instead of raw API calls when possible. It handles common boilerplate and tracks platform changes more gracefully.
+Building a theme or module? Use the [JavaScript wrapper](/extensions-and-development/javascript/) and Twig API helpers instead of raw browser calls when possible. They handle CSRF tokens and common response behavior for you.
 {% /aside %}
 
 FOSSBilling provides a REST API for integrating external systems and building custom functionality on top of the platform.
@@ -25,8 +25,8 @@ Three main entrypoints:
 
 ## Request Format
 
-- **Method:** All requests use POST
-- **Format:** JSON for both request and response
+- **Method:** Core API routes accept GET and POST. Use POST for requests with a JSON body or form data.
+- **Format:** JSON responses. POST requests may send JSON or form data.
 - **Naming:** Lowercase with underscores (`change_password`)
 - **Nulls:** Blank fields are included as `null`, not omitted
 - **Dates:** [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format
@@ -43,6 +43,44 @@ Authorization: Basic base64_encode('admin:YOUR_API_KEY')
 ```
 
 Most HTTP clients (curl, Postman) handle the encoding automatically.
+
+Browser requests from an active client or admin session use the session cookie instead. Those requests must include a valid CSRF token.
+
+## CSRF Tokens
+
+CSRF protection applies to session-authenticated `client` and `admin` browser API calls. It does not apply to `guest` calls or external API calls authenticated with API tokens.
+
+For browser calls, FOSSBilling accepts the token in any of these places:
+
+- `CSRFToken` in the JSON body
+- `CSRFToken` in form data or query parameters
+- `X-CSRF-Token` request header
+
+The token must match the `csrf_token` cookie or the session token. The bundled [JavaScript API wrapper](/developing-fossbilling/javascript/) reads the cookie and adds the token automatically.
+
+Use Twig helpers for theme and module templates. This way, you don't need to manually attach CSRF tokens to the requests:
+
+```twig
+<form action="{{ 'profile/update'|api_url }}" {{ fb_api_form({ message: 'Saved'|trans }) }}>
+  <input type="text" name="first_name">
+  <button type="submit">{{ 'Save'|trans }}</button>
+</form>
+```
+
+For raw `fetch()` requests, send the token yourself:
+
+```javascript
+const token = document.cookie.match(/csrf_token=([^;]*)/)?.[1] || '';
+
+fetch('/api/client/profile/update', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-CSRF-Token': decodeURIComponent(token),
+  },
+  body: JSON.stringify({ first_name: 'Jane' }),
+});
+```
 
 ## Example Requests
 

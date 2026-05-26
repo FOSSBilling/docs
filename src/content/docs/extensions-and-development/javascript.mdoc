@@ -4,7 +4,7 @@ description: Use the JavaScript wrapper for easier, more reliable API calls from
 ---
 
 {% aside type="note" %}
-If you're building themes or modules, use this wrapper instead of making raw API calls. It handles authentication, CSRF tokens, and other repetitive details for you.
+If you're building themes or modules, use this wrapper instead of making raw browser API calls. It handles CSRF tokens, response parsing, and other repetitive details for you.
 {% /aside %}
 
 ## Why Use the Wrapper?
@@ -16,16 +16,35 @@ If you're building themes or modules, use this wrapper instead of making raw API
 
 ## Importing the Wrapper
 
-Add this to your template's `<head>`:
+The bundled admin and Huraga themes already load the wrapper. For a custom theme, add this to your base layout before your theme JavaScript:
 
-```html
-<meta name="csrf-token" content="{{ CSRFToken }}">
-{{ "Api/API.js" | library_url | script_tag }}
+```twig
+{{ "Api/API.js"|library_url|script_tag }}
+<script src="{{ 'build/js/mytheme.js'|asset_url }}"></script>
 ```
 
-What this does:
-1. Creates a meta tag with the CSRF token (the wrapper reads this automatically)
-2. Loads the API wrapper, rendered as a `<script>` tag with cache-busting
+The `script_tag` filter adds a cache-busting hash and prevents the same script from being rendered more than once.
+
+If your custom theme does not reuse the bundled theme JavaScript, initialize automatic API forms and links after the DOM loads:
+
+```javascript
+document.addEventListener('DOMContentLoaded', function() {
+  API._apiForm();
+  API._apiLink();
+});
+```
+
+## CSRF Tokens
+
+FOSSBilling uses a double-submit style token for browser API calls. Browser-rendered Twig pages expose `CSRFToken` and set a `csrf_token` cookie.
+
+| Call type | CSRF requirement |
+|-----------|------------------|
+| `guest` API calls | Not required. |
+| `client` or `admin` API calls with the browser session | Required. |
+| External `client` or `admin` API calls using an API key | Not required. |
+
+The JavaScript wrapper reads the `csrf_token` cookie and sends it automatically where applicable. You don't need to manually attach the token to form data when using the wrapper.
 
 ## Making Requests
 
@@ -38,11 +57,11 @@ API.{role}.{method}(endpoint, params, onSuccess, onError, showSpinner)
 | Parameter | Description |
 |-----------|-------------|
 | `role` | `admin`, `client`, or `guest` |
-| `method` | `get` or `post` |
+| `method` | Use `get` or `post` for core FOSSBilling API routes. |
 | `endpoint` | The API endpoint (e.g., `"system/version"`) |
 | `params` | Request parameters (object) |
 | `onSuccess` | Callback function for successful responses |
-| `onError` | Callback function for errors |
+| `onError` | Callback function for errors. Receives `{ message, code }`. |
 | `showSpinner` | Boolean to show/hide the loading spinner (optional, default: `true`) |
 
 ## Examples
@@ -95,10 +114,9 @@ API.admin.post(
 
 ## Loading Spinner
 
-The wrapper automatically shows a spinner for requests taking longer than 250ms. To use it:
+The wrapper automatically creates a loader element for requests when the spinner is enabled. To use it, make sure your theme has styling for `.spinner-border`.
 
-1. Include a `.spinner-border` class in your CSS
-2. The wrapper creates and removes the spinner element automatically
+The wrapper creates and removes the spinner element automatically:
 
 ```css
 .spinner-border {
@@ -111,9 +129,66 @@ The wrapper automatically shows a spinner for requests taking longer than 250ms.
 
 ### Disabling the Spinner
 
+
 Either:
 - Don't define a `.spinner-border` class in your CSS
-- Pass `false` as the fifth parameter to the API call
+- Pass `false` as the fifth parameter to the API call like below:
+
+```javascript
+API.admin.post('client/get_list', {}, onSuccess, onError, false);
+```
+
+## API Forms and Links
+
+The Twig helpers `fb_api_form()` and `fb_api_link()` render a `data-fb-api` attribute that the wrapper uses for automatic form and link handling.
+
+Use `api_url` for the target endpoint:
+
+```twig
+<form action="{{ 'profile/update'|api_url }}" {{ fb_api_form({ message: 'Profile updated'|trans }) }}>
+  <input type="text" name="first_name" value="{{ profile.first_name }}">
+  <button type="submit">{{ 'Save'|trans }}</button>
+</form>
+```
+
+`fb_api_form()` adds `method="post"` and `data-fb-api`. The wrapper serializes the form, adds the CSRF token automatically for session-authenticated calls, disables enabled buttons while the request is running, and shows errors with `FOSSBilling.message()`.
+
+For API links:
+
+```twig
+<a href="{{ 'client/delete'|api_url(query: { id: client.id }, role: 'admin') }}"
+   {{ fb_api_link({
+     modal: { type: 'confirm', title: 'Are you sure?'|trans },
+     redirect: 'client'|url
+   }) }}>
+  {{ 'Delete'|trans }}
+</a>
+```
+
+The wrapper intercepts links with `data-fb-api`, sends a `GET` request to the link `href`, and then handles the configured follow-up action.
+
+Supported `data-fb-api` options:
+
+| Option | Applies to | Description |
+|--------|------------|-------------|
+| `message` | Forms and links | Show a success toast after the request. |
+| `redirect` | Forms and links | Redirect to the given URL after success. |
+| `reload` | Forms and links | Pass `true` to reload the current page after success. |
+| `callback` | Forms and links | Name of a global `window` function to call with the API result. |
+| `params` | Links | Extra request parameters merged into the link request. |
+| `modal` | Links | Show a confirmation, danger, or prompt modal before the request. |
+
+Prompt modals require a `key`; the entered value is sent under that request parameter name:
+
+```twig
+<a href="{{ 'example/update_name'|api_url }}"
+   {{ fb_api_link({
+     modal: { type: 'prompt', title: 'New name'|trans, label: 'Name'|trans, key: 'name' },
+     reload: true
+   }) }}>
+  {{ 'Rename'|trans }}
+</a>
+```
 
 ## Handling Responses
 
@@ -123,7 +198,7 @@ The success callback receives the decoded API response object:
 
 ```javascript
 function(response) {
-  console.log(response.result);
+  console.log(response);
 }
 ```
 
@@ -133,8 +208,29 @@ The error callback receives the API error payload:
 
 ```javascript
 function(error) {
-  console.error(error.message);
+  console.error(error.message, error.code);
 }
+```
+
+## Manual Requests
+
+Use manual `fetch()` only when the wrapper does not fit. For session-authenticated `admin` or `client` calls, include the CSRF token in the JSON body, query string, form data, or `X-CSRF-Token` header:
+
+```javascript
+function getCsrfToken() {
+  const match = document.cookie.match(/csrf_token=([^;]*)/);
+  return match ? decodeURIComponent(match[1]) : '';
+}
+
+fetch('{{ "profile/update"|api_url }}', {
+  method: 'POST',
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    'X-CSRF-Token': getCsrfToken(),
+  },
+  body: JSON.stringify({ first_name: 'Jane' }),
+});
 ```
 
 ## Complete Example
@@ -142,7 +238,7 @@ function(error) {
 ```javascript
 function loadProfile() {
   API.client.get(
-    "client/profile",
+    "profile/get",
     {},
     function(profile) {
       document.getElementById('name').textContent = profile.first_name + ' ' + profile.last_name;

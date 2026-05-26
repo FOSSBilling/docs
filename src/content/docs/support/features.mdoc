@@ -23,10 +23,7 @@ The `Antispam` module (replaces the old `Spamchecker` module in 0.8.0) provides 
 | Feature | Status | Notes |
 |---------|--------|-------|
 | IP blocking | ✅ | Block problematic IPs |
-| reCAPTCHA | ✅ | v2 supported |
-| Cloudflare Turnstile | ✅ | Supported via Antispam module |
-| hCaptcha | ✅ | Supported via Antispam module |
-| Honeypot fields | ✅ | Invisible anti-bot fields (new in 0.8.0) |
+| CAPTCHA | ✅ | reCaptcha v2, Cloudflare Turnstile and hCaptcha supported. |
 | Stop Forum Spam | ✅ | Community-driven spam prevention |
 | Disposable email blocking | ✅ | Uses [FakeFilter](https://fakefilter.net) |
 | MFA/2FA | 🚧 | Planned before 1.0 release |
@@ -34,7 +31,7 @@ The `Antispam` module (replaces the old `Spamchecker` module in 0.8.0) provides 
 | Session protection | ✅ | Hijacking prevention and session limits |
 | IP restrictions for staff | ✅ | Restrict admin access by IP (note: incorrect configuration may lock you out) |
 | Security alerts | ✅ | Checks our [Central Alerts API](https://fossbilling.org/api/central-alerts/list) for vulnerabilities |
-| CSRF protection | ✅ | Can be disabled in config if needed |
+| CSRF protection | ✅ | Enabled by default. Browser API calls are handled by the [bundled wrapper](/developing-fossbilling/javascript/) |
 | Staff permissions | ✅ | Role-based access control |
 | AbuseIPDB | 🚧 | Planned |
 

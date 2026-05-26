@@ -5,8 +5,10 @@ description: Hook into FOSSBilling events to run custom code when things happen.
 
 Event hooks let your module or theme respond to actions in FOSSBilling — like when a client signs up, an order is placed, or cron runs.
 
+If you are building the module that will receive these hooks, start with [Creating a Module](/developing-fossbilling/guides/creating-a-module/).
+
 {% aside type="note" %}
-This reference lists all available hooks. For practical examples, see [how the example module implements hooks](https://github.com/FOSSBilling/example-module/blob/main/src/Service.php).
+This reference lists hooks fired by FOSSBilling core modules. Optional or community modules can fire additional hooks. For practical examples, see [how the example module implements hooks](https://github.com/FOSSBilling/example-module/blob/main/src/Service.php).
 {% /aside %}
 
 ## How Hooks Work
@@ -17,6 +19,8 @@ Hook names follow this pattern:
 - `onBefore{Action}` — Runs **before** the action
 - `onAfter{Action}` — Runs **after** the action
 - `onEvent{Description}` — Fires when a specific event occurs
+
+The Hook module also supports `onEveryEvent`, a global listener that is connected to every fired event.
 
 ## Admin Hooks
 
@@ -37,6 +41,8 @@ Hook names follow this pattern:
 
 ### Clients
 
+- `onBeforeAdminClientCreate`
+- `onAfterAdminClientCreate`
 - `onBeforeAdminCreateClient`
 - `onAfterAdminCreateClient`
 - `onBeforeAdminClientDelete`
@@ -84,6 +90,7 @@ Hook names follow this pattern:
 - `onAfterAdminInvoiceReminderSent`
 - `onBeforeAdminInvoiceUpdate`
 - `onAfterAdminInvoiceUpdate`
+- `onAfterAdminInvoicePaymentReceived`
 - `onBeforeAdminGenerateRenewalInvoice`
 - `onAfterAdminGenerateRenewalInvoice`
 - `onAfterAdminInvoicePaymentReceived`
@@ -92,12 +99,27 @@ Hook names follow this pattern:
 - `onEventBeforeInvoiceIsDue`
 - `onEventAfterInvoiceIsDue`
 
+### Subscriptions
+
+- `onAfterAdminSubscriptionCreate`
+- `onAfterAdminSubscriptionDelete`
+
+### Transactions
+
+- `onBeforeAdminTransactionCreate`
+- `onAfterAdminTransactionCreate`
+- `onBeforeAdminTransactionProcess`
+- `onAfterAdminTransactionProcess`
+- `onBeforeAdminTransactionUpdate`
+- `onAfterAdminTransactionUpdate`
+
 ### Tickets
 
 - `onBeforeAdminOpenTicket`
 - `onAfterAdminOpenTicket`
 - `onAfterAdminCloseTicket`
 - `onAfterAdminReplyTicket`
+- `onBeforeAdminPublicTicketOpen`
 - `onAfterAdminPublicTicketOpen`
 - `onAfterAdminPublicTicketClose`
 - `onAfterAdminPublicTicketReply`
@@ -129,17 +151,14 @@ Hook names follow this pattern:
 - `onAfterAdminDeleteCurrency`
 - `onBeforeAdminSettingsUpdate`
 - `onAfterAdminSettingsUpdate`
-- `onBeforeAdminTransactionCreate`
-- `onAfterAdminTransactionCreate`
-- `onBeforeAdminTransactionProcess`
-- `onAfterAdminTransactionProcess`
-- `onBeforeAdminTransactionUpdate`
-- `onAfterAdminTransactionUpdate`
 - `onAfterAdminNotificationAdd`
 - `onBeforeAdminUpdateCore`
 - `onAfterAdminUpdateCore`
 - `onBeforeAdminManualUpdate`
 - `onAfterAdminManualUpdate`
+
+### Themes
+
 - `onBeforeThemeSettingsSave`
 
 ### Authentication
@@ -147,6 +166,8 @@ Hook names follow this pattern:
 - `onBeforeAdminLogin`
 - `onAfterAdminLogin`
 - `onEventAdminLoginFailed`
+- `onBeforePasswordResetStaff`
+- `onAfterPasswordResetStaff`
 
 ## Client Hooks
 
@@ -166,13 +187,14 @@ Hook names follow this pattern:
 - `onBeforeClientProfilePasswordReset`
 - `onAfterClientProfilePasswordReset`
 
-### Orders
+### Orders and Cart
 
-- `onAfterClientOrderCreate`
 - `onBeforeProductAddedToCart`
 - `onAfterProductAddedToCart`
+- `onBeforeClientCheckout`
+- `onAfterClientOrderCreate`
 
-### Tickets
+### Tickets and Domains
 
 - `onBeforeClientOpenTicket`
 - `onAfterClientOpenTicket`
@@ -181,18 +203,20 @@ Hook names follow this pattern:
 - `onBeforeClientChangeNameservers`
 - `onAfterClientChangeNameservers`
 
-### Invoices
-
-- `onBeforeClientCheckout`
-- `onBeforeClientInvoiceDelete`
-
 ## Guest Hooks
 
+- `onBeforeGuestPasswordResetRequest`
 - `onBeforeGuestPublicTicketOpen`
 - `onAfterGuestPublicTicketOpen`
 - `onAfterGuestPublicTicketClose`
 - `onAfterGuestPublicTicketReply`
-- `onBeforeGuestPasswordResetRequest`
+
+## Product Hooks
+
+### Service License
+
+- `onBeforeServicelicenseReset`
+- `onAfterServicelicenseReset`
 
 ## Service License Hooks
 
@@ -219,3 +243,12 @@ class Service
 ```
 
 FOSSBilling automatically discovers and calls these hooks when the events fire.
+
+## Troubleshooting Hook Discovery
+
+FOSSBilling discovers hook methods when cron jobs run. If you add a new hook handler in a module, cron must run at least once before the hook is registered.
+
+If a new hook is not being called:
+- Confirm cron is configured and running correctly.
+- During development, run cron jobs manually once after adding or renaming hook methods.
+- Make sure the hook method is public and accepts a `\Box_Event` argument.

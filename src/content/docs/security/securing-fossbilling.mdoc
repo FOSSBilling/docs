@@ -57,13 +57,15 @@ Configure reverse-proxy support so FOSSBilling correctly detects the visitor's I
 
 | Property | Default | Options | Description |
 |----------|---------|---------|-------------|
-| `CSRFPrevention` | `true` | `bool` | Enables CSRF protection. Keep this enabled unless it's causing specific issues. |
+| `CSRFPrevention` | `true` | `bool` | Enables CSRF protection for session-authenticated browser API calls. Keep this enabled unless it is causing a specific compatibility issue. |
 
 ```php
 'api' => [
     'CSRFPrevention' => true,
 ],
 ```
+
+The bundled [JavaScript API wrapper](/extensions-and-development/javascript/) sends the CSRF token automatically. External API calls authenticated with an API key do not need a CSRF token.
 
 ### Rate Limiter
 
