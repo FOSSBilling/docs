@@ -82,7 +82,9 @@ The PDF renderer does not provide top-level `client`, `company`, or `currency` v
 
 ```twig
 <div class="custom-header">
-  <img src="{{ logo_source }}" alt="{{ seller['Name']|default(seller['Company']|default('')) }}">
+  {% if logo_source %}
+  <img src="{{ logo_source }}" alt="{{ seller['Name']|default(seller['Company']|default('Company logo'|trans)) }}">
+  {% endif %}
   <h1>{{ 'Invoice'|trans }} #{{ invoice.serie_nr }}</h1>
 </div>
 ```
