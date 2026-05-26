@@ -1,0 +1,254 @@
+---
+title: Event Hooks
+description: Hook into FOSSBilling events to run custom code when things happen.
+---
+
+Event hooks let your module or theme respond to actions in FOSSBilling — like when a client signs up, an order is placed, or cron runs.
+
+If you are building the module that will receive these hooks, start with [Creating a Module](/extensions-and-development/guides/creating-a-module/).
+
+{% aside type="note" %}
+This reference lists hooks fired by FOSSBilling core modules. Optional or community modules can fire additional hooks. For practical examples, see [how the example module implements hooks](https://github.com/FOSSBilling/example-module/blob/main/src/Service.php).
+{% /aside %}
+
+## How Hooks Work
+
+FOSSBilling fires events at key moments. You can register handlers to run your code when these events fire.
+
+Hook names follow this pattern:
+- `onBefore{Action}` — Runs **before** the action
+- `onAfter{Action}` — Runs **after** the action
+- `onEvent{Description}` — Fires when a specific event occurs
+
+The Hook module also supports `onEveryEvent`, a global listener that is connected to every fired event.
+
+## Admin Hooks
+
+### Extensions
+
+- `onBeforeAdminActivateExtension`
+- `onAfterAdminActivateExtension`
+- `onBeforeAdminDeactivateExtension`
+- `onAfterAdminDeactivateExtension`
+- `onBeforeAdminExtensionConfigSave`
+- `onAfterAdminExtensionConfigSave`
+- `onBeforeAdminInstallExtension`
+- `onAfterAdminInstallExtension`
+- `onBeforeAdminUninstallExtension`
+- `onAfterAdminUninstallExtension`
+- `onBeforeAdminUpdateExtension`
+- `onAfterAdminUpdateExtension`
+
+### Clients
+
+- `onBeforeAdminClientCreate`
+- `onAfterAdminClientCreate`
+- `onBeforeAdminCreateClient`
+- `onAfterAdminCreateClient`
+- `onBeforeAdminClientDelete`
+- `onAfterAdminClientDelete`
+- `onBeforeAdminClientPasswordChange`
+- `onAfterAdminClientPasswordChange`
+- `onBeforeAdminClientUpdate`
+- `onAfterAdminClientUpdate`
+
+### Orders
+
+- `onBeforeAdminOrderActivate`
+- `onAfterAdminOrderActivate`
+- `onBeforeAdminOrderCancel`
+- `onAfterAdminOrderCancel`
+- `onBeforeAdminOrderCreate`
+- `onAfterAdminOrderCreate`
+- `onBeforeAdminOrderDelete`
+- `onAfterAdminOrderDelete`
+- `onBeforeAdminOrderRenew`
+- `onAfterAdminOrderRenew`
+- `onBeforeAdminOrderSuspend`
+- `onAfterAdminOrderSuspend`
+- `onBeforeAdminOrderUncancel`
+- `onAfterAdminOrderUncancel`
+- `onBeforeAdminOrderUnsuspend`
+- `onAfterAdminOrderUnsuspend`
+- `onBeforeAdminOrderUpdate`
+- `onAfterAdminOrderUpdate`
+- `onBeforeAdminBatchSuspendOrders`
+- `onAfterAdminBatchSuspendOrders`
+- `onBeforeAdminBatchCancelSuspendedOrders`
+- `onAfterAdminBatchCancelSuspendedOrders`
+
+### Invoices
+
+- `onBeforeAdminInvoiceApprove`
+- `onAfterAdminInvoiceApprove`
+- `onBeforeAdminInvoiceDelete`
+- `onAfterAdminInvoiceDelete`
+- `onBeforeAdminInvoiceRefund`
+- `onAfterAdminInvoiceRefund`
+- `onBeforeAdminInvoiceSendReminder`
+- `onBeforeAdminInvoiceSendReminders`
+- `onAfterAdminInvoiceReminderSent`
+- `onBeforeAdminInvoiceUpdate`
+- `onAfterAdminInvoiceUpdate`
+- `onAfterAdminInvoicePaymentReceived`
+- `onBeforeAdminGenerateRenewalInvoice`
+- `onAfterAdminGenerateRenewalInvoice`
+- `onAfterAdminInvoicePaymentReceived`
+- `onAfterAdminSubscriptionCreate`
+- `onAfterAdminSubscriptionDelete`
+- `onEventBeforeInvoiceIsDue`
+- `onEventAfterInvoiceIsDue`
+
+### Subscriptions
+
+- `onAfterAdminSubscriptionCreate`
+- `onAfterAdminSubscriptionDelete`
+
+### Transactions
+
+- `onBeforeAdminTransactionCreate`
+- `onAfterAdminTransactionCreate`
+- `onBeforeAdminTransactionProcess`
+- `onAfterAdminTransactionProcess`
+- `onBeforeAdminTransactionUpdate`
+- `onAfterAdminTransactionUpdate`
+
+### Tickets
+
+- `onBeforeAdminOpenTicket`
+- `onAfterAdminOpenTicket`
+- `onAfterAdminCloseTicket`
+- `onAfterAdminReplyTicket`
+- `onBeforeAdminPublicTicketOpen`
+- `onAfterAdminPublicTicketOpen`
+- `onAfterAdminPublicTicketClose`
+- `onAfterAdminPublicTicketReply`
+
+### Staff
+
+- `onBeforeAdminStaffCreate`
+- `onAfterAdminStaffCreate`
+- `onBeforeAdminStaffDelete`
+- `onAfterAdminStaffDelete`
+- `onBeforeAdminStaffPasswordChange`
+- `onAfterAdminStaffPasswordChange`
+- `onBeforeAdminStaffApiKeyChange`
+- `onAfterAdminStaffApiKeyChange`
+- `onBeforeAdminStaffUpdate`
+- `onAfterAdminStaffUpdate`
+- `onBeforeAdminStaffProfileUpdate`
+- `onAfterAdminStaffProfileUpdate`
+- `onBeforeAdminStaffProfilePasswordChange`
+- `onAfterAdminStaffProfilePasswordChange`
+- `onBeforePasswordResetStaff`
+- `onAfterPasswordResetStaff`
+
+### System
+
+- `onBeforeAdminCronRun`
+- `onAfterAdminCronRun`
+- `onBeforeAdminDeleteCurrency`
+- `onAfterAdminDeleteCurrency`
+- `onBeforeAdminSettingsUpdate`
+- `onAfterAdminSettingsUpdate`
+- `onAfterAdminNotificationAdd`
+- `onBeforeAdminUpdateCore`
+- `onAfterAdminUpdateCore`
+- `onBeforeAdminManualUpdate`
+- `onAfterAdminManualUpdate`
+
+### Themes
+
+- `onBeforeThemeSettingsSave`
+
+### Authentication
+
+- `onBeforeAdminLogin`
+- `onAfterAdminLogin`
+- `onEventAdminLoginFailed`
+- `onBeforePasswordResetStaff`
+- `onAfterPasswordResetStaff`
+
+## Client Hooks
+
+### Account
+
+- `onBeforeClientSignUp`
+- `onAfterClientSignUp`
+- `onBeforeClientLogin`
+- `onAfterClientLogin`
+- `onEventClientLoginFailed`
+- `onBeforeClientProfileUpdate`
+- `onAfterClientProfileUpdate`
+- `onBeforeClientUpdate`
+- `onBeforeClientProfilePasswordChange`
+- `onAfterClientProfilePasswordChange`
+- `onBeforePasswordResetClient`
+- `onBeforeClientProfilePasswordReset`
+- `onAfterClientProfilePasswordReset`
+
+### Orders and Cart
+
+- `onBeforeProductAddedToCart`
+- `onAfterProductAddedToCart`
+- `onBeforeClientCheckout`
+- `onAfterClientOrderCreate`
+
+### Tickets and Domains
+
+- `onBeforeClientOpenTicket`
+- `onAfterClientOpenTicket`
+- `onAfterClientCloseTicket`
+- `onAfterClientReplyTicket`
+- `onBeforeClientChangeNameservers`
+- `onAfterClientChangeNameservers`
+
+## Guest Hooks
+
+- `onBeforeGuestPasswordResetRequest`
+- `onBeforeGuestPublicTicketOpen`
+- `onAfterGuestPublicTicketOpen`
+- `onAfterGuestPublicTicketClose`
+- `onAfterGuestPublicTicketReply`
+
+## Product Hooks
+
+### Service License
+
+- `onBeforeServicelicenseReset`
+- `onAfterServicelicenseReset`
+
+## Service License Hooks
+
+- `onBeforeServicelicenseReset`
+- `onAfterServicelicenseReset`
+
+## Using Hooks in Your Module
+
+Define static methods in your module's `Service.php`:
+
+```php
+class Service
+{
+    public static function onAfterAdminOrderCreate(\Box_Event $event): void
+    {
+        $order = $event->getSubject();
+        error_log('New order created: ' . $order->id);
+    }
+
+    public static function onBeforeAdminCronRun(\Box_Event $event): void
+    {
+    }
+}
+```
+
+FOSSBilling automatically discovers and calls these hooks when the events fire.
+
+## Troubleshooting Hook Discovery
+
+FOSSBilling discovers hook methods when cron jobs run. If you add a new hook handler in a module, cron must run at least once before the hook is registered.
+
+If a new hook is not being called:
+- Confirm cron is configured and running correctly.
+- During development, run cron jobs manually once after adding or renaming hook methods.
+- Make sure the hook method is public and accepts a `\Box_Event` argument.

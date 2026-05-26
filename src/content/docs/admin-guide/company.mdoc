@@ -1,0 +1,73 @@
+---
+title: Company Information
+description: Set up your company details, logo, and branding in FOSSBilling.
+---
+
+Enter your business details once so they appear consistently across invoices, emails, hosted pages, and client-facing documents.
+
+## Where to Configure It
+
+**Configuration → Settings → SYSTEM**
+
+![Company settings location](../../../assets/company-info.gif)
+
+## Company Logo
+
+Upload the logo assets FOSSBilling should use across the interface:
+
+- **Light mode logo** — Primary logo for light backgrounds
+- **Dark mode logo** — Alternate logo for dark backgrounds, if your theme needs one
+
+### Best Practices
+
+- Store logos in your theme's `assets/` folder
+- Use SVG for crisp display at any size
+- Keep file sizes reasonable (< 500KB)
+
+{% aside type="caution" %}
+Don't edit `themes/huraga/assets/img/logo.svg` directly — it's overwritten on updates. Upload your logo through the settings page instead.
+{% /aside %}
+
+### Logo Not Showing?
+
+1. Clear FOSSBilling cache: **System → Tools → Clear cache**
+2. Clear your browser cache
+3. Check the file path is correct
+
+## Other Company Details
+
+Configure the rest of your business profile in the same area:
+
+| Setting | Where It Appears |
+|---------|------------------|
+| Company name | Invoices, emails, PDFs, client area |
+| Address | Invoice PDFs, company profile |
+| Email | System emails, contact forms |
+| Phone | Client area, invoices |
+| VAT/Tax ID | Invoice PDFs, tax calculations |
+| Terms of Service | Checkout page, client agreements |
+
+## Email Signature
+
+Set the default signature appended to system emails:
+
+```
+--
+Best regards,
+The Example Company Team
+https://example.com
+```
+
+This signature appears at the bottom of most automated emails. You can still override it in individual templates.
+
+For more control over generated output, see [Email Templates](/admin-guide/email-templates/) and [Customizing Invoice PDFs](/admin-guide/invoice-pdf/).
+
+## Currency Settings
+
+Also in **Configuration → Settings → Currency**:
+
+- Default currency
+- Currency format
+- Exchange rate sources
+
+See [Currency Support](/support/features/#currency-support) for more.

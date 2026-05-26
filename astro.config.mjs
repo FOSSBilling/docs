@@ -6,18 +6,67 @@ import markdoc from '@astrojs/markdoc';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://docs.fossbilling.org',
+  redirects: {
+    // fossbilling.org docs redirects
+    '/maintaining-fossbilling/updating': '/maintenance/updating/',
+    '/maintaining-fossbilling/admin-manual-reset':
+      '/maintenance/admin-manual-reset/',
+    '/changelog': '/maintenance/changelog/',
+    '/customizing-fossbilling/config': '/admin-guide/config/',
+    '/customizing-fossbilling/localization': '/admin-guide/localization/',
+    '/customizing-fossbilling/company': '/admin-guide/company/',
+    '/customizing-fossbilling/invoice-pdf': '/admin-guide/invoice-pdf/',
+    '/customizing-fossbilling/email-templates': '/admin-guide/email-templates/',
+    '/developing-fossbilling/api': '/extensions-and-development/api/',
+    '/developing-fossbilling/guides/creating-a-module':
+      '/extensions-and-development/guides/creating-a-module/',
+    '/developing-fossbilling/guides/creating-a-payment-gateway':
+      '/extensions-and-development/guides/creating-a-payment-gateway/',
+    '/developing-fossbilling/guides/custom-gateway':
+      '/admin-guide/custom-payment-gateway/',
+    '/developing-fossbilling/guides/creating-a-registrar-integration':
+      '/extensions-and-development/guides/creating-a-registrar-integration/',
+    '/developing-fossbilling/guides/creating-a-server-manager':
+      '/extensions-and-development/guides/creating-a-server-manager/',
+    '/developing-fossbilling/guides/creating-a-theme':
+      '/extensions-and-development/guides/creating-a-theme/',
+    '/developing-fossbilling/code-of-conduct':
+      'https://github.com/FOSSBilling/FOSSBilling/blob/main/CODE_OF_CONDUCT.md',
+    '/developing-fossbilling/event-hooks':
+      '/extensions-and-development/event-hooks/',
+    '/developing-fossbilling/file-structure':
+      '/extensions-and-development/file-structure/',
+    '/developing-fossbilling/javascript':
+      '/extensions-and-development/javascript/',
+    '/developing-fossbilling/twig-filters':
+      '/extensions-and-development/twig-filters/',
+    '/extensions': '/extensions-and-development/extensions/',
+    '/faq': '/support/faq/',
+    '/faq/error-reporting': '/maintenance/error-reporting/',
+    '/faq/features': '/support/features/',
+    '/product-types/apikeys': '/admin-guide/product-types/apikeys/',
+    '/product-types/domains': '/admin-guide/product-types/domains/',
+    '/product-types/downloadable': '/admin-guide/product-types/downloadable/',
+    '/product-types/hosting': '/admin-guide/product-types/hosting/',
+    '/product-types/license': '/admin-guide/product-types/license/',
+    '/troubleshooting': '/maintenance/troubleshooting/',
+    '/server-managers/cwp': '/admin-guide/server-managers/cwp/',
+    '/server-managers/hestiacp': '/admin-guide/server-managers/hestiacp/',
+    '/server-managers/others': '/admin-guide/server-managers/others/',
+    '/server-managers/whm': '/admin-guide/server-managers/whm/',
+  },
   integrations: [
     starlight({
       title: 'FOSSBilling',
       description:
         'Official FOSSBilling documentation for installation, maintenance, customization, and development.',
       logo: {
-        light: '/public/img/wordmark-black.png',
-        dark: '/public/img/wordmark-white.png',
+        light: './src/assets/logo-black.svg',
+        dark: './src/assets/logo-white.svg',
         alt: 'FOSSBilling',
         replacesTitle: true,
       },
-      customCss: ['/src/styles/fossbilling.css'],
+      customCss: ['./src/styles/fossbilling.css'],
       components: {
         Header: './src/components/starlight/Header.astro',
       },
@@ -31,166 +80,114 @@ export default defineConfig({
       sidebar: [
         {
           label: 'Introduction',
-          link: '/',
+          slug: '',
         },
         {
           label: 'Getting Started',
+          items: [{ autogenerate: { directory: 'getting-started' } }],
+        },
+        {
+          label: 'Admin Guide',
           items: [
             {
               label: 'Overview',
-              link: '/getting-started/',
+              slug: 'admin-guide',
             },
             {
-              label: 'System Requirements',
-              link: '/getting-started/requirements',
-            },
-            {
-              label: 'Standard Installation',
-              link: '/getting-started/installation',
-            },
-            { label: 'Docker Installation', link: '/getting-started/docker' },
-            {
-              label: 'Building FOSSBilling',
-              link: '/getting-started/building',
-            },
-          ],
-        },
-        {
-          label: 'Maintaining FOSSBilling',
-          items: [
-            {
-              label: 'Updating FOSSBilling',
-              link: '/maintaining-fossbilling/updating/',
-            },
-            {
-              label: 'Manual Password Reset',
-              link: '/maintaining-fossbilling/admin-manual-reset/',
-            },
-          ],
-        },
-        {
-          label: 'Customizing FOSSBilling',
-          items: [
-            {
-              label: 'Configuration File',
-              link: '/customizing-fossbilling/config',
-            },
-            {
-              label: 'Email Templates',
-              link: '/customizing-fossbilling/email-templates',
-            },
-            {
-              label: 'Localization',
-              link: '/customizing-fossbilling/localization',
+              label: 'Configuration',
+              slug: 'admin-guide/config',
             },
             {
               label: 'Company Information',
-              link: '/customizing-fossbilling/company',
+              slug: 'admin-guide/company',
+            },
+            {
+              label: 'Email Templates',
+              slug: 'admin-guide/email-templates',
+            },
+            {
+              label: 'Localization',
+              slug: 'admin-guide/localization',
             },
             {
               label: 'Invoice PDFs',
-              link: '/customizing-fossbilling/invoice-pdf',
+              slug: 'admin-guide/invoice-pdf',
+            },
+            {
+              label: 'Custom Payment Gateway',
+              slug: 'admin-guide/custom-payment-gateway',
+            },
+            {
+              label: 'Product Types',
+              collapsed: true,
+              items: [
+                { autogenerate: { directory: 'admin-guide/product-types' } },
+              ],
+            },
+            {
+              label: 'Server Managers',
+              collapsed: true,
+              items: [
+                { autogenerate: { directory: 'admin-guide/server-managers' } },
+              ],
             },
           ],
         },
         {
-          label: 'Developing FOSSBilling',
+          label: 'Maintenance',
+          items: [{ autogenerate: { directory: 'maintenance' } }],
+        },
+        {
+          label: 'Security',
+          items: [{ autogenerate: { directory: 'security' } }],
+        },
+        {
+          label: 'Extensions & Development',
           items: [
-            { label: 'API Reference', link: '/developing-fossbilling/api/' },
             {
-              label: 'File Structure',
-              link: '/developing-fossbilling/file-structure/',
+              label: 'Overview',
+              slug: 'extensions-and-development',
+            },
+            {
+              label: 'Extensions',
+              slug: 'extensions-and-development/extensions',
+            },
+            {
+              label: 'API Reference',
+              slug: 'extensions-and-development/api',
             },
             {
               label: 'JavaScript Wrapper',
-              link: '/developing-fossbilling/javascript/',
+              slug: 'extensions-and-development/javascript',
             },
             {
               label: 'Event Hooks',
-              link: '/developing-fossbilling/event-hooks/',
+              slug: 'extensions-and-development/event-hooks',
             },
             {
               label: 'Twig Filters & Functions',
-              link: '/developing-fossbilling/twig-filters/',
+              slug: 'extensions-and-development/twig-filters',
             },
             {
-              label: 'Code of Conduct',
-              link: '/developing-fossbilling/code-of-conduct/',
+              label: 'File Structure',
+              slug: 'extensions-and-development/file-structure',
             },
             {
               label: 'Guides',
+              collapsed: true,
               items: [
                 {
-                  label: 'Creating a Module',
-                  link: '/developing-fossbilling/guides/creating-a-module/',
-                },
-                {
-                  label: 'Creating a Payment Gateway',
-                  link: '/developing-fossbilling/guides/creating-a-payment-gateway/',
-                },
-                {
-                  label: 'Creating a Registrar Integration',
-                  link: '/developing-fossbilling/guides/creating-a-registrar-integration/',
-                },
-                {
-                  label: 'Creating a Server Manager',
-                  link: '/developing-fossbilling/guides/creating-a-server-manager/',
-                },
-                {
-                  label: 'Creating a Theme',
-                  link: '/developing-fossbilling/guides/creating-a-theme/',
-                },
-                {
-                  label: 'Custom Payment Gateway',
-                  link: '/developing-fossbilling/guides/custom-gateway/',
+                  autogenerate: {
+                    directory: 'extensions-and-development/guides',
+                  },
                 },
               ],
             },
           ],
         },
         {
-          label: 'Product Types',
-          items: [
-            { label: 'Hosting', link: '/product-types/hosting/' },
-            { label: 'Domains', link: '/product-types/domains/' },
-            { label: 'Downloadable', link: '/product-types/downloadable/' },
-            { label: 'License', link: '/product-types/license/' },
-            { label: 'API Keys', link: '/product-types/apikeys/' },
-          ],
-        },
-        {
-          label: 'Server Managers',
-          items: [
-            { label: 'CWP', link: '/server-managers/cwp/' },
-            { label: 'HestiaCP', link: '/server-managers/hestiacp/' },
-            { label: 'WHM/cPanel', link: '/server-managers/whm/' },
-            {
-              label: 'Other Server Managers',
-              link: '/server-managers/others/',
-            },
-          ],
-        },
-        {
-          label: 'Security',
-          items: [
-            {
-              label: 'Securing FOSSBilling',
-              link: '/security/securing-fossbilling/',
-            },
-            { label: 'Best Practices', link: '/security/best-practices/' },
-            { label: 'Reporting a Vulnerability', link: '/security/report/' },
-          ],
-        },
-        {
-          label: 'FAQ & Support',
-          items: [
-            { label: 'Frequently Asked Questions', link: '/faq/' },
-            { label: 'Features & Functionality', link: '/faq/features/' },
-            { label: 'Error Reporting', link: '/faq/error-reporting/' },
-            { label: 'Troubleshooting', link: '/troubleshooting' },
-            { label: 'Extensions', link: '/extensions' },
-            { label: 'Changelog', link: '/changelog' },
-          ],
+          label: 'Support',
+          items: [{ autogenerate: { directory: 'support' } }],
         },
       ],
       social: [

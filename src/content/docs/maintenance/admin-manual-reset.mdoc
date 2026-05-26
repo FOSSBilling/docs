@@ -1,0 +1,63 @@
+---
+title: Manual Admin Password Reset
+description: Reset your admin password directly in the database when you can't use the normal reset feature.
+sidebar:
+  label: Manual Password Reset
+  order: 3
+---
+
+Use this guide when you have lost admin access and cannot use the password reset feature. These steps use phpMyAdmin, but any database tool will work — the steps will simply differ slightly.
+
+{% aside type="danger" title="Back Up Your Database First" %}
+Before making any direct database changes, create a full backup of your database. If you edit the wrong value in the `admin` row or make a mistake while saving changes, you could cause irreversible data loss or lock yourself out completely.
+{% /aside %}
+
+## Step 1: Log into phpMyAdmin
+
+Log in to phpMyAdmin. Not sure how? Contact your hosting provider.
+
+## Step 2: Select Your Database
+
+Choose the database you installed FOSSBilling on. If you're not sure which one, check your `config.php` file.
+
+## Step 3: Find the Admin Table
+
+1. Click the **Structure** tab to see all tables
+2. Find and click on the **admin** table
+
+![Selecting the admin table](../../../assets/guides/admin-manual-reset/pma_table.png)
+
+3. Click the **Browse** tab to see all admin accounts
+4. Find your account and click **Edit**
+
+![Clicking the Edit button on your account row](../../../assets/guides/admin-manual-reset/pma_row.png)
+
+## Step 4: Generate New Password Hash
+
+{% aside type="danger" title="Security Warning" %}
+Generate the hash on a machine you trust. Do not enter admin passwords into online hashing tools; they may store passwords and hashes.
+{% /aside %}
+
+The `pass` field needs a bcrypt hash. Generate one locally:
+
+```bash
+php -r 'echo password_hash("temporary-password-here", PASSWORD_BCRYPT), PHP_EOL;'
+```
+
+1. Replace `temporary-password-here` with a temporary password
+2. Copy the generated hash
+3. Paste the hash into the **pass** field
+4. Click **Go** to save
+
+![Pasting the hash and saving](../../../assets/guides/admin-manual-reset/pma_edit.png)
+
+## Step 5: Log In and Change Your Password
+
+You can now log in with your temporary password. **Important:** Change it immediately to a secure password:
+
+1. Click your name in the top right corner
+2. Go to **Profile**
+3. Switch to the **Change Password** tab
+4. Set a strong, unique password
+
+Password reset complete. Store your password securely — ideally in a password manager.

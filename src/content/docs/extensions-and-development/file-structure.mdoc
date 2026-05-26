@@ -1,0 +1,138 @@
+---
+title: FOSSBilling File Structure
+description: Understanding how FOSSBilling organizes its code and where things live.
+---
+
+FOSSBilling's structure can feel unusual if you are coming from modern frameworks like Laravel or Symfony. This guide shows where the main pieces live and what each directory is responsible for.
+
+## Source Code
+
+All source code lives in the `/src` directory.
+
+### `/src/data`
+
+Runtime data storage:
+- **Cache** — Compiled templates, API responses
+- **Logs** — Application logs and error logs
+- **Uploads** — User-uploaded files (`/data/uploads`)
+
+This directory should be writable by the web server.
+
+### `/src/install`
+
+The installation wizard. Automatically deleted after installation unless `APP_ENV=dev` is set.
+
+### `/src/library`
+
+Core PHP classes and business logic.
+
+#### `/src/library/Api`
+
+Core API files including the JavaScript wrapper (`API.js`). [See the wrapper docs](/extensions-and-development/javascript/).
+
+#### `/src/library/Box`
+
+Legacy compatibility classes. Most have been migrated to `FOSSBilling/`:
+
+| File | Status |
+|------|--------|
+| `Box/Translate.php` | Still present |
+
+These are gradually being modernized.
+
+#### `/src/library/FOSSBilling`
+
+New or rewritten classes specific to FOSSBilling. This is where active development happens.
+
+| Subdirectory | Purpose |
+|-------------|---------|
+| `Doctrine/` | Doctrine DBAL and ORM factory classes (pairs with RedBean for a dual-ORM approach) |
+| `Http/` | `RequestFactory`, `CsvResponseFactory`, HTTP exception handling |
+| `Security/` | `RateLimiter`, `RateLimitResult`, `AuthenticationRequiredException`, `RandomizedTimeFloor` |
+| `Sanitizer/` | `BrowserHtmlSanitizer` (HTML sanitization via Symfony) |
+| `Twig/` | `TwigFactory`, `TwigLoader`, `SandboxedStringRenderer`, custom Twig extensions and filters. See [Twig Filters & Functions](/extensions-and-development/twig-filters/) for the template-facing API. |
+| `Validation/` | API validation utilities |
+
+Key standalone files:
+- `Module.php` — Base class for modules
+- `Paginator.php` — Pagination utility
+
+#### `/src/library/Model`
+
+Database models. You typically won't edit these, but they're useful for understanding the data structure.
+
+#### `/src/library/Payment`
+
+Payment gateway adapters. If you're building a payment gateway, look in `/src/library/Payment/Adapter/`.
+
+[Guide: Creating a Payment Gateway](/extensions-and-development/guides/creating-a-payment-gateway/)
+
+#### `/src/library/Registrar`
+
+Domain registrar adapters for domain reselling. Check `/src/library/Registrar/Adapter/`.
+
+[Guide: Creating a Registrar Integration](/extensions-and-development/guides/creating-a-registrar-integration/)
+
+#### `/src/library/Server`
+
+Server manager adapters for hosting control panels (cPanel, Plesk, HestiaCP, etc.).
+
+{% aside type="note" %}
+These are for shared hosting control panels. For VPS or game servers, consider creating a product module instead.
+{% /aside %}
+
+[Guide: Creating a Server Manager](/extensions-and-development/guides/creating-a-server-manager/)
+
+### `/src/locale`
+
+Translations as a Git submodule. Pointing to [github.com/FOSSBilling/locale](https://github.com/FOSSBilling/locale).
+
+### `/src/modules`
+
+All modules live here. Each module is a self-contained unit of functionality.
+
+A typical module structure:
+
+```
+ModuleName/
+├── Api/
+│   ├── Admin.php       # Admin API endpoints
+│   ├── Client.php      # Client API endpoints
+│   └── Guest.php       # Guest/public API endpoints
+├── Controller/
+│   ├── Admin.php       # Admin routes/controllers
+│   ├── Client.php      # Client routes/controllers
+│   └── Guest.php       # Guest routes/controllers
+├── templates/          # Module templates
+│   ├── admin/          # Admin panel templates
+│   ├── client/         # Client area templates
+│   └── email/          # Email templates
+├── manifest.json       # Module metadata
+└── Service.php         # Business logic
+```
+
+[Guide: Creating a Module](/extensions-and-development/guides/creating-a-module/)
+
+### `/src/themes`
+
+All installed themes.
+
+Theme structure:
+
+```
+theme-name/
+├── assets/                 # CSS, JS, images (built via esbuild)
+├── config/
+│   └── settings.html.twig  # Theme settings UI
+├── html/                   # Twig templates
+├── html_custom/            # User overrides (overrides take priority)
+└── manifest.json           # Theme metadata
+```
+
+The `html_custom/` folder lets users override templates without editing the theme directly.
+
+[Guide: Creating a Theme](/extensions-and-development/guides/creating-a-theme/)
+
+---
+
+For assistance, join our [Discord community](https://fossbilling.org/discord).

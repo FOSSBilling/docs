@@ -1,0 +1,52 @@
+---
+title: Extensions
+description: Working extensions and payment modules for FOSSBilling.
+---
+
+## Working Extensions and Payment Modules
+
+You can also browse the [Extension Directory](https://extensions.fossbilling.org/) for community extensions and payment modules. It is still growing, so not every compatible project is listed there yet.
+
+Where supported, you can install listed extensions directly from within your FOSSBilling installation.
+
+## Payment Adapters
+
+| **Payment Adapter** | | **Features** | **Developer** | **Status** |
+| --- | --- | --- | --- | --- |
+| | Single Payment | Subscriptions | | |
+| PayPal | ✅ | ✅ | FOSSBilling | Production* |
+| Stripe | ✅ | ❌ | FOSSBilling | Production* |
+| Razorpay | ✅ | ❌ | [Albinvar](https://github.com/albinvar/Razorpay-FOSSBilling) | Production* |
+| Payrexx | ✅ | ❌ | [Jaap Marcus](https://github.com/jaapmarcus/payrexx) | In Development |
+| Mollie | ✅ | ❌ | [FOSSBilling](https://github.com/FOSSBilling/Mollie) | Production* |
+| UddoktaPay | ✅ | ❌ | [UddoktaPay](https://github.com/UddoktaPay/FOSSBilling) | Production* |
+| Bitcart | ✅ | ❌ | [Bitcart](https://github.com/bitcart/bitcart-fossbilling) | Production* |
+| Liqpay | ✅ | ❌ | [Namingo](https://github.com/getnamingo/fossbilling-liqpay) | Production* |
+| Nicky.me | ✅ | ❌ | [Namingo](https://github.com/getnamingo/fossbilling-nicky) | Production* |
+
+* FOSSBilling is still working toward a 1.0 release. Review each adapter carefully and test it in staging before relying on it in production.
+
+See [this GitHub issue](https://github.com/FOSSBilling/FOSSBilling/issues/1360) for broader discussion about payment adapter plans.
+
+Building your own adapter? Start with [Creating a Payment Gateway](/extensions-and-development/guides/creating-a-payment-gateway/).
+
+## Registrar Modules
+
+| **Registrar Module** | **Developer** | **Status** |
+| --- | --- | --- |
+| | | |
+| EPP Registrar Module | [Namingo](https://github.com/getnamingo/fossbilling-epp-registrar) | Production* |
+| NETIM Registrar Module | [NETIM](https://github.com/netim-com/fossbilling-registrar-module) | Production* |
+
+* As with payment adapters, test registrar modules carefully before using them in production.
+
+Building your own registrar integration? See [Creating a Registrar Integration](/extensions-and-development/guides/creating-a-registrar-integration/).
+
+## Custom Extensions
+
+For custom business logic, start with [Creating a Module](/extensions-and-development/guides/creating-a-module/).
+
+## How do I get my extension listed in the Extension directory?
+
+Open a pull request against the [extension-directory repository](https://github.com/FOSSBilling/extension-directory).
+If you have questions, ask the team in the community channels before submitting.

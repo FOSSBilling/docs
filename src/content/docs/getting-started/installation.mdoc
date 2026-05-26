@@ -1,6 +1,9 @@
 ---
 title: Installing FOSSBilling
 description: Complete installation guide covering web server configuration (Apache, NGINX, LiteSpeed), database setup, file permissions, and cron job configuration for FOSSBilling.
+sidebar:
+  label: Installation
+  order: 3
 ---
 
 {% aside type="tip" %}
@@ -73,11 +76,6 @@ server {
 		return 403;
 	}
 
-	# Disable PHP execution in /uploads
-	location ~* /uploads/.*\.php$ {
-		return 403;
-	}
-
 	# Deny access to /data, except /assets/gateways
 	location ~* /data/(?!(assets/gateways/)) {
 		return 403;
@@ -137,18 +135,19 @@ server {
 	├── cron.php
 	├── di.php
 	├── index.php
+	├── load.php
 	...
 	```
 3. **Launch the installer**: Visit the domain you set up for FOSSBilling. If you are using HTTPS, access it over `https://` so the application configures secure URLs automatically.
 
 	{% aside type="tip" title="Seeing HTTP 500, HTTP 404, or permission errors?" %}
-	  You may need to [fix folder permissions](/troubleshooting#permission-issues) before the installer can run.
+	  You may need to [fix folder permissions](/maintenance/troubleshooting/#permission-issues) before the installer can run.
 	{% /aside %}
 
 	If you see the FOSSBilling installer welcome page below, you're ready to proceed.
-	![The FOSSBilling Installer Landing Page](/img/guides/install/installer-landing.png)
+	![The FOSSBilling Installer Landing Page](../../../assets/guides/install/installer-landing.png)
 4. **Complete the setup wizard**: Follow the on-screen steps to accept the license, enter your database credentials, and create your administrator account.
-5. **Configure the default currency**: The price format **must** include `{{price}}` as a placeholder. Place your currency symbol before or after it, for example `{{price}} USD` or `$ {{price}}`.
+5. **Configure the default currency**: Select your currency code (e.g., `USD`, `EUR`). The price format is auto-generated; place your currency symbol before or after the `{{price}}` placeholder, for example `{{price}} USD` or `$ {{price}}`.
 6. **Install**: Click install and wait for the success page to appear.
 
 {% aside type="tip" %}
@@ -164,10 +163,10 @@ Once the installer finishes, configure the cron job before you begin using the s
 FOSSBilling relies on cron to handle renewals, expired orders, email delivery, background checks, and other scheduled work. It needs to be configured correctly, run consistently, and execute often enough to keep the platform healthy.
 
 We recommend running cron every five minutes. If more than 15 minutes pass without a run, FOSSBilling will show a warning in the admin panel. Treat the warning as urgent.
-![FOSSBilling warning about cron execution](/img/guides/install/cron-warning.png)
+![FOSSBilling warning about cron execution](../../../assets/guides/install/cron-warning.png)
 
 #### Local Cron Job
 
 FOSSBilling shows the correct cron command on the installation-complete screen and again in the admin panel. If you need to find it later, go to `Settings` -> `Scheduled Tasks` (`/admin/extension/settings/cron`).
 
-![Cron settings - correct cron command](/img/guides/install/cron-settings-command.png)
+![Cron settings - correct cron command](../../../assets/guides/install/cron-settings-command.png)

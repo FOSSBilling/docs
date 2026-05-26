@@ -1,0 +1,149 @@
+---
+title: Creating a Theme
+description: Design and build custom themes for FOSSBilling.
+---
+
+{% aside type="caution" %}
+FOSSBilling is evolving quickly on the path to 1.0. Expect breaking changes in 0.x releases. We document these in the "breaking changes" section of release notes.
+{% /aside %}
+
+## How Themes Work
+
+FOSSBilling uses [Twig](https://twig.symfony.com/) for templating. Themes work by overriding the templates shipped by modules:
+
+1. Module provides a default template (`modules/Example/templates/client/mod_example_index.html.twig`)
+2. Your theme provides an override with the same filename (`themes/mytheme/html/mod_example_index.html.twig`)
+3. FOSSBilling uses your theme's version
+
+## Template Priority Order
+
+FOSSBilling loads templates in this order (highest priority first):
+
+1. `themes/mytheme/html_custom/` — User customizations
+2. `themes/mytheme/html/` — Your theme files
+3. `modules/Example/templates/client/` or `modules/Example/templates/admin/` — Module defaults for the current area
+
+## Theme Structure
+
+```
+themes/mytheme/
+├── assets/                     # CSS, JS, images (built via esbuild)
+│   ├── css/
+│   ├── js/
+│   └── img/
+├── config/
+│   └── settings.html.twig      # Theme settings UI (optional)
+├── html/                       # Your templates
+│   ├── layout_default.html.twig # Base layout
+│   ├── layout_public.html.twig  # Public pages layout
+│   ├── partial_menu.html.twig   # Shared partial
+│   └── mod_index_dashboard.html.twig # Optional module override
+├── html_custom/                 # For user customizations (leave empty)
+└── manifest.json               # Theme metadata
+```
+
+## Manifest File
+
+```json
+{
+    "name": "My Theme",
+    "description": "A custom FOSSBilling theme",
+    "version": "1.0.0",
+    "author": "Your Name",
+    "author_url": "https://example.com",
+    "icon": "icon.png"
+}
+```
+
+## API URLs and CSRF
+
+Use `api_url` to build browser API URLs and `fb_api_form` or `fb_api_link` to let the [JavaScript API wrapper](/extensions-and-development/javascript/) handle submissions.
+
+```twig
+<form action="{{ 'profile/update'|api_url }}" {{ fb_api_form({ message: 'Profile updated'|trans }) }}>
+  <input type="text" name="first_name" value="{{ profile.first_name }}">
+  <button type="submit">{{ 'Save'|trans }}</button>
+</form>
+```
+
+For links that trigger API actions:
+
+```twig
+<a href="{{ 'client/group_delete'|api_url(query: { id: group.id }, role: 'admin') }}"
+   {{ fb_api_link({
+     modal: { type: 'confirm', title: 'Are you sure?'|trans },
+     reload: true
+   }) }}>
+  {{ 'Delete'|trans }}
+</a>
+```
+
+Session-authenticated `client` and `admin` browser API calls require CSRF protection. The [JavaScript API wrapper](/extensions-and-development/javascript/) reads the `csrf_token` cookie and sends the token automatically.
+
+Use `role: 'guest'` for public actions such as login, signup, and password reset:
+
+```twig
+<form action="{{ 'client/login'|api_url(role: 'guest') }}" {{ fb_api_form({ redirect: '/'|url }) }}>
+  <input type="email" name="email" required>
+  <input type="password" name="password" required>
+  <button type="submit">{{ 'Login'|trans }}</button>
+</form>
+```
+
+## Server-Side API Globals
+
+The `guest`, `client`, and `admin` Twig globals call FOSSBilling APIs during server-side template rendering. They are not browser HTTP requests and do not use CSRF tokens.
+
+### Guest API (always available)
+
+```twig
+{{ guest.currency_get_pairs }}
+{{ guest.system_version }}
+```
+
+### Client API (when logged in)
+
+```twig
+{{ client.invoice_get_list({ 'per_page': 10 }) }}
+```
+
+### Admin API (when logged in)
+
+```twig
+{{ admin.staff_group_get_pairs }}
+{{ admin.extension_config_get({ 'ext': 'mod_seo' }) }}
+```
+
+## Twig Filters and Functions
+
+FOSSBilling provides [custom filters](/extensions-and-development/twig-filters) for themes:
+
+```twig
+{{ price | format_currency(currency.code) }} {# Format currency #}
+{{ 'client/manage' | url(area: 'admin') }}   {# Admin panel link #}
+{{ 'css/theme.css' | asset_url }}            {# Theme asset URL #}
+{{ date | timeago }}                         {# "2 hours ago" #}
+{{ content | markdown_to_html }}             {# Parse Markdown #}
+```
+
+## Security Best Practices
+
+- Use `htmlspecialchars` when outputting user data
+- Validate all inputs
+- Use `fb_api_form` and `fb_api_link` for browser API actions
+- Include CSRF tokens manually for raw requests that do not use the wrapper
+- See the [security docs](/security/securing-fossbilling) for more
+
+## Testing Your Theme
+
+1. Place your theme in `/themes/mytheme/`
+2. Go to **Settings → Themes** in the admin panel
+3. Select and activate your theme
+4. Check both client and admin areas
+5. Test on different screen sizes
+
+## Getting Help
+
+- [Twig documentation](https://twig.symfony.com/doc/)
+- [FOSSBilling Twig filters](/extensions-and-development/twig-filters)
+- [Discord community](https://fossbilling.org/discord)

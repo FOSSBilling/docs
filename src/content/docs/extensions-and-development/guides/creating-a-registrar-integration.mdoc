@@ -1,0 +1,116 @@
+---
+title: Creating a Registrar Integration
+description: Build domain registrar adapters for FOSSBilling.
+---
+
+{% aside type="caution" %}
+FOSSBilling is evolving quickly on the path to 1.0. Expect breaking changes in 0.x releases. We document these in the "breaking changes" section of release notes.
+{% /aside %}
+
+Registrar adapters let FOSSBilling communicate with domain registrars to register, transfer, and manage domains on behalf of your customers.
+
+## File Structure
+
+Place your adapter in:
+
+```
+src/library/Registrar/Adapter/
+└── YourRegistrar.php
+```
+
+Your class must extend `Registrar_AdapterAbstract` and implement its required methods.
+
+## Required Methods
+
+Check the [`Registrar_AdapterAbstract`](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/library/Registrar/AdapterAbstract.php) class for the full list of methods to implement. Common ones include:
+
+| Method | Purpose |
+|--------|---------|
+| `isAvailable()` | Check domain availability |
+| `register()` | Register a new domain |
+| `transfer()` | Transfer a domain |
+| `renew()` | Renew a domain |
+| `getInfo()` | Get domain details |
+| `modifyNs()` | Update nameservers |
+| `modifyContact()` | Update contact information |
+
+## Basic Structure
+
+```php
+<?php
+
+class Registrar_Adapter_YourRegistrar extends Registrar_AdapterAbstract
+{
+    public function __construct($options)
+    {
+        parent::__construct($options);
+
+        if (!isset($this->config['api_key'])) {
+            throw new Registrar_Exception('API key is required');
+        }
+    }
+
+    public static function getConfig(): array
+    {
+        return [
+            'label' => 'YourRegistrar',
+            'form' => [
+                'api_key' => ['text', ['label' => 'API Key']],
+                'api_secret' => ['password', ['label' => 'API Secret']],
+            ],
+        ];
+    }
+
+    public function isAvailable($domain): bool
+    {
+        $response = $this->apiRequest('check', ['domain' => $domain]);
+        return $response['available'] ?? false;
+    }
+
+    public function register($domain, array $contact): bool
+    {
+        $params = [
+            'domain' => $domain,
+            'period' => $this->getPeriod(),
+            'contacts' => $this->normalizeContact($contact),
+        ];
+
+        $response = $this->apiRequest('register', $params);
+        return $response['success'] ?? false;
+    }
+
+    private function apiRequest($action, array $params = []): array
+    {
+        $ch = curl_init($this->config['api_url'] . '/' . $action);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Authorization: Bearer ' . $this->config['api_key'],
+            'Content-Type: application/json',
+        ]);
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        return json_decode($response, true);
+    }
+}
+```
+
+## Testing Your Adapter
+
+1. Create a test domain product in FOSSBilling
+2. Configure your registrar adapter in **System → Domain registration**
+3. Test domain availability checks
+4. Test registration (if possible with registrar's test environment)
+5. Verify contact information syncing
+
+## Resources
+
+- [`Registrar_AdapterAbstract`](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/library/Registrar/AdapterAbstract.php) — Base class with inline docs
+- Existing adapters in `src/library/Registrar/Adapter/`
+- [Example: Netim adapter](https://github.com/netim-com/fossbilling-registrar-module)
+
+## Getting Help
+
+Join our [Discord](https://fossbilling.org/discord) if you need assistance with your registrar integration.

@@ -1,0 +1,114 @@
+---
+title: Twig Filters & Functions
+description: Available Twig filters and functions for theming and module development.
+---
+
+FOSSBilling uses [Twig](https://twig.symfony.com/) across themes, email templates, and PDFs. This page lists the project-specific and third-party filters and functions you can rely on while building against it.
+
+## Standard Twig
+
+FOSSBilling includes all [default Twig filters](https://twig.symfony.com/doc/3.x/filters/index.html), plus the [Intl Extra Extension](https://github.com/twigphp/intl-extra) for internationalization and the [Markdown Extra Extension](https://github.com/twigphp/markdown-extra) for Markdown rendering.
+
+Common bundled filters include:
+
+| Filter | Description |
+|--------|-------------|
+| `format_currency` | Format a number as currency, for example `{{ 29.99 \| format_currency('USD') }}`. |
+| `format_date` | Format a date using the configured locale and date format. |
+| `format_datetime` | Format a date and time using the configured locale and time zone. |
+| `markdown_to_html` | Convert Markdown to HTML with FOSSBilling's safe CommonMark renderer. |
+
+## FOSSBilling Custom Filters
+
+Project-specific filters and functions are defined in these classes:
+
+- [`FOSSBilling\Twig\Extension\ApiExtension`](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/library/FOSSBilling/Twig/Extension/ApiExtension.php)
+- [`FOSSBilling\Twig\Extension\FOSSBillingExtension`](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/library/FOSSBilling/Twig/Extension/FOSSBillingExtension.php)
+- [`FOSSBilling\Twig\Extension\LegacyExtension`](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/library/FOSSBilling/Twig/Extension/LegacyExtension.php)
+- [`FOSSBilling\Twig\Extension\DebugBarExtension`](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/library/FOSSBilling/Twig/Extension/DebugBarExtension.php)
+
+### Translation & Localization
+
+| Filter | Description |
+|--------|-------------|
+| `trans` | Translate a string using FOSSBilling's translation system. |
+| `timeago` | Show how long ago a date was (e.g., "2 hours ago"). Accepts ISO 8601 format. |
+| `daysleft` | Show days until a date. Accepts ISO 8601 format. |
+| `period_title` | Display a translated period title (e.g., `1M` → "1 Month"). |
+| `ip_country_name` | Show the country name for an IP address. |
+| `ip_country_code` | Show the ISO 2-letter country code for an IP address. |
+
+### URLs & Links
+
+| Filter | Description |
+|--------|-------------|
+| `url` | Generate a URL for the current area, or pass `area: 'admin'` / `area: 'client'`. |
+| `api_url` | Generate a URL for an API endpoint. Defaults to the current area; pass `role: 'admin'`, `role: 'client'`, or `role: 'guest'` when needed. |
+
+### Assets & Resources
+
+| Filter | Description |
+|--------|-------------|
+| `asset_url` | Get the URL for a theme asset. |
+| `library_url` | Get the URL for the library folder. |
+| `mod_asset_url` | Get the URL for a module asset. Use the asset path as the filtered value and the module name as the argument. |
+| `script_tag` | Generate an HTML `<script>` tag. |
+| `stylesheet_tag` | Generate an HTML `<link>` tag for CSS. |
+
+### Utilities
+
+| Filter | Description |
+|--------|-------------|
+| `file_size` | Convert bytes to a human-readable size (KB, MB, GB, etc.). |
+| `hash` | Hash a value. Defaults to `xxh128`; pass another PHP-supported algorithm if needed. |
+| `truncate` | Truncate a string to a maximum length. |
+
+## FOSSBilling Custom Functions
+
+| Function | Description |
+|----------|-------------|
+| `fb_api` | Refer to [JavaScript Wrapper](/extensions-and-development/javascript/#api-forms-and-links) for documentation. |
+| `fb_api_form` | Refer to [JavaScript Wrapper](/extensions-and-development/javascript/#api-forms-and-links) for documentation. |
+| `fb_api_link` | Refer to [JavaScript Wrapper](/extensions-and-development/javascript/#api-forms-and-links) for documentation. |
+| `render_widgets` | Render widgets registered for a slot. |
+| `svg_sprite` | Render the current theme's SVG icon sprite when available. |
+| `has_permission` | Check whether the logged-in admin has a module permission. |
+| `antispam_honeypot` | Return the antispam honeypot configuration array. |
+
+## Usage Examples
+
+```twig
+{# Format money #}
+{{ 29.99 | format_currency('USD') }}  {# $29.99 #}
+
+{# Generate URL #}
+<a href="{{ 'client/manage' | url }}">Manage</a>                   {# client area #}
+<a href="{{ 'client/manage' | url({area: 'admin'}) }}">Manage</a>  {# admin area #}
+
+{# Generate API URL #}
+{{ 'profile/update' | api_url }}
+{{ 'client/login' | api_url(role: 'guest') }}
+
+{# Parse Markdown #}
+{{ product.description | markdown_to_html }}
+
+{# Time ago #}
+{{ order.created_at | timeago }}  {# 2 hours ago #}
+
+{# Theme and module assets #}
+<link rel="stylesheet" href="{{ 'css/theme.css'|asset_url }}">
+<script src="{{ 'js/widget.js'|mod_asset_url('Example') }}"></script>
+
+{# API form handled by Api/API.js #}
+<form action="{{ 'profile/update'|api_url }}" {{ fb_api_form({ message: 'Saved'|trans }) }}>
+  <input type="text" name="first_name">
+  <button type="submit">{{ 'Save'|trans }}</button>
+</form>
+
+{# API link with a confirmation modal #}
+<a href="{{ 'client/delete'|api_url(query: { id: client.id }, role: 'admin') }}"
+   {{ fb_api_link({ modal: { type: 'confirm', title: 'Are you sure?'|trans }, reload: true }) }}>
+  {{ 'Delete'|trans }}
+</a>
+```
+See [JavaScript API Wrapper](/extensions-and-development/javascript/) for the `data-fb-api` options and CSRF behavior.
