@@ -53,6 +53,8 @@ Configure reverse-proxy support so FOSSBilling correctly detects the visitor's I
 | `trusted_proxies.proxies` | `[]` | List of trusted proxy IPs or CIDR ranges |
 | `trusted_proxies.headers` | `x_forwarded` | Header type: `x_forwarded` (standard) or `forwarded` (RFC 7239) |
 
+If you are running behind a reverse proxy, configure the `trusted_proxies` setting in your config (see above) so request metadata is interpreted correctly.
+
 ### API Security
 
 | Property | Default | Options | Description |
@@ -98,7 +100,3 @@ If you're using Cloudflare, enable **IP Geolocation** under your site's **Networ
 ### HTTPS Detection
 
 Reverse proxies often make FOSSBilling think it is being accessed over HTTP even when the visitor is using HTTPS. To avoid that, make sure your proxy forwards `X-Forwarded-Proto: https`.
-
-### Trusted Proxies
-
-If you are running behind a reverse proxy, configure the `trusted_proxies` setting in your config (see above) so request metadata is interpreted correctly.
