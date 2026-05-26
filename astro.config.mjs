@@ -57,7 +57,7 @@ export default defineConfig({
   },
   integrations: [
     starlight({
-      title: 'FOSSBilling',
+      title: 'FOSSBilling Docs',
       description:
         'Official FOSSBilling documentation for installation, maintenance, customization, and development.',
       logo: {
