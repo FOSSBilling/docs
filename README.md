@@ -21,15 +21,15 @@ npm run build
 
 ## Commands
 
-| Command           | Action                                       |
-| :---------------- | :------------------------------------------- |
-| `npm install`     | Install dependencies                         |
-| `npm run dev`     | Start local dev server at `localhost:4321`   |
-| `npm run check`   | Run Astro checks against the project         |
-| `npm run build`   | Build the production site to `./dist/`       |
-| `npm run preview` | Preview the build locally before deploying   |
-| `npm run format`  | Format Astro, CSS, TS, JS, and JSON files    |
-| `npm run format:check` | Verify formatting without writing changes |
+| Command                | Action                                     |
+| :--------------------- | :----------------------------------------- |
+| `npm install`          | Install dependencies                       |
+| `npm run dev`          | Start local dev server at `localhost:4321` |
+| `npm run check`        | Run Astro checks against the project       |
+| `npm run build`        | Build the production site to `./dist/`     |
+| `npm run preview`      | Preview the build locally before deploying |
+| `npm run format`       | Format Astro, CSS, TS, JS, and JSON files  |
+| `npm run format:check` | Verify formatting without writing changes  |
 
 For Cloudflare deployments with Wrangler, run `npm run build` first so `./dist/` exists before `wrangler deploy`.
 
@@ -41,9 +41,7 @@ Pull requests to `main` are also validated in CI with formatting checks, `astro 
 src/
 ├── content/
 │   └── docs/          # Documentation pages (MDX/Markdown)
-└── assets/            # Static assets
-public/
-└── img/               # Images referenced in documentation
+└── assets/            # Images and other bundled assets
 ```
 
 ## Contributing
@@ -63,10 +61,8 @@ Unless otherwise noted, the documentation license applies to:
 
 - `src/content/docs/**`
 - `src/assets/**`
-- `public/img/docs/**`
-- `public/img/guides/**`
 
-Logos, wordmarks, trademarks, and other brand assets are not licensed under CC BY-SA 4.0. Third-party marks remain subject to their respective owners' rights, including assets under `public/img/logos/**`.
+Logos, wordmarks, trademarks, and other brand assets are not licensed under CC BY-SA 4.0. Third-party marks remain subject to their respective owners' rights.
 
 ## Links
 

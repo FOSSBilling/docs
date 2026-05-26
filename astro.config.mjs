@@ -61,12 +61,12 @@ export default defineConfig({
       description:
         'Official FOSSBilling documentation for installation, maintenance, customization, and development.',
       logo: {
-        light: '/public/img/wordmark-black.png',
-        dark: '/public/img/wordmark-white.png',
+        light: './src/assets/logo-black.svg',
+        dark: './src/assets/logo-white.svg',
         alt: 'FOSSBilling',
         replacesTitle: true,
       },
-      customCss: ['/src/styles/fossbilling.css'],
+      customCss: ['./src/styles/fossbilling.css'],
       components: {
         Header: './src/components/starlight/Header.astro',
       },
@@ -84,9 +84,7 @@ export default defineConfig({
         },
         {
           label: 'Getting Started',
-          items: [
-            { autogenerate: { directory: 'getting-started' } },
-          ],
+          items: [{ autogenerate: { directory: 'getting-started' } }],
         },
         {
           label: 'Admin Guide',
@@ -137,15 +135,11 @@ export default defineConfig({
         },
         {
           label: 'Maintenance',
-          items: [
-            { autogenerate: { directory: 'maintenance' } },
-          ],
+          items: [{ autogenerate: { directory: 'maintenance' } }],
         },
         {
           label: 'Security',
-          items: [
-            { autogenerate: { directory: 'security' } },
-          ],
+          items: [{ autogenerate: { directory: 'security' } }],
         },
         {
           label: 'Extensions & Development',
@@ -185,7 +179,7 @@ export default defineConfig({
                 {
                   autogenerate: {
                     directory: 'extensions-and-development/guides',
-                  }
+                  },
                 },
               ],
             },
@@ -193,9 +187,7 @@ export default defineConfig({
         },
         {
           label: 'Support',
-          items: [
-            { autogenerate: { directory: 'support' } },
-          ],
+          items: [{ autogenerate: { directory: 'support' } }],
         },
       ],
       social: [

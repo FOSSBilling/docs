@@ -102,7 +102,7 @@ If FOSSBilling starts failing after an update, work through these steps:
 ## Issues with cron
 
 If you see a warning like this in the FOSSBilling dashboard, cron has not run for at least 15 minutes. That is a real problem because many core tasks depend on it.
-![FOSSBilling warning about cron execution](/img/guides/install/cron-warning.png)
+![FOSSBilling warning about cron execution](../../../assets/guides/install/cron-warning.png)
 
 1. Check the FOSSBilling [logs](/support/faq/#where-can-i-find-error-logs) for any PHP or application errors.
 2. Confirm that cron is configured to run every five minutes. FOSSBilling shows a crontab example with the correct path for your installation under the cron settings (`/admin/extension/settings/cron`).
