@@ -9,10 +9,6 @@ Building a theme or module? Use the [JavaScript wrapper](/extensions-and-develop
 
 FOSSBilling provides a REST API for integrating external systems and building custom functionality on top of the platform.
 
-{% aside type="tip" %}
-This API reference is evolving. New endpoints have been added in 0.8.0 including `Stats/*`, `Antispam/*`, and `Widgets/*`. The `guest/system/version` endpoint was removed.
-{% /aside %}
-
 ## API Endpoints
 
 Three main entrypoints:
@@ -193,7 +189,7 @@ List endpoints typically accept:
 - `page` — Page number (starting at 1)
 - `per_page` — Items per page
 
-Paginated results use the `FOSSBilling\Paginator` class (replacing the old `Box_Paginator`).
+Paginated results use the `FOSSBilling\Paginator` class.
 
 ---
 
