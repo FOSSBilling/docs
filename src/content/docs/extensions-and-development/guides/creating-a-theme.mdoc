@@ -57,7 +57,7 @@ themes/mytheme/
 
 ## API URLs and CSRF
 
-Use `api_url` to build browser API URLs and `fb_api_form` or `fb_api_link` to let the [JavaScript API wrapper](/developing-fossbilling/javascript/) handle submissions.
+Use `api_url` to build browser API URLs and `fb_api_form` or `fb_api_link` to let the [JavaScript API wrapper](/extensions-and-development/javascript/) handle submissions.
 
 ```twig
 <form action="{{ 'profile/update'|api_url }}" {{ fb_api_form({ message: 'Profile updated'|trans }) }}>
@@ -78,7 +78,7 @@ For links that trigger API actions:
 </a>
 ```
 
-Session-authenticated `client` and `admin` browser API calls require CSRF protection. The [JavaScript API wrapper](/developing-fossbilling/javascript/) reads the `csrf_token` cookie and sends the token automatically.
+Session-authenticated `client` and `admin` browser API calls require CSRF protection. The [JavaScript API wrapper](/extensions-and-development/javascript/) reads the `csrf_token` cookie and sends the token automatically.
 
 Use `role: 'guest'` for public actions such as login, signup, and password reset:
 
