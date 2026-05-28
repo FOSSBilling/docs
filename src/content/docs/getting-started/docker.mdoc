@@ -88,8 +88,6 @@ Open `http://localhost` or your server's IP/hostname to continue with the instal
 
 ## Post-Installation
 
-After installation, set up the cron job on your host:
+The official Docker image runs FOSSBilling cron automatically every five minutes inside the container.
 
-```bash
-(crontab -l; echo "*/5 * * * * docker exec <container-name/id> su www-data -s /usr/local/bin/php /var/www/html/cron.php") | awk '!x[$0]++' | crontab -
-```
+You do not need to add a host crontab entry when using the official Docker image.
