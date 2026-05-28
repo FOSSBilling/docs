@@ -1,0 +1,52 @@
+---
+title: Page Not Found
+description: The requested FOSSBilling documentation page could not be found.
+editUrl: false
+lastUpdated: false
+template: splash
+tableOfContents: false
+head:
+  - tag: meta
+    attrs:
+      name: robots
+      content: noindex
+---
+
+The page you are looking for may have moved, been renamed, or no longer exists.
+
+Start with one of the main documentation sections below, or use search to find the topic you need.
+
+{% cardgrid %}
+  {% linkcard
+    title="Getting Started"
+    href="/getting-started/"
+    description="Install FOSSBilling, check requirements, and prepare your environment."
+  /%}
+  {% linkcard
+    title="Maintenance"
+    href="/maintenance/"
+    description="Update, troubleshoot, and maintain an existing FOSSBilling installation."
+  /%}
+  {% linkcard
+    title="Admin Guide"
+    href="/admin-guide/"
+    description="Configure FOSSBilling and manage day-to-day administration tasks."
+  /%}
+  {% linkcard
+    title="Extensions & Development"
+    href="/extensions-and-development/"
+    description="Build modules, themes, payment gateways, and integrations."
+  /%}
+  {% linkcard
+    title="Support"
+    href="/support/"
+    description="Find FAQs, troubleshooting guidance, and community support links."
+  /%}
+  {% linkcard
+    title="GitHub Repository"
+    href="https://github.com/FOSSBilling/FOSSBilling"
+    description="Report issues or browse the FOSSBilling source code."
+  /%}
+{% /cardgrid %}
+
+If you followed a link from the documentation site, please [open an issue](https://github.com/FOSSBilling/docs/issues/new) so it can be corrected.
