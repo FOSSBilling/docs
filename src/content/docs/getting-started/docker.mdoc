@@ -32,7 +32,7 @@ docker run -d \
 Then open your server IP or hostname in a browser to complete the web installer.
 {% /tabitem %}
 {% tabitem label="Docker Compose" %}
-This option brings up FOSSBilling and MySQL together, which makes it the fastest way to get started.
+This option brings up FOSSBilling and MariaDB together, which makes it the fastest way to get started.
 
 ```yaml {% meta="title='docker-compose.yml'" %}
 services:
@@ -44,22 +44,22 @@ services:
     volumes:
       - fossbilling:/var/www/html
     depends_on:
-      - mysql
+      - mariadb
 
-  mysql:
-    image: mysql:8.4
+  mariadb:
+    image: mariadb:lts
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: fossbilling
-      MYSQL_USER: fossbilling
-      MYSQL_PASSWORD: fossbilling
-      MYSQL_RANDOM_ROOT_PASSWORD: "1"
+      MARIADB_DATABASE: fossbilling
+      MARIADB_USER: fossbilling
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:?set-a-strong-database-password}
+      MARIADB_RANDOM_ROOT_PASSWORD: "1"
     volumes:
-      - mysql:/var/lib/mysql
+      - mariadb:/var/lib/mysql
 
 volumes:
   fossbilling:
-  mysql:
+  mariadb:
 ```
 
 Run it:
@@ -73,14 +73,14 @@ The first startup downloads container images, so it may take a few minutes.
 Before starting the stack, set a strong database password:
 
 ```bash
-export MYSQL_PASSWORD="$(openssl rand -base64 32)"
+export MARIADB_PASSWORD="$(openssl rand -base64 32)"
 ```
 
 **Database credentials** (if using the example above):
-- Hostname: `mysql`
+- Hostname: `mariadb`
 - Database: `fossbilling`
 - Username: `fossbilling`
-- Password: the value of `MYSQL_PASSWORD`
+- Password: the value of `MARIADB_PASSWORD`
 
 Open `http://localhost` or your server's IP/hostname to continue with the installer.
 {% /tabitem %}
