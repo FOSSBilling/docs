@@ -32,8 +32,7 @@ Then open your server IP or hostname in a browser to complete the web installer.
 {% tabitem label="Docker Compose" %}
 This option brings up FOSSBilling and MySQL together, which makes it the fastest way to get started.
 
-```yaml
-version: "3.9"
+```yaml {% meta="title='docker-compose.yml'" %}
 services:
   fossbilling:
     image: fossbilling/fossbilling:latest

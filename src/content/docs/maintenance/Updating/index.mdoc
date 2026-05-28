@@ -10,6 +10,10 @@ sidebar:
 **Always back up first.** Before any update, make full backups of your database and all FOSSBilling files. If something goes wrong, you'll need these to restore your data.
 {% /aside %}
 
+{% aside type="caution" %}
+**Review version-specific notes.** Major releases like 0.8.0 include breaking changes to themes, templates, APIs, and configuration. Read the upgrade guide for your target version **before** updating, especially if you use custom themes or modules.
+{% /aside %}
+
 ## Automatic Updates (Recommended)
 
 For most installations, the built-in updater is the easiest option:
@@ -43,6 +47,6 @@ Some releases need extra review before updating.
   {% linkcard
     title="Upgrading from 0.7.x to 0.8.0"
     href="/maintenance/updating/0-7-to-0-8/"
-    description="Review database, configuration, module, template, and public asset changes before moving to 0.8.0."
+    description="PHP 8.3 upgrade, jQuery removal, esbuild migration, Twig filter changes, Symfony routing overhaul, theme template updates, guest API lockdown, and more."
   /%}
 {% /cardgrid %}

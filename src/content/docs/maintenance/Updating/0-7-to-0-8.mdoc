@@ -8,7 +8,15 @@ sidebar:
     text: New
 ---
 
-The 0.8.0 release includes significant database and structural changes. Read the notes below before upgrading.
+The 0.8.0 release includes significant database, structural, and frontend changes. Read every section below before upgrading.
+
+{% aside type="caution" %}
+**Review custom themes and modules carefully.** 0.8.0 removes jQuery, switches from Webpack Encore to esbuild, replaces the routing layer with Symfony HttpKernel, and introduces multiple Twig filter removals and renames. Custom code that depends on the old infrastructure will break.
+{% /aside %}
+
+## PHP Requirement
+
+The minimum PHP version has been raised from 8.1 to **8.3**. Verify your server meets this requirement before upgrading.
 
 ## Database & Charset Migration
 
@@ -19,6 +27,9 @@ The database charset has been migrated from `utf8` to `utf8mb4` / `utf8mb4_unico
 - `db.type` has been renamed to `db.driver` and its value changed from `'mysql'` to `'pdo_mysql'`. The patcher migrates this for you.
 - Old `api.rate_*` settings (`rate_span`, `rate_limit`, `throttle_delay`, `rate_span_login`, `rate_limit_login`, `rate_limit_whitelist`) have been replaced by the new `rate_limiter` block. The patcher will prompt you to accept the new defaults.
 - The `url` setting no longer stores the protocol prefix; it is stripped on save.
+- New `security.trusted_proxies` block for configuring reverse proxy trust.
+- New `security.session_regeneration_grace_period` setting (default: 300).
+- New `i18n.auto_detect_locale`, `i18n.date_format`, `i18n.time_format`, `i18n.datetime_pattern` settings.
 
 ## Module Migrations
 
@@ -27,9 +38,11 @@ The following modules have been removed or replaced. The patcher handles the mig
 | Change | Details |
 |--------|---------|
 | `Servicemembership` removed | Membership products and orders are migrated to the "custom" product type. Review active membership orders after updating. |
-| `Spamchecker` replaced | Replaced by the new `Antispam` module (supports honeypot fields). Review your spam-protection settings after the update. |
-| `Wysiwyg` removed | Functionality replaced by built-in theme JavaScript. |
+| `Spamchecker` replaced | Replaced by the new `Antispam` module (supports Cloudflare Turnstile, hCaptcha, and honeypot fields). Review your spam-protection settings after the update. |
+| `Wysiwyg` removed | CKEditor 5 is now integrated directly into themes. Use the `wysiwyg` Twig function to initialize editors. |
 | `Paidsupport` removed | Module data is cleaned up. |
+| Added `Antispam` | New spam-prevention module with multiple challenge providers. |
+| Added `Widgets` | New module for registering renderable widget slots in templates. |
 
 ## Uploads Directory
 
@@ -74,7 +87,339 @@ Shared browser assets now live in `/public` instead of `/data/assets` or theme-s
 
 The patcher migrates bundled gateway icons and default branding settings automatically. If you maintain custom web-server rules, make sure `/public` remains publicly readable while `/data` remains blocked.
 
-Custom themes should load shared frontend assets with `public_asset_url`, for example `{{ 'js/fossbilling.js'|public_asset_url|script_tag }}` followed by `{{ 'js/api.js'|public_asset_url|script_tag }}`. The old `library/Api/API.js` path has been removed.
+## Theme & Frontend Changes
+
+### Build System: Webpack Encore → esbuild
+
+The front-end build system has been migrated from [Webpack Encore](https://symfony.com/doc/current/frontend.html) to [esbuild](https://esbuild.github.io/).
+
+- Bundled theme `package.json` scripts now call local `esbuild.mjs` files instead of Webpack Encore. Huraga's `dev` script uses `node ./esbuild.mjs --watch`; `admin_default` uses `node ./esbuild.mjs` for both `dev` and `build`.
+- Shared build helpers are in `frontend/tools/esbuild-helpers.mjs` (at the repository root).
+- Theme-specific build scripts are at `src/themes/{theme}/esbuild.mjs`.
+
+If you maintain a custom theme with its own build pipeline, update it for the new asset structure and Twig loading pattern. You can keep another build tool if it outputs compatible assets, but the bundled `huraga` and `admin_default` themes now use esbuild and are the best reference implementations.
+
+### Asset Loading
+
+Replace `encore_entry_link_tags` / `encore_entry_script_tags` with direct CSS and JS asset tags:
+
+{% tabs %}
+{% tabitem label="Before (0.7.x)" %}
+```twig
+{{ encore_entry_link_tags('fossbilling') }}
+{{ "Api/API.js" | library_url | script_tag }}
+{{ encore_entry_script_tags('fossbilling') }}
+```
+{% /tabitem %}
+{% tabitem label="After (0.8.0)" %}
+```twig
+<link rel="stylesheet" href="{{ 'build/css/vendor.css' | asset_url }}">
+<link rel="stylesheet" href="{{ 'build/css/fossbilling.css' | asset_url }}">
+{{ 'js/fossbilling.js' | public_asset_url | script_tag }}
+{{ 'js/api.js' | public_asset_url | script_tag }}
+<script src="{{ 'build/js/fossbilling.js' | asset_url }}"></script>
+```
+{% /tabitem %}
+{% /tabs %}
+
+### jQuery Removed
+
+jQuery has been removed from both bundled themes. All admin and client templates have been migrated to vanilla JavaScript.
+
+- The old `bb` JavaScript object and `bb.redirect()` no longer exist. Use `window.location` instead.
+- `$(function() { ... })` → `document.addEventListener("DOMContentLoaded", function() { ... })`
+- Any custom theme or module JavaScript that depends on jQuery must be rewritten.
+
+### JavaScript API Wrapper
+
+The JS API wrapper has been rewritten and moved from `library/Api/API.js` to `frontend/core/api.js`. The browser call pattern (`API.admin.post`, `API.client.get`, `API.guest.get`, etc.) remains compatible, and the related Twig helpers (`fb_api_form`, `fb_api_link`) are still available, but the internal implementation is entirely new.
+
+Load it with:
+```twig
+{{ 'js/fossbilling.js' | public_asset_url | script_tag }}
+{{ 'js/api.js' | public_asset_url | script_tag }}
+```
+
+The old `library_url` filter used for `{{ "Api/API.js" | library_url | script_tag }}` has been removed.
+
+### Frontend Directory Structure
+
+Shared frontend source code has moved to a new `frontend/` directory at the repository root:
+
+```
+frontend/
+├── core/
+│   ├── api.js          # JavaScript API wrapper
+│   └── fossbilling.js  # Runtime helpers (message toasts, request utilities)
+├── editor/
+│   └── ckeditor.js     # CKEditor 5 bundle
+├── styles/
+│   └── markdown.css    # Markdown content styling
+└── tools/
+    └── esbuild-helpers.mjs  # Shared build utilities
+```
+
+### Debug Bar
+
+The `DebugBar_renderHead()` Twig function has been renamed to `debug_bar_render_head()`:
+
+{% tabs %}
+{% tabitem label="Before (0.7.x)" %}
+```twig
+{{ DebugBar_renderHead() }}
+```
+{% /tabitem %}
+{% tabitem label="After (0.8.0)" %}
+```twig
+{{ debug_bar_render_head() }}
+```
+{% /tabitem %}
+{% /tabs %}
+
+### CSRF Meta Tag Removed
+
+The `<meta name="csrf-token" content="{{ CSRFToken }}">` tag has been removed from bundled themes. CSRF tokens are now sent via cookie (`csrf_token`) and handled automatically by the JavaScript API wrapper. If your custom theme relies on the meta tag, switch to reading the cookie:
+
+```javascript
+const token = document.cookie.match(/csrf_token=([^;]*)/)?.[1] || '';
+```
+
+Build output is written to theme/public asset directories such as `src/public/assets`, not to a tracked `frontend/build` directory.
+
+### Twig Globals
+
+Available Twig globals to review when updating custom templates include:
+
+| Global | Description |
+|--------|-------------|
+| `app_area` | `"admin"` or `"client"` |
+| `current_theme` | The active theme code |
+| `request` | Query parameters from the current request |
+| `request_query` | Original query parameters array |
+| `request_path` | Normalized route path |
+| `request_has_filters` | Boolean indicating active filters in the request |
+| `default_currency` | The default currency code |
+| `FOSSBillingVersion` | The current version string |
+
+### Twig Filter Changes
+
+The following filters have been **removed**:
+
+| Removed filter | Replacement |
+|----------------|-------------|
+| `alink` | `url` with `area: 'admin'` — `{{ 'staff/login' \| url({area: 'admin'}) }}` |
+| `link` | `url` — `{{ 'order' \| url }}` |
+| `gravatar` | `avatar` function — `{{ avatar(email, 80) }}` (uses DiceBear locally) |
+| `library_url` | `public_asset_url` |
+| `markdown` | `markdown_to_html` — `{{ content \| markdown_to_html }}` |
+| `size` | `file_size` — `{{ 1048576 \| file_size }}` |
+| `number` | `format_number` (from Twig Intl Extra) |
+| `money` / `money_without_currency` | `format_currency` — `{{ 29.99 \| format_currency('USD') }}` |
+| `money_convert` / `money_convert_without_currency` | No direct Twig filter replacement. Convert the amount before rendering, then format it with `format_currency`. |
+| `img_tag` | Use standard `<img>` HTML |
+| `iplookup` | Removed. |
+| `ipcountryname` | Renamed to `ip_country_name` |
+| `autolink` | Removed. |
+
+The following filters and functions have been **added**:
+
+| New filter/function | Description |
+|---------------------|-------------|
+| `public_asset_url` | URL for shared core assets in `/public` |
+| `url` | Now accepts `area` parameter (`'admin'` / `'client'`) to replace both old `alink` and `link` |
+| `has_permission` | Check admin module permission in templates |
+| `render_widgets` | Render widgets for a named slot |
+| `svg_sprite` | Render the theme's SVG icon sprite |
+| `antispam_honeypot` | Return honeypot configuration array |
+| `wysiwyg` | Initialize CKEditor 5 on a textarea selector |
+| `avatar` | Generate DiceBear avatar image for an email address |
+| `script_tag` | Generate `<script>` tag with cache-busting hash |
+| `stylesheet_tag` | Generate `<link>` stylesheet tag with cache-busting hash |
+| `file_size` | Format bytes to human-readable size (replaces `size`) |
+| `hash` | Hash a value (defaults to xxh128) |
+| `api_url` | Supports `role` parameter to override the API area |
+
+### Theme HTML Changes
+
+Key template changes in both bundled themes (admin_default and huraga):
+
+- `<html lang="en">` → `<html lang="{{ active_locale }}">` where `active_locale` is derived from the active locale.
+- `<meta property="bb:url">` and `<meta property="bb:client_area">` removed.
+- `<meta name="csrf-token">` removed (see CSRF section above).
+- `encore_entry_link_tags` / `encore_entry_script_tags` → direct asset links (see above).
+- Old admin redirect `bb.redirect(...)` → `window.location = ...`.
+- The `macro_functions.html.twig` import removed from layout files; macros are now loaded individually.
+- Language selectors use `js-locale-selector` class instead of `js-language-selector`.
+- New widget slots: `{{ render_widgets('client.theme.body.start') }}` in Huraga.
+- Dashboard cards rewritten with AJAX-loaded content.
+- Tables, pagination, forms, and search have been revamped with new markup and CSS.
+
+## Guest API Lockdown
+
+The guest API has been hardened to expose less information publicly:
+
+- The guest `system/version` API action (`guest.system_version` in Twig) has been **removed** — versions are no longer disclosed to unauthenticated callers.
+- `guest.system_company()` hides extra company fields from unauthenticated callers when the `hide_company_public` setting is enabled.
+- `guest.system_phone_codes()` no longer accepts a `country` parameter for single-code lookups; it returns all codes.
+- `guest.support_ticket_create()` now requires `name`, `email`, `subject`, and `message` parameters through the `RequiredParams` attribute. Rate limiting is enforced.
+- Messages submitted via guest ticket creation are now sanitized to prevent XSS.
+
+If your integration depends on any of these guest endpoints, update accordingly.
+
+## Architecture & Module Development Changes
+
+### Symfony HttpKernel Routing
+
+The custom HTTP and routing layer (`Box_App`, `Box_AppAdmin`, `Box_AppClient`) has been replaced by Symfony's HttpKernel, HttpFoundation, and Routing components.
+
+- `Box_App` still exists and exposes `$app->get()`, `$app->post()`, `$app->render()` for backward compatibility in module controllers.
+- `Box_App::run()` now returns a `Symfony\Component\HttpFoundation\Response` instead of a string.
+- `Box_App::show404()` returns a `Response` object instead of echoing and exiting.
+- Module controllers can return `Response` objects directly.
+- New `HttpResponseException` allows aborting with a response from anywhere in the call stack.
+- `RequestFactory` normalizes route paths from Symfony's `Request` object.
+
+### Box_Mod → FOSSBilling\Module
+
+The `Box_Mod` class has been reworked into `FOSSBilling\Module`:
+
+{% tabs %}
+{% tabitem label="Before (0.7.x)" %}
+```php
+$mod = new Box_Mod('Example');
+```
+{% /tabitem %}
+{% tabitem label="After (0.8.0)" %}
+```php
+$mod = new FOSSBilling\Module('Example');
+```
+{% /tabitem %}
+{% /tabs %}
+
+The new class uses Symfony Filesystem/Path components internally and supports additional methods like `hasSettingsPage()`, `hasClientController()`, and `hasAdminController()`.
+
+### Paginator Changes
+
+Legacy global paginator usage should be replaced with `FOSSBilling\Paginator` (metadata only) and `FOSSBilling\Pagination` (Doctrine-backed data retrieval):
+
+{% tabs %}
+{% tabitem label="Before (0.7.x)" %}
+```php
+$p = new \Box_Paginator($itemsCount, $currentPage, $limit, $midRange);
+```
+{% /tabitem %}
+{% tabitem label="After (0.8.0)" %}
+```php
+$p = new \FOSSBilling\Paginator($itemsCount, $currentPage, $limit, $midRange);
+$p->toArray(); // Same output format
+```
+{% /tabitem %}
+{% /tabs %}
+
+For Doctrine-backed pagination, use `FOSSBilling\Pagination` with `PaginationOptions`:
+
+```php
+$pagination = $this->di['pagination'];
+$options = \FOSSBilling\PaginationOptions::fromArray($data);
+$result = $pagination->paginateDoctrineQuery($queryBuilder, $options);
+```
+
+### Permission System
+
+Permissions have been expanded and enforced more strictly across all modules:
+
+- New `checkPermissionsAndThrowException($module, $permission)` method on the Staff service.
+- New `has_permission` Twig function for template-level permission checks.
+- Email permission keys added for finer-grained email access control.
+- Module names are now normalized in permission checks (`hasManagePermission`).
+- Expanded permission checks enforce `'view'` and `'manage_tickets'` etc. throughout modules.
+
+If you have custom admin modules, verify your permission configurations.
+
+### New Twig Infrastructure
+
+The Twig system has been refactored into dedicated classes:
+
+- `FOSSBilling\Twig\TwigFactory` — Creates Twig environments for admin, client, email, adapters, and theme settings.
+- `FOSSBilling\Twig\TwigLoader` — New filesystem loader with proper priority: `html_custom/` > `html/` > module templates.
+- `FOSSBilling\Twig\Extension\FOSSBillingExtension` — Core filters (`url`, `asset_url`, `trans`, `timeago`, etc.).
+- `FOSSBilling\Twig\Extension\ApiExtension` — API-related filters/functions (`api_url`, `fb_api_form`, `fb_api_link`).
+- `FOSSBilling\Twig\Extension\LegacyExtension` — Backward-compatible filters (`ip_country_name`, `ip_country_code`, `mod_asset_url`, `period_title`).
+- `FOSSBilling\Twig\Extension\DebugBarExtension` — Debug bar integration.
+- `FOSSBilling\Twig\EmailPolicy` / `FOSSBilling\Twig\AdapterPolicy` — Sandbox policies for email and adapter templates.
+- `FOSSBilling\Twig\SandboxedStringRenderer` — Sandboxed rendering for user-provided template strings.
+
+The old `Box_TwigExtensions` and `Box_TwigLoader` classes have been removed.
+
+## Gravatar Removed
+
+Gravatar has been removed. User avatars are now generated locally using DiceBear. The `gravatar` Twig filter no longer exists; use the `avatar` function instead:
+
+```twig
+{{ avatar(email, 80) }}
+```
+
+## Honeypot Enabled by Default
+
+The new Antispam module enables honeypot spam prevention by default for supported forms such as signup. If you have custom signup or public submission forms, use the `antispam_honeypot` function to include honeypot fields:
+
+```twig
+{\% set honeypot = antispam_honeypot() %}
+{\% if honeypot.enabled %}
+  <input type="text" name="{{ honeypot.field }}" value="" tabindex="-1" autocomplete="off">
+{\% endif %}
+```
+
+## Rate Limiter
+
+The old `api.rate_*` configuration settings have been replaced by a centralized `rate_limiter` block:
+
+```php
+'rate_limiter' => [
+    'enabled' => true,
+    'whitelist_ips' => [],
+    // Override individual policies as needed
+],
+```
+
+The rate limiter is now enforced on guest ticket creation and other public endpoints. Policies are defined in `FOSSBilling\Security\RateLimiter::getDefaultConfig()`.
+
+## Widget System
+
+0.8.0 introduces a new widget system for rendering dynamic content in template slots. Use `render_widgets` in your theme templates:
+
+```twig
+{{ render_widgets('client.theme.body.start') }}
+{{ render_widgets('client.theme.body.end') }}
+```
+
+Widgets are registered by modules and can be created by implementing the `WidgetProviderInterface`.
+
+## Email Templates
+
+File-backed email templates are now supported in addition to the database-stored templates. The email Twig environment is now sandboxed for security, restricting available filters and globals.
+
+## Deprecations & Removals (Summary)
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| `Box_Mod` | Removed | Replaced by `FOSSBilling\Module` |
+| `Box_Paginator` | Removed | Replaced by `FOSSBilling\Paginator` |
+| `Box_TwigExtensions` | Removed | Split into dedicated extension classes |
+| `Box_TwigLoader` | Removed | Replaced by `FOSSBilling\Twig\TwigLoader` |
+| `ramsey/uuid` | Removed | Replaced by `symfony/uid` |
+| Webpack Encore | Removed | Replaced by esbuild |
+| jQuery | Removed | Vanilla JS used throughout |
+| Gravatar | Removed | Replaced by DiceBear |
+| `Api/API.js` path | Removed | Replaced by `frontend/core/api.js` |
+| `DebugBar_renderHead()` | Removed | Use `debug_bar_render_head()` |
+| `alink` / `link` filters | Removed | Use `url` with `area` parameter |
+| `gravatar` filter | Removed | Use `avatar` function |
+| `library_url` filter | Removed | Use `public_asset_url` |
+| `markdown` filter | Removed | Use `markdown_to_html` |
+| `size` filter | Removed | Use `file_size` |
+| `money` / `money_without_currency` filters | Removed | Use `format_currency` |
+| `money_convert` / `money_convert_without_currency` filters | Removed | Convert values before rendering, then use `format_currency` |
 
 ## Encryption Format Update
 
