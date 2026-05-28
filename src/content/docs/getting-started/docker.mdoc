@@ -21,9 +21,11 @@ Use the `latest` tag for the current stable release.
 The simplest option. This runs only the FOSSBilling container, so you must provide your own database service.
 
 ```bash
-docker run -d -p 80:80 \
+docker run -d \
+  --name fossbilling \
+  -p 80:80 \
   -v fossbilling:/var/www/html \
-  --restart=always \
+  --restart unless-stopped \
   fossbilling/fossbilling:latest
 ```
 
