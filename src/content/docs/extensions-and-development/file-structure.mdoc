@@ -18,6 +18,13 @@ Runtime data storage:
 
 This directory should be writable by the web server.
 
+### `/src/public`
+
+Public core assets that must be web-accessible:
+- **Assets** — Shared built browser assets (`/public/assets`), including the API wrapper, shared runtime, Markdown CSS, and CKEditor bundle
+- **Branding** — Default logo, dark logo, and favicon (`/public/branding`)
+- **Gateway icons** — Payment gateway logos (`/public/gateways`)
+
 ### `/src/install`
 
 The installation wizard. Automatically deleted after installation unless `APP_ENV=dev` is set.
@@ -28,7 +35,7 @@ Core PHP classes and business logic.
 
 #### `/src/library/Api`
 
-Core API files including the JavaScript wrapper (`API.js`). [See the wrapper docs](/extensions-and-development/javascript/).
+Core PHP API files. The browser-side API wrapper source now lives in `/frontend/core/api.js` and builds to `/src/public/assets/js/api.js`. [See the wrapper docs](/extensions-and-development/javascript/).
 
 #### `/src/library/Box`
 
@@ -87,6 +94,19 @@ These are for shared hosting control panels. For VPS or game servers, consider c
 
 Translations as a Git submodule. Pointing to [github.com/FOSSBilling/locale](https://github.com/FOSSBilling/locale).
 
+### `/frontend`
+
+Shared frontend source and build tooling:
+
+| Path | Purpose |
+|------|---------|
+| `core/` | Shared browser runtime and API wrapper source |
+| `editor/` | CKEditor integration source |
+| `styles/` | Shared CSS such as Markdown rendering styles |
+| `tools/` | Common esbuild, Sass, PostCSS, asset copy, and PurgeCSS helpers used by theme builds |
+
+The root `npm run build` command builds this directory into `/src/public/assets`.
+
 ### `/src/modules`
 
 All modules live here. Each module is a self-contained unit of functionality.
@@ -122,6 +142,7 @@ Theme structure:
 ```
 theme-name/
 ├── assets/                 # CSS, JS, images (built via esbuild)
+│   └── build/              # Generated theme assets and manifest
 ├── config/
 │   └── settings.html.twig  # Theme settings UI
 ├── html/                   # Twig templates
