@@ -1,0 +1,88 @@
+---
+title: Upgrading from 0.7.x to 0.8.0
+description: Version-specific upgrade notes for moving a FOSSBilling 0.7.x installation to 0.8.0.
+sidebar:
+  label: 0.7.x to 0.8.0
+  order: 2
+---
+
+The 0.8.0 release includes significant database and structural changes. Read the notes below before upgrading.
+
+## Database & Charset Migration
+
+The database charset has been migrated from `utf8` to `utf8mb4` / `utf8mb4_unicode_ci`. The patcher handles this automatically.
+
+## Configuration Changes
+
+- `db.type` has been renamed to `db.driver` and its value changed from `'mysql'` to `'pdo_mysql'`. The patcher migrates this for you.
+- Old `api.rate_*` settings (`rate_span`, `rate_limit`, `throttle_delay`, `rate_span_login`, `rate_limit_login`, `rate_limit_whitelist`) have been replaced by the new `rate_limiter` block. The patcher will prompt you to accept the new defaults.
+- The `url` setting no longer stores the protocol prefix; it is stripped on save.
+
+## Module Migrations
+
+The following modules have been removed or replaced. The patcher handles the migration automatically, but you may need to review your configuration afterward:
+
+| Change | Details |
+|--------|---------|
+| `Servicemembership` removed | Membership products and orders are migrated to the "custom" product type. Review active membership orders after updating. |
+| `Spamchecker` replaced | Replaced by the new `Antispam` module (supports honeypot fields). Review your spam-protection settings after the update. |
+| `Wysiwyg` removed | Functionality replaced by built-in theme JavaScript. |
+| `Paidsupport` removed | Module data is cleaned up. |
+
+## Uploads Directory
+
+The uploads directory has moved from `/uploads` to `/data/uploads`. Files are migrated automatically. If you have web-server rules referencing the old path, update them:
+
+{% tabs %}
+{% tabitem label="NGINX" %}
+```nginx
+# Old rule (0.7.x):
+location ~* /uploads/.*\.php$ { return 403; }
+
+# Updated for 0.8.0:
+location ^~ /data/ { return 403; }
+```
+{% /tabitem %}
+{% tabitem label="Apache (.htaccess)" %}
+The bundled `.htaccess` is updated automatically with the new release. If you maintain a custom `.htaccess`, update it to block `/data/` instead of `/uploads/`.
+{% /tabitem %}
+{% /tabs %}
+
+## Template Directory Restructure
+
+Module templates have been moved from the old `html_*` directory names to a `templates/` structure. Theme directories (`html/` and `html_custom/`) are unchanged.
+
+| Old path | New path |
+|----------|----------|
+| `modules/{Module}/html_admin/` | `modules/{Module}/templates/admin/` |
+| `modules/{Module}/html_client/` | `modules/{Module}/templates/client/` |
+| `modules/{Module}/html_email/` | `modules/{Module}/templates/email/` |
+
+The patcher removes the old `html_*` directories from modules. If you have custom modules, **update your file structure before applying the patches**, or the old directories will be deleted and you will lose your changes.
+
+## Public Assets
+
+Shared browser assets now live in `/public` instead of `/data/assets` or theme-specific fallback paths:
+
+| Asset | New location |
+|-------|--------------|
+| Gateway icons | `/public/gateways/` |
+| Default logo, dark logo, and favicon | `/public/branding/` |
+| Shared JavaScript, Markdown CSS, and CKEditor bundles | `/public/assets/` |
+
+The patcher migrates bundled gateway icons and default branding settings automatically. If you maintain custom web-server rules, make sure `/public` remains publicly readable while `/data` remains blocked.
+
+Custom themes should load shared frontend assets with `public_asset_url`, for example `{{ 'js/api.js'|public_asset_url|script_tag }}`. The old `library/Api/API.js` path has been removed.
+
+## Encryption Format Update
+
+Custom payment adapters or modules that store encrypted data using FOSSBilling's encryption may need their data re-encrypted after the update. The patcher (patch 50) handles this migration automatically for core data, but custom implementations should be verified.
+
+## Post-Upgrade Checklist
+
+- [ ] Review spam/anti-spam settings (`Antispam` module replaces `Spamchecker`)
+- [ ] Review active membership orders migrated to custom products
+- [ ] Update web-server rules if you have custom NGINX/Apache configs
+- [ ] Verify custom modules use the new `templates/` directory structure (custom themes are unaffected)
+- [ ] Verify custom themes load shared assets from `/public/assets` with `public_asset_url`
+- [ ] Clear the cache: **System → Tools → Clear cache**
