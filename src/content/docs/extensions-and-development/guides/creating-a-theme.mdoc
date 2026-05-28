@@ -30,7 +30,8 @@ themes/mytheme/
 ├── assets/                     # CSS, JS, images (built via esbuild)
 │   ├── css/
 │   ├── js/
-│   └── img/
+│   ├── img/
+│   └── build/               # Generated assets and manifest
 ├── config/
 │   └── settings.html.twig      # Theme settings UI (optional)
 ├── html/                       # Your templates
@@ -122,8 +123,17 @@ FOSSBilling provides [custom filters](/extensions-and-development/twig-filters) 
 {{ price | format_currency(currency.code) }} {# Format currency #}
 {{ 'client/manage' | url(area: 'admin') }}   {# Admin panel link #}
 {{ 'css/theme.css' | asset_url }}            {# Theme asset URL #}
+{{ 'js/api.js' | public_asset_url }}         {# Shared core asset URL #}
 {{ date | timeago }}                         {# "2 hours ago" #}
 {{ content | markdown_to_html }}             {# Parse Markdown #}
+```
+
+Custom layouts that do not extend the bundled themes should load the shared runtime and API wrapper before theme JavaScript:
+
+```twig
+{{ 'js/fossbilling.js'|public_asset_url|script_tag }}
+{{ 'js/api.js'|public_asset_url|script_tag }}
+<script src="{{ 'build/js/mytheme.js'|asset_url }}"></script>
 ```
 
 ## Security Best Practices

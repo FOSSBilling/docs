@@ -21,42 +21,45 @@ Use the `latest` tag for the current stable release.
 The simplest option. This runs only the FOSSBilling container, so you must provide your own database service.
 
 ```bash
-docker run -d -p 80:80 \
+docker run -d \
+  --name fossbilling \
+  -p 80:80 \
   -v fossbilling:/var/www/html \
-  --restart=always \
+  --restart unless-stopped \
   fossbilling/fossbilling:latest
 ```
 
 Then open your server IP or hostname in a browser to complete the web installer.
 {% /tabitem %}
 {% tabitem label="Docker Compose" %}
-This option brings up FOSSBilling and MySQL together, which makes it the fastest way to get started.
+This option brings up FOSSBilling and MariaDB together, which makes it the fastest way to get started.
 
-```yaml
-version: "3.9"
+```yaml {% meta="title='docker-compose.yml'" %}
 services:
   fossbilling:
     image: fossbilling/fossbilling:latest
-    restart: always
+    restart: unless-stopped
     ports:
-      - 80:80
+      - "80:80"
     volumes:
       - fossbilling:/var/www/html
+    depends_on:
+      - mariadb
 
-  mysql:
-    image: mysql:8.4
-    restart: always
+  mariadb:
+    image: mariadb:lts
+    restart: unless-stopped
     environment:
-      MYSQL_DATABASE: fossbilling
-      MYSQL_USER: fossbilling
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?set-a-strong-database-password}
-      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+      MARIADB_DATABASE: fossbilling
+      MARIADB_USER: fossbilling
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:?set-a-strong-database-password}
+      MARIADB_RANDOM_ROOT_PASSWORD: "1"
     volumes:
-      - mysql:/var/lib/mysql
+      - mariadb:/var/lib/mysql
 
 volumes:
   fossbilling:
-  mysql:
+  mariadb:
 ```
 
 Run it:
@@ -70,14 +73,14 @@ The first startup downloads container images, so it may take a few minutes.
 Before starting the stack, set a strong database password:
 
 ```bash
-export MYSQL_PASSWORD="$(openssl rand -base64 32)"
+export MARIADB_PASSWORD="$(openssl rand -base64 32)"
 ```
 
 **Database credentials** (if using the example above):
-- Hostname: `mysql`
+- Hostname: `mariadb`
 - Database: `fossbilling`
 - Username: `fossbilling`
-- Password: the value of `MYSQL_PASSWORD`
+- Password: the value of `MARIADB_PASSWORD`
 
 Open `http://localhost` or your server's IP/hostname to continue with the installer.
 {% /tabitem %}
@@ -85,8 +88,6 @@ Open `http://localhost` or your server's IP/hostname to continue with the instal
 
 ## Post-Installation
 
-After installation, set up the cron job on your host:
+The official Docker image runs FOSSBilling cron automatically every five minutes inside the container.
 
-```bash
-(crontab -l; echo "*/5 * * * * docker exec <container-name/id> su www-data -s /usr/local/bin/php /var/www/html/cron.php") | awk '!x[$0]++' | crontab -
-```
+You do not need to add a host crontab entry when using the official Docker image.

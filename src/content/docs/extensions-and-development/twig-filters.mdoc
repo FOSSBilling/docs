@@ -50,7 +50,7 @@ Project-specific filters and functions are defined in these classes:
 | Filter | Description |
 |--------|-------------|
 | `asset_url` | Get the URL for a theme asset. |
-| `library_url` | Get the URL for the library folder. |
+| `public_asset_url` | Get the URL for a shared core public asset built into `/public/assets`. |
 | `mod_asset_url` | Get the URL for a module asset. Use the asset path as the filtered value and the module name as the argument. |
 | `script_tag` | Generate an HTML `<script>` tag. |
 | `stylesheet_tag` | Generate an HTML `<link>` tag for CSS. |
@@ -74,6 +74,7 @@ Project-specific filters and functions are defined in these classes:
 | `svg_sprite` | Render the current theme's SVG icon sprite when available. |
 | `has_permission` | Check whether the logged-in admin has a module permission. |
 | `antispam_honeypot` | Return the antispam honeypot configuration array. |
+| `wysiwyg` | Load and initialize the shared CKEditor bundle for a selector. |
 
 ## Usage Examples
 
@@ -98,12 +99,17 @@ Project-specific filters and functions are defined in these classes:
 {# Theme and module assets #}
 <link rel="stylesheet" href="{{ 'css/theme.css'|asset_url }}">
 <script src="{{ 'js/widget.js'|mod_asset_url('Example') }}"></script>
+{{ 'js/fossbilling.js'|public_asset_url|script_tag }}
+{{ 'js/api.js'|public_asset_url|script_tag }}
 
-{# API form handled by Api/API.js #}
+{# API form handled by the shared API wrapper #}
 <form action="{{ 'profile/update'|api_url }}" {{ fb_api_form({ message: 'Saved'|trans }) }}>
   <input type="text" name="first_name">
   <button type="submit">{{ 'Save'|trans }}</button>
 </form>
+
+{# Shared editor bundle #}
+{{ wysiwyg('.editor-textarea') }}
 
 {# API link with a confirmation modal #}
 <a href="{{ 'client/delete'|api_url(query: { id: client.id }, role: 'admin') }}"

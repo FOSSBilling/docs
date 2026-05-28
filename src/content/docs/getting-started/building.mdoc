@@ -14,7 +14,7 @@ Build FOSSBilling from source when you want to contribute code, test changes loc
 Make sure you have:
 - PHP 8.3 or newer
 - [Composer](https://getcomposer.org/) (latest version)
-- [Node.js](https://nodejs.org/) (LTS version) with npm
+- [Node.js](https://nodejs.org/) with npm 11 or newer
 {% /aside %}
 
 ## Build Steps
@@ -46,6 +46,8 @@ Make sure you have:
    npm run build
    ```
 
+   This builds the shared frontend assets into `src/public/assets` and builds the bundled `admin_default` and `huraga` theme assets.
+
 5. **Add translations** (optional)
 
    Download the [latest translations](https://github.com/FOSSBilling/locale/releases/tag/latest) and extract to `src/locale/`, overwriting existing files.
@@ -54,13 +56,19 @@ After these steps, your checkout is ready for local development or for packaging
 
 ## Development Mode
 
-For active development:
+For active theme development, use the theme workspace scripts:
 
 ```bash
-npm run dev
+npm run build-admin_default
+npm run build-huraga
 ```
 
-This watches files and rebuilds automatically when you make changes.
+The Huraga theme also supports watch mode:
+
+```bash
+cd src/themes/huraga
+npm run dev
+```
 
 ## Running Locally
 

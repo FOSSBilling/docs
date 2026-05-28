@@ -27,10 +27,13 @@ For the latest changes, start with the [most recent release](https://github.com/
 | **Configuration** | New `rate_limiter` block replaces old `api.rate_*` keys; new `trusted_proxies` and `auto_detect_locale` settings |
 | **Modules** | `Antispam` replaces `Spamchecker`; `Servicemembership`, `Paidsupport`, `Wysiwyg` removed; new `Widgets` module |
 | **Templates** | All module templates moved from `html_*` to `templates/{admin,client,email}/` |
-| **Build** | Front-end asset build migrated from webpack to esbuild |
-| **Library** | New Doctrine ORM layer alongside RedBean; Symfony Rate Limiter, Uid, Sanitizer, Serializer, PropertyAccess components added; `Box_Mod`, `Box_Paginator`, `Box_TwigExtensions` removed |
-| **Patcher** | Extended through patch 63 (was 43) |
-| **Uploads** | Moved from `/uploads` to `/data/uploads` |
+| **Build** | Front-end asset build migrated from Webpack Encore to esbuild; jQuery removed; shared frontend source now lives in `/frontend`; assets built into `/src/public/assets` |
+| **Routing** | Custom HTTP layer replaced with Symfony HttpKernel, HttpFoundation, and Routing components |
+| **Themes** | Asset loading (`encore_entry_*` → direct tags), Twig filter removals (`alink`, `link`, `gravatar`, `library_url`, `markdown`, `size`, legacy `money*` filters), `DebugBar_renderHead()` → `debug_bar_render_head()`, new `public_asset_url` filter, new `url` filter with `area` parameter |
+| **API** | Guest API hardened: `system_version` endpoint removed, public company data can be restricted with `hide_company_public`, rate limiting on guest ticket creation |
+| **Library** | New Doctrine ORM layer alongside RedBean; Symfony Rate Limiter, Uid, Sanitizer, Serializer, PropertyAccess components added; `Box_Mod`, `Box_Paginator`, `Box_TwigExtensions` removed; Gravatar replaced with DiceBear |
+| **Patcher** | Extended through patch 64 (was 43) |
+| **Uploads & Public Assets** | Uploads moved from `/uploads` to `/data/uploads`; gateway and default branding assets moved to `/public` |
 
 [View the full 0.8.0 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/latest) for the complete list of changes.
 
