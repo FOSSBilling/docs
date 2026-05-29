@@ -38,10 +38,10 @@ The following modules have been removed or replaced. The patcher handles the mig
 | Change | Details |
 |--------|---------|
 | `Servicemembership` removed | Membership products and orders are migrated to the "custom" product type. Review active membership orders after updating. |
-| `Spamchecker` replaced | Replaced by the new `Antispam` module (supports Cloudflare Turnstile, hCaptcha, and honeypot fields). Review your spam-protection settings after the update. |
+| `Spamchecker` replaced | Replaced by the new [`Antispam`](/admin-guide/anti-spam/) module (supports Cloudflare Turnstile, hCaptcha, and honeypot fields). Review your spam-protection settings after the update. |
 | `Wysiwyg` removed | CKEditor 5 is now integrated directly into themes. Use the `wysiwyg` Twig function to initialize editors. |
 | `Paidsupport` removed | Module data is cleaned up. |
-| Added `Antispam` | New spam-prevention module with multiple challenge providers. |
+| Added `Antispam` | New [spam-prevention module](/admin-guide/anti-spam/) with multiple challenge providers. |
 | Added `Widgets` | New module for registering renderable widget slots in templates. |
 
 ## Uploads Directory
@@ -361,7 +361,7 @@ Gravatar has been removed. User avatars are now generated locally using DiceBear
 
 ## Honeypot Enabled by Default
 
-The new Antispam module enables honeypot spam prevention by default for supported forms such as signup. If you have custom signup or public submission forms, use the `antispam_honeypot` function to include honeypot fields:
+The new [Antispam module](/admin-guide/anti-spam/) enables honeypot spam prevention by default for supported forms such as signup. If you have custom signup or public submission forms, use the `antispam_honeypot` function to include honeypot fields:
 
 ```twig
 {\% set honeypot = antispam_honeypot() %}
