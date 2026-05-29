@@ -57,6 +57,10 @@ export default defineConfig({
               slug: 'admin-guide/email-templates',
             },
             {
+              label: 'Anti-Spam',
+              slug: 'admin-guide/anti-spam',
+            },
+            {
               label: 'Localization',
               slug: 'admin-guide/localization',
             },

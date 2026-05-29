@@ -1,0 +1,120 @@
+---
+title: The Anti-Spam Module
+description: Configure FOSSBilling's anti-spam module to reduce abusive registrations, public tickets, and login attempts.
+---
+
+The Anti-Spam module helps reduce automated abuse by combining CAPTCHA checks, IP blocking, disposable email detection, Stop Forum Spam lookups, and a hidden signup honeypot field.
+
+Use these protections together. CAPTCHA and honeypot checks help block automated signups, while IP and email checks help block repeated abusive traffic.
+
+## What It Protects
+
+Anti-spam checks run before several public and client actions:
+
+| Protection | Applies To |
+|------------|------------|
+| IP blocking | Client signup, public ticket opening, client profile updates, client login, admin login |
+| CAPTCHA | Client signup and public ticket opening |
+| Stop Forum Spam | Client signup and public ticket opening |
+| Disposable email detection | Client signup and public ticket opening |
+| Honeypot | Client signup |
+
+## IP Blocking
+
+Enable **IP Blocking** to reject requests from known abusive IP addresses.
+
+Add one IP address per line in the blocked IP list:
+
+```text
+203.0.113.10
+2001:db8::10
+```
+
+Blocked IP addresses cannot log in, register, update client details, or open public tickets.
+
+## CAPTCHA Protection
+
+Enable **CAPTCHA** to require visitors to complete a verification challenge before submitting protected public forms.
+
+FOSSBilling supports these providers:
+
+| Provider | Required Settings | Notes |
+|----------|-------------------|-------|
+| Google reCAPTCHA v2 | Site key, secret key | Shows a visible reCAPTCHA challenge |
+| Google reCAPTCHA v3 | Site key, secret key, minimum score | Uses a score from `0.0` to `1.0`; higher thresholds are stricter |
+| Cloudflare Turnstile | Site key, secret key | Uses Cloudflare's CAPTCHA alternative |
+| hCaptcha | Site key, secret key | Uses hCaptcha verification |
+
+Get provider keys from the provider's dashboard:
+
+- [Google reCAPTCHA](https://www.google.com/recaptcha/about/)
+- [Cloudflare Turnstile](https://www.cloudflare.com/products/turnstile/)
+- [hCaptcha](https://www.hcaptcha.com/)
+
+### reCAPTCHA v3 Score
+
+For reCAPTCHA v3, FOSSBilling compares Google's score with the configured minimum score. The default is `0.5`.
+
+- Lower values allow more submissions but may let more spam through
+- Higher values block more suspicious submissions but may reject legitimate users
+- Keep the value between `0.0` and `1.0`
+
+## Stop Forum Spam
+
+Enable **Stop Forum Spam** to check submitted IP and email details against the [Stop Forum Spam](https://stopforumspam.com/) database before signup or public ticket creation.
+
+If Stop Forum Spam reports a submitted username, email address, or IP address as abusive, FOSSBilling rejects the request.
+
+{% aside type="note" %}
+This feature depends on the external Stop Forum Spam API. If the service is unavailable or returns an unsuccessful response, FOSSBilling does not block the request based on that lookup alone.
+{% /aside %}
+
+## Disposable Email Protection
+
+Enable **Disposable Email Protection** to reject email addresses from temporary or throwaway email domains.
+
+FOSSBilling downloads the disposable domain list from the [FakeFilter](https://github.com/7c/fakefilter) project and caches it for 24 hours. If the list cannot be downloaded, FOSSBilling retries later and does not block addresses from an empty list.
+
+## Honeypot Protection
+
+Enable **Honeypot Protection** to add a hidden field to the signup form. Most people never fill this field, but simple bots often do.
+
+The default honeypot field name is `bio`. If the field is submitted with a value, FOSSBilling rejects the registration and records an informational log entry.
+
+Change the field name if you suspect bots are learning to ignore the default field.
+
+## Recommended Setup
+
+For most production installations:
+
+1. Enable a CAPTCHA provider and confirm the site key and secret key are correct
+2. Keep disposable email protection enabled
+3. Keep honeypot protection enabled
+4. Enable Stop Forum Spam and make sure your server can make outbound requests to `stopforumspam.com`
+5. Use IP blocking for repeat offenders, not as the only spam control
+
+## Troubleshooting
+
+### CAPTCHA Always Fails
+
+- Check that the selected provider matches the keys you entered
+- Verify that the site key is allowed for your billing domain in the provider dashboard
+- Confirm your server can make outbound HTTPS requests to the provider verification endpoint
+- For reCAPTCHA v3, try lowering the minimum score if legitimate users are being rejected
+
+### Legitimate Email Addresses Are Blocked
+
+- Disable disposable email protection temporarily to confirm whether it is the cause
+- Ask the user for a non-disposable email address
+- Check whether the domain appears in the FakeFilter list
+
+### Users Are Blocked by IP Address
+
+- Review the blocked IP list and remove stale entries
+- If FOSSBilling is behind a reverse proxy, configure trusted proxies correctly so FOSSBilling sees the real visitor IP. See [Configuration File](/admin-guide/config/#trusted-proxies).
+
+### Signups Fail Without a Visible CAPTCHA Error
+
+- Check whether honeypot protection is enabled
+- Review logs for the message `Potential spam registration blocked`
+- Change the honeypot field name if bots are targeting the default field
