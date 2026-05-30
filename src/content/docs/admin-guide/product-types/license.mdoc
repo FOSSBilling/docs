@@ -99,8 +99,7 @@ payload = {
     "license": "MYAPP-ABCD1-EFGH2-IJKL3-MNOP4",
     "host": "customer-site.com",
     "version": "1.2.3",
-    "path": "/var/www/myapp",
-    "format": 2
+    "path": "/var/www/myapp"
 }
 
 response = requests.post(url, json=payload)
@@ -126,8 +125,8 @@ print(response.json())
 | Field | Type | Description |
 |-------|------|-------------|
 | `licensed_to` | string | Name of the license owner |
-| `created_at` | string | License creation date |
-| `expires_at` | string or null | Expiry date, or `null` if no expiry |
+| `created_at` | string | License creation date (ISO 8601) |
+| `expires_at` | string or null | Expiry date in ISO 8601, or `null` if no expiry |
 | `valid` | bool | Whether the license passed all validation checks |
 
 #### Error Codes
