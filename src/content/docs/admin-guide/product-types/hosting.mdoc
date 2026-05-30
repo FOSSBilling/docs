@@ -46,3 +46,22 @@ Anything not listed above likely won't work. Check our [server managers document
 4. Link them to your hosting plans
 
 See [server manager guides](/admin-guide/server-managers/) for specific setup instructions.
+
+## Domain Options
+
+When configuring a hosting product, you choose which domain options customers can use during checkout:
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| Allow domain registration | Yes | Customers can register a new domain |
+| Allow domain transfer | Yes | Customers can transfer an existing domain |
+| Allow using own domain | Yes | Customers can point an existing domain they manage elsewhere |
+| Offer free subdomains | No | Customers get a free subdomain on a base domain you provide |
+
+### Free Subdomains
+
+Enable **Offer Free Subdomains** and enter a **Free Subdomain Base Domain** (e.g., `example.com`) to let customers choose a subdomain like `username.example.com` without registering or transferring a domain.
+
+- Duplicate subdomains are blocked — once a subdomain is assigned to an active order, it cannot be reused.
+- The base domain is configured per product and cannot be overridden by clients.
+- Free subdomains do not trigger domain registration or transfer charges.
