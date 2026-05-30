@@ -67,14 +67,14 @@ API.{role}.{method}(endpoint, params, onSuccess, onError, showSpinner)
 
 ## Examples
 
-### Get System Version (Guest)
+### Get Currency Pairs (Guest)
 
 ```javascript
 API.guest.get(
-  "system/version",
+  "currency/get_pairs",
   {},
   function(response) {
-    console.log("Version:", response);
+    console.log("Currency pairs:", response);
   },
   function(error) {
     console.error("Error:", error);
