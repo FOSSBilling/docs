@@ -45,27 +45,70 @@ Give customers their license key, then have your application validate it using t
 
 ## API Endpoints
 
-| Endpoint | Access | Description |
-|----------|--------|-------------|
-| `/admin/servicelicense/plugin_get_pairs` | Admin | List available license plugins |
-| `/admin/servicelicense/update` | Admin | Update license validation rules |
-| `/admin/servicelicense/reset` | Admin | Reset license to defaults |
-| `/guest/servicelicense/check` | Guest | Validate a license |
+| Endpoint | Method | Access | Description |
+|----------|--------|--------|-------------|
+| `/admin/servicelicense/plugin_get_pairs` | GET/POST | Admin | List available license plugins |
+| `/admin/servicelicense/update` | POST | Admin | Update license validation rules |
+| `/admin/servicelicense/reset` | POST | Admin | Reset license to defaults |
+| `/guest/servicelicense/check` | POST | Guest | Validate a license |
 
 ### Validating a License
 
-Call `/guest/servicelicense/check` with these parameters:
+Use a **POST** request with a **JSON body** to `/api/guest/servicelicense/check`. The endpoint requires no authentication.
 
-- `license` — the license key
-- `host` — the hostname
-- `version` — the software version
-- `path` — the installation path
+{% aside type="caution" %}
+Always send parameters in the **request body**. Query string parameters on a POST request are ignored.
+{% /aside %}
+
+#### Parameters
+
+| Parameter | Required | Type | Description |
+|-----------|:--------:|------|-------------|
+| `license` | Yes | string | The license key to validate |
+| `host` | Yes | string | Hostname of the installation (e.g., `example.com`) |
+| `version` | Yes | string | Software version (e.g., `1.0.0`) |
+| `path` | Yes | string | Installation path (e.g., `/var/www/app`) |
+
+The client's **IP address** is detected automatically from the request and does not need to be sent.
 
 {% aside type="tip" %}
 If you disabled validation for certain fields (like `host` or `version`), you can send dummy values for them.
 {% /aside %}
 
-**Success response:**
+#### Examples
+
+{% tabs %}
+{% tabitem label="curl" %}
+```bash
+curl -X POST "https://example.com/api/guest/servicelicense/check" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "license": "MYAPP-ABCD1-EFGH2-IJKL3-MNOP4",
+    "host": "customer-site.com",
+    "version": "1.2.3",
+    "path": "/var/www/myapp"
+  }'
+```
+{% /tabitem %}
+{% tabitem label="Python" %}
+```python
+import requests
+
+url = "https://example.com/api/guest/servicelicense/check"
+payload = {
+    "license": "MYAPP-ABCD1-EFGH2-IJKL3-MNOP4",
+    "host": "customer-site.com",
+    "version": "1.2.3",
+    "path": "/var/www/myapp"
+}
+
+response = requests.post(url, json=payload)
+print(response.json())
+```
+{% /tabitem %}
+{% /tabs %}
+
+#### Success Response
 
 ```json
 {
@@ -79,17 +122,29 @@ If you disabled validation for certain fields (like `host` or `version`), you ca
 }
 ```
 
-**Error response:**
+| Field | Type | Description |
+|-------|------|-------------|
+| `licensed_to` | string | Name of the license owner |
+| `created_at` | string | License creation date (ISO 8601) |
+| `expires_at` | string or null | Expiry date in ISO 8601, or `null` if no expiry |
+| `valid` | bool | Whether the license passed all validation checks |
 
-```json
-{
-  "result": null,
-  "error": {
-    "message": "Your license key is invalid.",
-    "code": 1005
-  }
-}
-```
+#### Error Codes
+
+| Code | Message |
+|------|---------|
+| 1000 | Invalid request. Parameters missing? |
+| 1001 | License key is not present in call |
+| 1002 | Host key is not present in call |
+| 1003 | Version key is not present in call |
+| 1004 | Path key is not present in call |
+| 1005 | Your license key is invalid |
+| 1006 | License is not active |
+| 1007 | IP address is not allowed for this license |
+| 1008 | Host is not allowed for this license |
+| 1009 | Version is invalid for this license |
+| 1010 | Software install path is invalid for this license |
+| 1020 | Plugin-specific validation failure |
 
 ## Custom License Plugins
 
