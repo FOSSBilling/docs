@@ -97,6 +97,17 @@ If you're using Cloudflare, enable **IP Geolocation** under your site's **Networ
 
 ## Reverse Proxies
 
+### Auto-Detection
+
+FOSSBilling can detect when it is running behind a reverse proxy. If forwarded headers (such as `X-Forwarded-For` or `Forwarded`) are present during installation, the installer shows a proxy configuration step with:
+
+- The detected proxy IP address
+- Whether the address is private/local
+- The detected header format
+- A suggested public URL derived from the forwarded headers
+
+You can enable trust directly in the installer or configure it later in `config.php` using the `trusted_proxies` setting.
+
 ### HTTPS Detection
 
 Reverse proxies often make FOSSBilling think it is being accessed over HTTP even when the visitor is using HTTPS. To avoid that, make sure your proxy forwards `X-Forwarded-Proto: https`.

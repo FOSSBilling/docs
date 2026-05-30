@@ -147,8 +147,10 @@ server {
 	If you see the FOSSBilling installer welcome page below, you're ready to proceed.
 	![The FOSSBilling Installer Landing Page](../../../assets/guides/install/installer-landing.png)
 4. **Complete the setup wizard**: Follow the on-screen steps to accept the license, enter your database credentials, and create your administrator account.
-5. **Configure the default currency**: Select your currency code (e.g., `USD`, `EUR`). The price format is auto-generated; place your currency symbol before or after the `{{price}}` placeholder, for example `{{price}} USD` or `$ {{price}}`.
-6. **Install**: Click install and wait for the success page to appear.
+5. **Confirm the public URL**: The installer shows a suggested FOSSBilling URL based on how you accessed it. Verify this is the correct public address for your installation (e.g., `https://billing.example.com/`).
+6. **Configure reverse proxy (if detected)**: If the installer detects forwarded headers from a reverse proxy, it shows a proxy configuration step where you can enable trusted proxy support and review the detected settings. Only enable this if the detected proxy is one you control and trust.
+7. **Configure the default currency**: Select your currency code (e.g., `USD`, `EUR`). The price format is auto-generated; place your currency symbol before or after the `{{price}}` placeholder, for example `{{price}} USD` or `$ {{price}}`.
+8. **Install**: Click install and wait for the success page to appear.
 
 {% aside type="tip" %}
 If installation fails, you may need to manually empty the database before retrying.

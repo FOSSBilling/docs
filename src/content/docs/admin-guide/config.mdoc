@@ -46,6 +46,12 @@ Configure reverse-proxy support so FOSSBilling correctly detects the visitor's I
 | `trusted_proxies.proxies` | `[]` | List of trusted proxy IPs or CIDR ranges |
 | `trusted_proxies.headers` | `x_forwarded` | Header type: `x_forwarded` (standard) or `forwarded` (RFC 7239) |
 
+{% aside type="tip" %}
+The installer and admin panel can detect reverse proxies automatically. When forwarded headers are detected, the installer shows a proxy configuration step with the detected proxy address and a suggested public URL. You can also review and configure proxy settings from **System** → **Settings** in the admin panel.
+{% /aside %}
+
+If you are running behind a reverse proxy, configure the `trusted_proxies` setting in your config (see above) so request metadata is interpreted correctly.
+
 ### Encryption Key
 
 - `salt` — Used for reversible encryption. **Keep this secret and don't change it** after installation.

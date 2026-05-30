@@ -32,5 +32,13 @@ The product will appear in your store like any other. After purchase, customers 
 
 - View download statistics per order
 - See which customers have downloaded files
-- Update files for existing products
+- Update files for existing products — when you replace a file, the old stored file is automatically cleaned up if no other products or orders reference it
 - Track popular downloads
+
+### File Storage
+
+Uploaded files are stored with a generated `stored_filename` (a unique 64-character hex identifier) separate from the display filename. This keeps the original file name visible to customers while preventing unauthorized file access through guessing or path traversal.
+
+When you upload a replacement file for a product:
+- Existing orders can optionally be updated with the new file
+- The previous file is removed automatically if it is no longer referenced by any product or order
