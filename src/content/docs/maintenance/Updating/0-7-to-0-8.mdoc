@@ -398,7 +398,7 @@ Widgets are registered by modules and can be created by implementing the `Widget
 ## Email Templates
 
 {% aside type="caution" %}
-**Custom email templates must be updated.** The email Twig environment now runs inside a sandbox that restricts allowed tags, filters, functions, and globals. Any template that used removed or renamed filters, the `{% set %}` tag, the `api_admin` / `api_client` globals, or `{{ guest.method() }}` calls will fail to render and block email delivery.
+**Custom email templates must be updated.** The email Twig environment now runs inside a sandbox that restricts allowed tags, filters, functions, and globals. Any template that used filters that were removed or renamed, the `{% set %}` tag, the `api_admin` / `api_client` globals, or `{{ guest.method() }}` calls will fail to render and block email delivery.
 {% /aside %}
 
 ### File-backed Defaults
