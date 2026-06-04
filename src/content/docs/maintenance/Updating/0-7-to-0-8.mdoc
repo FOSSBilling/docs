@@ -397,7 +397,24 @@ Widgets are registered by modules and can be created by implementing the `Widget
 
 ## Email Templates
 
-File-backed email templates are now supported in addition to the database-stored templates. The email Twig environment is now sandboxed for security, restricting available filters and globals.
+{% aside type="caution" %}
+**Custom email templates must be updated.** The email Twig environment now runs inside a sandbox that restricts allowed tags, filters, functions, and globals. Any template that used filters that were removed or renamed, the `{% set %}` tag, the `api_admin` / `api_client` globals, or `{{ guest.method() }}` calls will fail to render and block email delivery.
+{% /aside %}
+
+### File-backed Defaults
+
+In the email template editor, three states are now shown: customized, file-backed default, and no file-backed default. Admins can reset a customized template back to its file-backed default.
+
+### Sandbox Policy
+
+The set of tags, filters, functions, and globals allowed in email templates is summarized below:
+
+| Category | Allowed |
+|----------|---------|
+| **Tags** | `if`, `for`, `block`, `apply` |
+| **Filters** | `escape`/`e`, `default`, `title`, `length`, `date`, `format_currency`, `format_date`, `format_datetime`, `format_number`, `format_time`, `currency_name`, `currency_symbol`, `country_name`, `url`, `daysleft`, `trans`, `period_title`, `markdown_to_html` |
+| **Functions** | `country_names` |
+| **Globals** | `guest` *(only `guest.system_company` is exposed)*, `default_currency`, `FOSSBillingVersion` |
 
 ## Deprecations & Removals (Summary)
 
