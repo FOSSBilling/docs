@@ -390,8 +390,7 @@ The rate limiter is now enforced on guest ticket creation and other public endpo
 
 Additional rate limits are now enforced on guest invoice endpoints.
 
-Invoice hashes are validated and those outside the accepted range are rejected. Legacy hashes that don't meet the new format are removed and are regenerated when an admin re-sends the invoice.
-
+Invoice hashes are now validated; hashes outside the accepted range (30–60 hex characters) are rejected. Legacy hashes that don't meet the new format are removed and regenerated when an admin re-sends the invoice.
 Invoice hashes now expire after a configurable number of days. The new `invoice_hash_lifetime_days` setting (default: 90) controls this expiration. Setting it to `0` disables hash expiration entirely. Hash lifetime is automatically extended when an invoice is created, approved, or a payment reminder is sent.
 
 ## Guest Cron Security (0.8.2)
