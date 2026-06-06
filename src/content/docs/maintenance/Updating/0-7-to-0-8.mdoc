@@ -30,6 +30,8 @@ The database charset has been migrated from `utf8` to `utf8mb4` / `utf8mb4_unico
 - New `security.trusted_proxies` block for configuring reverse proxy trust.
 - New `security.session_regeneration_grace_period` setting (default: 300).
 - New `i18n.auto_detect_locale`, `i18n.date_format`, `i18n.time_format`, `i18n.datetime_pattern` settings.
+- New rate limiter policies for guest invoice endpoints (`invoice_get_ip`, `invoice_get_hash`, `invoice_pdf_ip`, `invoice_pdf_hash`).
+- New `invoice_hash_lifetime_days` setting (default: 90) controls how long invoice magic links remain valid. Set to 0 for no expiration.
 
 ## Module Migrations
 
@@ -40,7 +42,7 @@ The following modules have been removed or replaced. The patcher handles the mig
 | `Servicemembership` removed | Membership products and orders are migrated to the "custom" product type. Review active membership orders after updating. |
 | `Spamchecker` replaced | Replaced by the new [`Antispam`](/admin-guide/anti-spam/) module (supports Cloudflare Turnstile, hCaptcha, and honeypot fields). Review your spam-protection settings after the update. |
 | `Wysiwyg` removed | CKEditor 5 is now integrated directly into themes. Use the `wysiwyg` Twig function to initialize editors. |
-| `Paidsupport` removed | Module data is cleaned up. |
+| `Paidsupport` removed | Module data is cleaned up and leftover files are purged from disk. |
 | Added `Antispam` | New [spam-prevention module](/admin-guide/anti-spam/) with multiple challenge providers. |
 | Added `Widgets` | New module for registering renderable widget slots in templates. |
 
@@ -384,6 +386,30 @@ The old `api.rate_*` configuration settings have been replaced by a centralized 
 
 The rate limiter is now enforced on guest ticket creation and other public endpoints. Policies are defined in `FOSSBilling\Security\RateLimiter::getDefaultConfig()`.
 
+### Invoice Hash Rate Limiting (0.8.2)
+
+Additional rate limits are now enforced on guest invoice endpoints.
+
+Invoice hashes are validated and those outside the accepted range are rejected. Legacy hashes that don't meet the new format are removed and are regenerated when an admin re-sends the invoice.
+
+Invoice hashes now expire after a configurable number of days. The new `invoice_hash_lifetime_days` setting (default: 90) controls this expiration. Setting it to `0` disables hash expiration entirely. Hash lifetime is automatically extended when an invoice is created, approved, or a payment reminder is sent.
+
+## Guest Cron Security (0.8.2)
+
+The `guest/cron/run` endpoint now requires a `hash` parameter to prevent unauthorized triggering. One is automatically generated if guest cron is enabled but no hash has been configured.
+
+The hash is displayed in **System → Cron** and can be regenerated from the admin interface. If you use the guest cron URL externally, append `?hash=...` — the old unauthenticated URL now returns a 403 error.
+
+## Email Template Validation (0.8.2)
+
+Templates are now syntax-validated on save. Failed renders are flagged with the error message and visible in the admin panel, which displays error badges and includes bulk actions for reviewing or resetting broken templates.
+
+Templates that fail to render block email delivery for their associated notifications.
+
+## Update Readiness Checks (0.8.2)
+
+The updater now checks filesystem permissions before applying an update. If any check fails, the update is blocked and the admin panel shows which paths are not writable, surfacing issues like SELinux denials or incorrect ownership that previously caused updates to fail partway through.
+
 ## Widget System
 
 0.8.0 introduces a new widget system for rendering dynamic content in template slots. Use `render_widgets` in your theme templates:
@@ -394,6 +420,10 @@ The rate limiter is now enforced on guest ticket creation and other public endpo
 ```
 
 Widgets are registered by modules and can be created by implementing the `WidgetProviderInterface`.
+
+### Login Form Widget Slots (0.8.2)
+
+Login forms now include widget slots that extensions can use to inject alerts, branding, or custom authentication flows.
 
 ## Email Templates
 
