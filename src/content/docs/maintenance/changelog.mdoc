@@ -22,7 +22,7 @@ For the latest changes, start with the [most recent release](https://github.com/
 
 | Area | Summary |
 |------|---------|
-| **Security** | Rate limiting on guest invoice, PDF, and payment APIs with per-hash and per-IP limits; invoice hash format validated (30–60 hex chars) and hashes expire after configurable period; guest cron endpoint now requires security hash; extension uninstall paths validated against directory traversal; fixed reverse tabnapping vulnerability in Theme service; password values no longer echoed in login templates |
+| **Security** | Rate limiting on guest invoice, PDF, and payment APIs with per-hash and per-IP limits; invoice hash format validated (30–60 hex chars) and hashes expire after configurable period; guest cron endpoint now requires security hash; extension uninstall paths validated against directory traversal; fixed reverse tabnabbing vulnerability in Theme service; password values no longer echoed in login templates |
 | **Rate Limiting** | New `invoice_get_ip`, `invoice_get_hash`, `invoice_pdf_ip`, `invoice_pdf_hash` policies; invoice hashes expire by default after 90 days (`invoice_hash_lifetime_days`) |
 | **Email Templates** | Built-in syntax validation with error tracking in admin panel; new `last_error` / `error_checked_at` columns for tracking rendering failures; bulk actions and batch delete |
 | **Payment Gateways** | One-time payment enforcement per gateway; gateway keys required based on operating mode; update readiness checks in gateway settings UI |
