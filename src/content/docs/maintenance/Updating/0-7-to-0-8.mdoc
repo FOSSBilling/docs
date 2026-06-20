@@ -451,6 +451,59 @@ The set of tags, filters, functions, and globals allowed in email templates is s
 | **Functions** | `country_names` |
 | **Globals** | `guest` *(only `guest.system_company` is exposed)*, `default_currency`, `FOSSBillingVersion` |
 
+## Public Ticket Unification (0.8.3)
+
+Public (guest) support tickets have been unified with client tickets. Both now share the same `support_ticket` table, endpoints, templates, email notifications, and event structure.
+
+{% aside type="caution" %}
+Custom modules or themes that reference the old public ticket hooks, templates, API endpoints, or template variables must be updated. Old public ticket email links redirect automatically, but module-level listeners and template overrides need manual review.
+{% /aside %}
+
+### Structural Changes
+
+- Guest tickets are stored in the main `support_ticket` table with `client_id = NULL` and an `access_hash` for lookup.
+- URLs now use `/support/ticket/:id-or-hash` for all tickets. Old `/support/public-ticket/:hash` links redirect to the new URL.
+- Guest tickets appear in the unified admin Support page and can be filtered by type.
+- Separate admin public ticket templates are removed; the unified admin UI handles all tickets.
+
+### Event Hook Changes
+
+The following 8 hooks have been **removed**:
+
+| Removed Hook | Replacement |
+|-------------|-------------|
+| `onBeforeGuestPublicTicketOpen` | `onBeforeClientOpenTicket` |
+| `onAfterGuestPublicTicketOpen` | `onAfterClientOpenTicket` |
+| `onAfterGuestPublicTicketClose` | `onAfterClientCloseTicket` |
+| `onAfterGuestPublicTicketReply` | `onAfterClientReplyTicket` |
+| `onBeforeAdminPublicTicketOpen` | `onBeforeAdminOpenTicket` |
+| `onAfterAdminPublicTicketOpen` | `onAfterAdminOpenTicket` |
+| `onAfterAdminPublicTicketClose` | `onAfterAdminCloseTicket` |
+| `onAfterAdminPublicTicketReply` | `onAfterAdminReplyTicket` |
+
+The Antispam module's listener moved from `onBeforeGuestPublicTicketOpen` to `onBeforeClientOpenTicket`. If your custom module registers listeners on any of the removed hooks, update them to the corresponding client or admin hook.
+
+## Frontend & Icon Changes (0.8.3)
+
+### SVG Icon Sprite
+
+The icon sprite system has been refactored:
+- `xlink:href` has been replaced with standard `href` on `<use>` elements. If you maintain custom `<svg><use xlink:href="..."></svg>` markup, change `xlink:href` to `href`.
+- Sprite generation is now shared across themes (`svg_sprite` Twig function) instead of being duplicated per theme.
+- Legacy PNG images and icon-font classes (e.g. `glyphicon`, `bb-icon-`) have been replaced with SVG markup. Custom theme templates that render the old icon classes need updating to use `<svg>` elements with the sprite.
+
+### Color Picker
+
+The Coloris color picker library has been removed in favor of native `input type="color"`. Any custom theme or module CSS/JS that depends on Coloris should switch to the native browser color picker.
+
+## Cron Identity Changes (0.8.3)
+
+Cron jobs now carry an `is_cron` flag, and the system no longer falls back to an admin identity during cron execution.
+
+{% aside type="caution" %}
+Custom modules that relied on admin-level permission fallback during cron runs (e.g. for subscription renewals, deposit payments) need review. Use the `is_cron` flag to determine context and ensure your module works with the correct identity during cron.
+{% /aside %}
+
 ## Deprecations & Removals (Summary)
 
 | Component | Status | Notes |

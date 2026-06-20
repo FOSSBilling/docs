@@ -18,6 +18,25 @@ FOSSBilling publishes release notes and tagged versions on GitHub. Use the links
 
 For the latest changes, start with the [most recent release](https://github.com/FOSSBilling/FOSSBilling/releases/latest).
 
+### Version 0.8.3
+
+| Area | Summary |
+|------|---------|
+| **Breaking: Public Tickets** | Public (guest) tickets unified with client tickets — same endpoints, templates, emails, and event hooks. Eight deprecated ticket hooks removed; replaced by shared client ticket hooks. Old email links redirect automatically. Custom modules/themes referencing the old hooks, templates, or endpoints need updating. |
+| **Security** | Invoice hash self-healing — missing hashes are regenerated automatically; database patch backfills hashes for existing invoices |
+| **Admin UX** | Persistent light/dark theme toggle with dark-mode logo support on login pages |
+| **Orders & Transactions** | Order list/details use batch API retrieval; marking invoice as paid correctly records transaction; admin order templates handle null service data gracefully |
+| **Payment Gateways** | Failed transactions marked as errored with retry support; SQL claim queries use correct `IN` grouping; Stripe type hints and appearance enhancements |
+| **Huraga Theme** | Client dashboard widget slots; pagination tab redirects; `fb_api_link` usage for API actions instead of custom event listeners |
+| **Cron** | `is_cron` flag for context awareness; admin-level fallback during cron runs now restricted |
+| **Templates** | Twig strict-variables fixes across activity logs, tickets, invoices, payment gateways, and domain registrars; staff password reset emails now use correct recipient; client order page shows product add-ons for restricted categories |
+| **Bug Fixes** | Currency settings crash when exchange rate data missing; stale `unpaid_invoice` references corrected; `getCell` returns proper types; legacy BoxBilling IPN params (`bb_*`, `bb-ipn.php`) redirect to standard endpoint |
+| **Frontend** | Legacy PNG/font icons replaced with SVG; icon sprite `xlink:href` → `href` refactor with shared builder; Coloris color picker replaced with native `input type="color"` |
+| **Development** | Product models migrating to Doctrine; promo code redemption compensates correctly on checkout failure; esbuild helpers refactored with JS checker and asset optimization |
+| **Dependencies** | DiceBear core v10.3.0 / styles v10.2.0; esbuild v0.28.1; Sass v1.101.0; Sentry v4.28.0; guzzlehttp/psr7 v2.12.1; Docker base tag v1.25 |
+
+[View the full 0.8.3 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.3) for the complete list of changes.
+
 ### Version 0.8.2
 
 | Area | Summary |

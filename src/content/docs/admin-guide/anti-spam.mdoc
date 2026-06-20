@@ -1,6 +1,6 @@
 ---
 title: The Anti-Spam Module
-description: Configure FOSSBilling's anti-spam module to reduce abusive registrations, public tickets, and login attempts.
+description: Configure FOSSBilling's anti-spam module to reduce abusive registrations, support tickets, and login attempts.
 ---
 
 The Anti-Spam module helps reduce automated abuse by combining CAPTCHA checks, IP blocking, disposable email detection, Stop Forum Spam lookups, and a hidden signup honeypot field.
@@ -13,10 +13,10 @@ Anti-spam checks run before several public and client actions:
 
 | Protection | Applies To |
 |------------|------------|
-| IP blocking | Client signup, public ticket opening, client profile updates, client login, admin login |
-| CAPTCHA | Client signup and public ticket opening |
-| Stop Forum Spam | Client signup and public ticket opening |
-| Disposable email detection | Client signup and public ticket opening |
+| IP blocking | Client signup, ticket opening, client profile updates, client login, admin login |
+| CAPTCHA | Client signup and ticket opening |
+| Stop Forum Spam | Client signup and ticket opening |
+| Disposable email detection | Client signup and ticket opening |
 | Honeypot | Client signup |
 
 ## IP Blocking
@@ -30,7 +30,7 @@ Add one IP address per line in the blocked IP list:
 2001:db8::10
 ```
 
-Blocked IP addresses cannot log in, register, update client details, or open public tickets.
+Blocked IP addresses cannot log in, register, update client details, or open tickets.
 
 ## CAPTCHA Protection
 
@@ -61,7 +61,7 @@ For reCAPTCHA v3, FOSSBilling compares Google's score with the configured minimu
 
 ## Stop Forum Spam
 
-Enable **Stop Forum Spam** to check submitted IP and email details against the [Stop Forum Spam](https://stopforumspam.com/) database before signup or public ticket creation.
+Enable **Stop Forum Spam** to check submitted IP and email details against the [Stop Forum Spam](https://stopforumspam.com/) database before signup or ticket creation.
 
 If Stop Forum Spam reports a submitted username, email address, or IP address as abusive, FOSSBilling rejects the request.
 
