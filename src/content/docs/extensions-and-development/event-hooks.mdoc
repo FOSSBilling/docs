@@ -116,10 +116,6 @@ The Hook module also supports `onEveryEvent`, a global listener that is connecte
 - `onAfterAdminOpenTicket`
 - `onAfterAdminCloseTicket`
 - `onAfterAdminReplyTicket`
-- `onBeforeAdminPublicTicketOpen`
-- `onAfterAdminPublicTicketOpen`
-- `onAfterAdminPublicTicketClose`
-- `onAfterAdminPublicTicketReply`
 
 ### Staff
 
@@ -201,10 +197,10 @@ The Hook module also supports `onEveryEvent`, a global listener that is connecte
 ## Guest Hooks
 
 - `onBeforeGuestPasswordResetRequest`
-- `onBeforeGuestPublicTicketOpen`
-- `onAfterGuestPublicTicketOpen`
-- `onAfterGuestPublicTicketClose`
-- `onAfterGuestPublicTicketReply`
+
+{% aside type="caution" %}
+`onBeforeGuestPublicTicketOpen`, `onAfterGuestPublicTicketOpen`, `onAfterGuestPublicTicketClose`, and `onAfterGuestPublicTicketReply` were removed in 0.8.3. Guest tickets now fire the client ticket hooks (`onBeforeClientOpenTicket`, `onAfterClientOpenTicket`, etc.). See the [0.7 to 0.8 upgrade guide](/maintenance/updating/0-7-to-0-8/#public-ticket-unification-083) for details.
+{% /aside %}
 
 ## Product Hooks
 
