@@ -504,6 +504,16 @@ Cron jobs now carry an `is_cron` flag, and the system no longer falls back to an
 Custom modules that relied on admin-level permission fallback during cron runs (e.g. for subscription renewals, deposit payments) need review. Use the `is_cron` flag to determine context and ensure your module works with the correct identity during cron.
 {% /aside %}
 
+## Admin Permissions Group Rework (0.8.4)
+
+Admin permissions have moved from per-user to a Doctrine-backed group model. Staff members can belong to multiple groups; permissions are set at the group level.
+
+{% aside type="caution" %}
+Custom modules or themes that check permissions directly via `$staff->hasPermission(...)` or inspect the `role`/`permissions` fields on the staff entity may need updating. The `manage_settings` permission is now enforced on extension configuration pages.
+{% /aside %}
+
+Existing staff group assignments are migrated automatically, with legacy non-admin staff from the old default group assigned to the **Migrated staff** group. For untouched legacy groups, `manage_settings` is backfilled on selected core modules where access was already granted to preserve prior behavior. After updating, review staff group assignments and permissions in the admin panel. Use the `has_permission` Twig function for template checks; in PHP, use the staff service's group-aware methods instead of reading the `permissions` field directly.
+
 ## Deprecations & Removals (Summary)
 
 | Component | Status | Notes |
