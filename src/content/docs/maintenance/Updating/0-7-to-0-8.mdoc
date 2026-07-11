@@ -506,7 +506,7 @@ Custom modules that relied on admin-level permission fallback during cron runs (
 
 ## Admin Permissions Group Rework (0.8.4)
 
-Admin permissions have moved from per-user to a Doctrine-backed group model. Each staff member belongs to a group; permissions are set at the group level.
+Admin permissions have moved from per-user to a Doctrine-backed group model. Staff members can belong to multiple groups; permissions are set at the group level.
 
 {% aside type="caution" %}
 Custom modules or themes that check permissions directly via `$staff->hasPermission(...)` or inspect the `role`/`permissions` fields on the staff entity may need updating. The `manage_settings` permission is now enforced on extension configuration pages.
