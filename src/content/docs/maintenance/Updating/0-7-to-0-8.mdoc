@@ -512,7 +512,7 @@ Admin permissions have moved from per-user to a Doctrine-backed group model. Sta
 Custom modules or themes that check permissions directly via `$staff->hasPermission(...)` or inspect the `role`/`permissions` fields on the staff entity may need updating. The `manage_settings` permission is now enforced on extension configuration pages.
 {% /aside %}
 
-Existing staff are auto-migrated to temporary groups on upgrade, and `manage_settings` is backfilled to all groups to preserve prior behavior. After updating, review your groups under **System** → **Staff Groups** and assign permissions. Use the `has_permission` Twig function for template checks; in PHP, use the staff service's group-aware methods instead of reading the `permissions` field directly.
+Existing staff group assignments are migrated automatically, with legacy non-admin staff from the old default group assigned to the **Migrated staff** group. For untouched legacy groups, `manage_settings` is backfilled on modules where access was already granted to preserve prior behavior. After updating, review staff group assignments and permissions in the admin panel. Use the `has_permission` Twig function for template checks; in PHP, use the staff service's group-aware methods instead of reading the `permissions` field directly.
 
 ## Deprecations & Removals (Summary)
 
