@@ -18,6 +18,23 @@ FOSSBilling publishes release notes and tagged versions on GitHub. Use the links
 
 For the latest changes, start with the [most recent release](https://github.com/FOSSBilling/FOSSBilling/releases/latest).
 
+### Version 0.8.4
+
+| Area | Summary |
+|------|---------|
+| **Breaking: Admin Permissions** | Admin permissions reworked from per-user to a group-based model. Existing staff are auto-migrated to temporary groups on upgrade. Custom modules/themes checking permissions directly may need updating. |
+| **Security** | Server manager credentials masked in API/admin UI; `manage_settings` permission enforced on extension config pages; Stripe webhooks require signing secret; server manager input hardened |
+| **Stripe** | Recurring subscriptions via Setup Intents and webhooks; invoice paid webhook and currency normalization |
+| **Client Profiles** | Per-user timezone support; country code selector and number formatter; custom client fields sorted and cap raised to 20; custom client IDs exposed in API |
+| **Knowledge Base** | Migrated to Doctrine with improved search, view counts, and canned responses; Markdown-safe sanitization for ticket/KB messages |
+| **Admin UX** | Ticket replies editable with revision history; staff notification emails scoped to admin groups; ribbon-style suspended badges; rate limit management UI; Discord community button |
+| **Invoicing** | PDF invoice attachment to emails; configurable reminder intervals; zero-price order invoices; price validation at order creation; renewal price and duplicate-payment fixes |
+| **Bug Fixes** | MySQL 8.0.22+ REGEXP charset conflict in patches 67/74; registrar adapter autoloader fix; PayPal duplicate subscription handling; Product Promotions crash on NULL flags; domain double-activation fix; UpdatePatcher undefined method from 0.6.x upgrades; Twig 500 error pages; cron defaults on fresh installs; DirectAdmin account deletion recovery |
+| **Development** | Email, Extension, Support modules migrated to Doctrine; frontend JS migrated to TypeScript; document fields migrated to custom client fields |
+| **Dependencies** | Twig v3.28.0; CKEditor 5 v48.3.0; Sentry v4.29.0; Stripe PHP v20.3.0; PostCSS v8.5.16; Autoprefixer v10.5.2; Rector v2.5.0 |
+
+[View the full 0.8.4 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.4) for the complete list of changes.
+
 ### Version 0.8.3
 
 | Area | Summary |
