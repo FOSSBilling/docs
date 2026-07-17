@@ -84,7 +84,7 @@ Project-specific filters and functions are defined in these classes:
 
 {# Generate URL #}
 <a href="{{ 'client/manage' | url }}">Manage</a>                   {# client area #}
-<a href="{{ 'client/manage' | url({area: 'admin'}) }}">Manage</a>  {# admin area #}
+<a href="{{ 'client/manage' | url(area: 'admin') }}">Manage</a>  {# admin area #}
 
 {# Generate API URL #}
 {{ 'profile/update' | api_url }}
