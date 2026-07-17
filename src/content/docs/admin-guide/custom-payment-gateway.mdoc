@@ -91,12 +91,14 @@ Do not use advanced Twig features such as importing templates, including templat
 
 After confirming the payment:
 
+{% steps %}
 1. Go to **Invoicing → Invoices**.
 2. Open the relevant invoice.
 3. Use **Mark as paid**.
 4. Select the Custom gateway if needed.
 5. Enter a transaction ID or payment reference.
 6. Choose whether FOSSBilling should execute the related invoice tasks.
+{% /steps %}
 
 The transaction ID is required when marking an invoice as paid through the Custom gateway.
 

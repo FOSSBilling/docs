@@ -17,12 +17,12 @@ This guide walks you through building a payment gateway adapter to integrate pro
 
 Place your adapter in:
 
-```text
-src/library/Payment/Adapter/
-├── MyGateway.php              # Single file
-└── MyGateway/
-    └── MyGateway.php          # Or subdirectory for complex gateways
-```
+{% filetree %}
+- library/Payment/Adapter/
+  - MyGateway.php              # Single file
+  - MyGateway/
+    - MyGateway.php          # Or subdirectory for complex gateways
+{% /filetree %}
 
 ### Naming
 
@@ -156,10 +156,12 @@ FOSSBilling injects these into `$this->config`:
 
 ## Testing
 
+{% steps %}
 1. Enable test mode in the admin panel
 2. Create a test invoice
 3. Check **Invoicing → Transactions** for results
 4. Test the full flow: payment → verification → invoice marking
+{% /steps %}
 
 ## Examples
 

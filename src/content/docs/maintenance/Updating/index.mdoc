@@ -19,9 +19,11 @@ tableOfContents: false
 
 For most installations, the built-in updater is the easiest option:
 
+{% steps %}
 1. Log in to your admin panel
 2. Go to **System** → **Update**
 3. Click to install the update
+{% /steps %}
 
 FOSSBilling downloads and installs the new files, enables maintenance mode, clears the cache, and logs you out. After logging back in, you will be prompted to finalize the update.
 
@@ -40,11 +42,13 @@ The updater follows the configured update branch, usually `release` or `preview`
 
 If you prefer to manage files yourself:
 
+{% steps %}
 1. **Back up your database and files**
 2. [Download the latest release](https://fossbilling.org/downloads/stable)
 3. Extract the files over your existing installation (overwrite existing files)
 4. Delete the `install` folder that came with the new files
 5. Log in to the admin panel and follow the finalization prompt to apply pending patches
+{% /steps %}
 
 FOSSBilling will detect the new files and direct you to the finalization page. If you navigated away, go to **System** → **Update** and use **Apply Patches & Update Configuration**.
 

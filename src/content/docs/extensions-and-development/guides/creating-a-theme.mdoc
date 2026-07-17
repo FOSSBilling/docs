@@ -23,23 +23,23 @@ FOSSBilling loads templates in this order (highest priority first):
 
 ## Theme Structure
 
-```text
-themes/mytheme/
-├── assets/                     # CSS, JS, images (built via esbuild)
-│   ├── css/
-│   ├── js/
-│   ├── img/
-│   └── build/               # Generated assets and manifest
-├── config/
-│   └── settings.html.twig      # Theme settings UI (optional)
-├── html/                       # Your templates
-│   ├── layout_default.html.twig # Base layout
-│   ├── layout_public.html.twig  # Public pages layout
-│   ├── partial_menu.html.twig   # Shared partial
-│   └── mod_index_dashboard.html.twig # Optional module override
-├── html_custom/                 # For user customizations (leave empty)
-└── manifest.json               # Theme metadata
-```
+{% filetree %}
+- themes/mytheme/
+  - assets/ CSS, JS, images (built via esbuild)
+    - css/
+    - js/
+    - img/
+    - build/ Generated assets and manifest
+  - config/
+    - settings.html.twig Theme settings UI (optional)
+  - html/ Your templates
+    - layout_default.html.twig Base layout
+    - layout_public.html.twig Public pages layout
+    - partial_menu.html.twig   Shared partial
+    - mod_index_dashboard.html.twig Optional module override
+  - html_custom/ For user customizations (leave empty)
+    - manifest.json Theme metadata
+{% /filetree %}
 
 ## Manifest File
 
@@ -144,11 +144,13 @@ Custom layouts that do not extend the bundled themes should load the shared runt
 
 ## Testing Your Theme
 
+{% steps %}
 1. Place your theme in `/themes/mytheme/`
 2. Go to **Settings → Themes** in the admin panel
 3. Select and activate your theme
 4. Check both client and admin areas
 5. Test on different screen sizes
+{% /steps %}
 
 ## Getting Help
 

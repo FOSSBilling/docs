@@ -10,17 +10,20 @@ sidebar:
 
 FOSSBilling connects to WHM using its API. Here's how to set up an API token:
 
+{% steps %}
 1. Log in to WHM and go to **Development** → **Manage API Tokens**
 2. Click **Generate Token**
 3. Give the token a friendly name (like "billing")
 4. Review the permissions. The defaults are usually fine, but make sure you understand the access you are granting
 5. Click **Save**
 6. **Important:** Copy the token now — WHM won't show it to you again
+{% /steps %}
 
 Need more help? See the [WHM API documentation](https://docs.cpanel.net/whm/development/manage-api-tokens-in-whm/).
 
 ## Adding a WHM server to FOSSBilling
 
+{% steps %}
 1. Log in to your FOSSBilling admin panel
 2. Go to **System** → **Hosting plans and servers**
 3. Switch to the **New server** tab
@@ -29,6 +32,7 @@ Need more help? See the [WHM API documentation](https://docs.cpanel.net/whm/deve
 6. Enter the WHM **root** username (not the API token name)
 7. Paste the API token you created earlier
 8. Click **Add server** to save
+{% /steps %}
 
 ## Hosting plans with WHM and FOSSBilling
 

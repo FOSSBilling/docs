@@ -10,6 +10,7 @@ sidebar:
 
 FOSSBilling integrates with CWP (Control-WebPanel) using its API. Here's how to set up the CWP API:
 
+{% steps %}
 1. Log in to your CWP server and navigate to **CWP Settings** → **API Manager**
 2. Click **Allow new API access**
 3. Give the API key a friendly name (like "FOSSBilling"), generate an API key, and enter your FOSSBilling server IP in the **IP Origin** field
@@ -21,11 +22,13 @@ FOSSBilling integrates with CWP (Control-WebPanel) using its API. Here's how to 
    - **Account Package Change**: `Update`
    - **Change Password**: `Update`
 6. Copy the API key and save your changes
+{% /steps %}
 
 For more detail, see the [CWP API documentation](https://docs.control-webpanel.com/docs/developer-tools/api-manager/configuration).
 
 ## Adding a CWP server to FOSSBilling
 
+{% steps %}
 1. Log in to your FOSSBilling admin panel
 2. Go to **System** → **Hosting plans and servers**
 3. Switch to the **New server** tab
@@ -33,6 +36,7 @@ For more detail, see the [CWP API documentation](https://docs.control-webpanel.c
 5. Select **CWP** from the **Server manager** dropdown
 6. Enter the API key you created earlier
 7. Click **Add server** to save
+{% /steps %}
 
 ## Hosting plans with CWP and FOSSBilling
 

@@ -14,13 +14,13 @@ FOSSBilling ships with translations that are at least 25% complete. To install m
 
 ### Translation Structure
 
-```text
-/locale/
-└── en_US/
-    └── LC_MESSAGES/
-        ├── messages.mo    ← Compiled translation (required)
-        └── messages.po    ← Source file (optional but helpful)
-```
+{% filetree %}
+- locale/
+  - en_US/
+    - LC_MESSAGES/
+      - messages.mo    ← Compiled translation (required)
+      - messages.po    ← Source file (optional but helpful)
+{% /filetree %}
 
 {% aside type="tip" %}
 Add your language to `/locale/locales.php` to show the native name in language selectors. This file is overwritten on updates, so you'll need to re-add it.
@@ -38,18 +38,22 @@ Add your language to `/locale/locales.php` to show the native name in language s
 
 Don't see your language?
 
+{% steps %}
 1. Join our [Discord](https://fossbilling.org/discord)
 2. Ask in `#localization` for it to be added
 3. We'll add it to Crowdin
 4. Start translating
+{% /steps %}
 
 ### Already Have a Translation?
 
 If you've created a complete translation locally:
 
+{% steps %}
 1. Submit a pull request to the [locale repository](https://github.com/FOSSBilling/locale)
 2. **Don't include the `.mo` file** — we generate those automatically
 3. We'll add it to Crowdin for community contributions
+{% /steps %}
 
 For assistance, ask in our [Discord](https://fossbilling.org/discord).
 
