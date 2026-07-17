@@ -3,6 +3,7 @@ title: License
 description: Issue and validate software licenses for your applications.
 sidebar:
   label: Licenses
+  order: 5
 ---
 
 The license product type lets you create and manage software licenses that your application can validate against FOSSBilling over the API.
@@ -114,7 +115,7 @@ print(response.json())
 {
   "result": {
     "licensed_to": "Client Name",
-    "created_at": "2025-01-01 12:00:00",
+    "created_at": "2025-01-01T12:00:00Z",
     "expires_at": null,
     "valid": true
   },
@@ -184,7 +185,7 @@ class License_YourPlugin
 
 The default `Simple` plugin generates keys like:
 
-```
+```text
 MYAPP-ABCD1-EFGH2-IJKL3-MNOP4
 ```
 

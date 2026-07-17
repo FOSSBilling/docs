@@ -70,16 +70,16 @@ Only trusted administrators should edit Custom gateway templates. Do not paste s
 ## Example: Different instructions by currency
 
 ```twig
-{ percent if invoice.currency == 'EUR' percent }
+{% if invoice.currency == 'EUR' %\}
   <p>Transfer to IBAN: DE00 0000 0000 0000 0000 00</p>
-{ percent elseif invoice.currency == 'USD' percent }
+{% elseif invoice.currency == 'USD' %\}
   <p>Transfer to account 1234567890, routing 021000021.</p>
-{ percent else percent }
+{% else %\}
   <p>Contact support for {{ invoice.currency }} payment instructions.</p>
-{ percent endif percent }
+{% endif %\}
 ```
 
-Replace `{ percent` with `{%` and `percent }` with `%}` when adding the template in FOSSBilling.
+Remove the backslashes when using this template in FOSSBilling.
 
 ## Supported template syntax
 

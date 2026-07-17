@@ -3,9 +3,7 @@ title: Creating a Server Manager
 description: Build control panel integrations for automatic hosting provisioning.
 ---
 
-{% aside type="caution" %}
-FOSSBilling is evolving quickly on the path to 1.0. Expect breaking changes in 0.x releases. We document these in the "breaking changes" section of release notes.
-{% /aside %}
+{% partial file="./_breaking-changes-caution.mdoc" /%}
 
 Server managers connect FOSSBilling to hosting control panels (cPanel, Plesk, DirectAdmin, etc.), enabling automatic account creation, suspension, and management.
 
@@ -17,7 +15,7 @@ These are for shared hosting control panels. For VPS or game servers, consider c
 
 Place your manager in:
 
-```
+```text
 src/library/Server/Manager/
 └── YourManager.php
 ```

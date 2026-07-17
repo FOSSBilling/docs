@@ -3,9 +3,7 @@ title: Creating a Registrar Integration
 description: Build domain registrar adapters for FOSSBilling.
 ---
 
-{% aside type="caution" %}
-FOSSBilling is evolving quickly on the path to 1.0. Expect breaking changes in 0.x releases. We document these in the "breaking changes" section of release notes.
-{% /aside %}
+{% partial file="./_breaking-changes-caution.mdoc" /%}
 
 Registrar adapters let FOSSBilling communicate with domain registrars to register, transfer, and manage domains on behalf of your customers.
 
@@ -13,7 +11,7 @@ Registrar adapters let FOSSBilling communicate with domain registrars to registe
 
 Place your adapter in:
 
-```
+```text
 src/library/Registrar/Adapter/
 └── YourRegistrar.php
 ```

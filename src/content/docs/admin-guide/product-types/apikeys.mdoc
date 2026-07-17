@@ -1,6 +1,8 @@
 ---
 title: API Keys
 description: Sell API keys for your custom applications and services.
+sidebar:
+  order: 6
 ---
 
 API key products let you sell access to your own APIs or services. After purchase, the customer receives a unique key that your application can validate against FOSSBilling.
@@ -39,7 +41,7 @@ When creating the product, set these options:
 
 **Example key with default settings:**
 
-```
+```text
 BA907863-47C1A4F5-3CB914D3-AC927BDD
 ```
 
@@ -117,7 +119,7 @@ FOSSBilling includes rate limiting on all API requests (configured via the `rate
 Cache validation results in your application for a few minutes. This avoids hitting rate limits and reduces server load.
 {% /aside %}
 
-You can adjust rate limiting in the [configuration](/admin-guide/config#rate-limiter).
+You can adjust rate limiting in the [configuration](/admin-guide/config/#rate-limiter).
 
 ## Security Considerations
 

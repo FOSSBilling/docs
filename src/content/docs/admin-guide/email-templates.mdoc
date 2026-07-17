@@ -48,13 +48,13 @@ See [Twig Filters & Functions](/extensions-and-development/twig-filters/) for al
 Default templates use Markdown for simple formatting. Wrap your content with the `apply markdown_to_html` filter:
 
 ```twig
-\{% apply markdown_to_html %\}
-Hi \{\{ staff.name \}\},
+{% apply markdown_to_html %\}
+Hi {{ staff.name }},
 
 If you are reading this email, FOSSBilling is **configured properly** and is **able to send emails**.
 
-\{\{ guest.system_company.signature \}\}
-\{% endapply %\}
+{{ guest.system_company.signature }}
+{% endapply %\}
 ```
 
 Remove the backslashes when using this in your actual template.

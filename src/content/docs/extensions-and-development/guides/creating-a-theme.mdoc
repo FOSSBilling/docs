@@ -3,9 +3,7 @@ title: Creating a Theme
 description: Design and build custom themes for FOSSBilling.
 ---
 
-{% aside type="caution" %}
-FOSSBilling is evolving quickly on the path to 1.0. Expect breaking changes in 0.x releases. We document these in the "breaking changes" section of release notes.
-{% /aside %}
+{% partial file="./_breaking-changes-caution.mdoc" /%}
 
 ## How Themes Work
 
@@ -25,7 +23,7 @@ FOSSBilling loads templates in this order (highest priority first):
 
 ## Theme Structure
 
-```
+```text
 themes/mytheme/
 ├── assets/                     # CSS, JS, images (built via esbuild)
 │   ├── css/
@@ -98,8 +96,7 @@ The `guest`, `client`, and `admin` Twig globals call FOSSBilling APIs during ser
 ### Guest API (always available)
 
 ```twig
-{{ guest.currency_get_pairs }}
-{{ guest.system_version }}
+{{ guest.currency_get_pairs() }}
 ```
 
 ### Client API (when logged in)
@@ -111,13 +108,13 @@ The `guest`, `client`, and `admin` Twig globals call FOSSBilling APIs during ser
 ### Admin API (when logged in)
 
 ```twig
-{{ admin.staff_group_get_pairs }}
+{{ admin.staff_group_get_pairs() }}
 {{ admin.extension_config_get({ 'ext': 'mod_seo' }) }}
 ```
 
 ## Twig Filters and Functions
 
-FOSSBilling provides [custom filters](/extensions-and-development/twig-filters) for themes:
+FOSSBilling provides [custom filters](/extensions-and-development/twig-filters/) for themes:
 
 ```twig
 {{ price | format_currency(currency.code) }} {# Format currency #}
@@ -143,7 +140,7 @@ Custom layouts that do not extend the bundled themes should load the shared runt
 - Use `fb_api_form` and `fb_api_link` for browser API actions
 - Include CSRF tokens manually for raw requests that do not use the wrapper
 - Include the [antispam honeypot](/admin-guide/anti-spam/#honeypot-protection) field in custom signup or public submission forms
-- See the [security docs](/security/securing-fossbilling) for more
+- See the [security docs](/security/securing-fossbilling/) for more
 
 ## Testing Your Theme
 
@@ -156,5 +153,5 @@ Custom layouts that do not extend the bundled themes should load the shared runt
 ## Getting Help
 
 - [Twig documentation](https://twig.symfony.com/doc/)
-- [FOSSBilling Twig filters](/extensions-and-development/twig-filters)
+- [FOSSBilling Twig filters](/extensions-and-development/twig-filters/)
 - [Discord community](https://fossbilling.org/discord)
