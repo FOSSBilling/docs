@@ -13,7 +13,7 @@ sidebar:
 ## Prerequisites
 
 - A domain or subdomain dedicated to FOSSBilling.
-- A server that meets the [system requirements](/getting-started/requirements).
+- A server that meets the [system requirements](/getting-started/requirements/).
 - A web server running a FOSSBilling-compatible configuration.
 
 ## Web Server Configuration
@@ -113,31 +113,35 @@ server {
 
 ## Pre-installation Steps
 
+{% steps %}
 1. **Download FOSSBilling**: Download the latest [stable release](https://fossbilling.org/downloads) from our downloads page.
 2. **Prepare your database**: Create a new MariaDB/MySQL database and a dedicated user for this installation. Keep the credentials handy for the installer.
 3. **Set up SSL**: If you plan to use HTTPS, and you should, configure and verify your certificate *before* you start the installer.
 4. **Configure reverse-proxy headers**: If you run behind a reverse proxy, forward the `X-Forwarded-Host` and `X-Forwarded-Proto` headers so FOSSBilling can generate the correct URLs and enforce HTTPS properly.
+{% /steps %}
 
 ## Installation Steps
 
+{% steps %}
 1. **Clean your document root**: Remove placeholder files created by your control panel, such as default index pages or sample `.htaccess` files, so they do not interfere with routing.
 2. **Upload and extract FOSSBilling**: Upload the release you downloaded and extract it into your document root. Your directory should look similar to this:
 
-	```
-	├── data
-	├── install
-	├── library
-	├── locale
-	├── modules
-	├── themes
-	├── vendor
-	├── config-sample.php
-	├── cron.php
-	├── di.php
-	├── index.php
-	├── load.php
-	...
-	```
+	{% filetree %}
+	- data/
+	- install/
+	- library/
+	- locale/
+	- modules/
+	- themes/
+	- vendor/
+	- config-sample.php
+	- cron.php
+	- di.php
+	- index.php
+	- load.php
+	- ...
+	{% /filetree %}
+
 3. **Launch the installer**: Visit the domain you set up for FOSSBilling. If you are using HTTPS, access it over `https://` so the application configures secure URLs automatically.
 
 	{% aside type="tip" title="Seeing HTTP 500, HTTP 404, or permission errors?" %}
@@ -151,6 +155,7 @@ server {
 6. **Configure reverse proxy (if detected)**: If the installer detects forwarded headers from a reverse proxy, it shows a proxy configuration step where you can enable trusted proxy support and review the detected settings. Only enable this if the detected proxy is one you control and trust.
 7. **Configure the default currency**: Select your currency code (e.g., `USD`, `EUR`). The price format is auto-generated; place your currency symbol before or after the `{{price}}` placeholder, for example `{{price}} USD` or `$ {{price}}`.
 8. **Install**: Click install and wait for the success page to appear.
+{% /steps %}
 
 {% aside type="tip" %}
 If installation fails, you may need to manually empty the database before retrying.

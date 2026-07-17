@@ -35,7 +35,7 @@ If you are using Apache, LiteSpeed, or OpenLiteSpeed and receive HTTP 404 errors
 
 ### NGINX
 
-- Verify that you loaded the recommended [NGINX configuration](/getting-started/installation#web-server-configuration).
+- Verify that you loaded the recommended [NGINX configuration](/getting-started/installation/#web-server-configuration).
 
 ## Cloudflare specific issues
 
@@ -118,7 +118,7 @@ These steps may help you resolve this issue:
 2. Try specifying a different PHP binary in the cron command, for example `php8.3` or `/usr/bin/php8.3` instead of just `php`.
 3. Remove unsupported PHP versions if they keep being selected by default.
 4. Ask your hosting or control-panel provider how to set a different PHP version for cron jobs.
-5. As a last resort, use the [cron API endpoint](/getting-started/installation#option-2-remote-cron-service) with `wget` or an external cron service.
+5. As a last resort, use the [cron API endpoint](/getting-started/installation/#configuring-the-cronjob) with `wget` or an external cron service.
    - Be aware that cron can run for a while. Triggering it over HTTP is more likely to hit timeout limits than running it locally.
 
 ## Administrator account login issues

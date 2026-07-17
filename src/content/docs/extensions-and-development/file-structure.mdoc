@@ -113,23 +113,23 @@ All modules live here. Each module is a self-contained unit of functionality.
 
 A typical module structure:
 
-```
-ModuleName/
-├── Api/
-│   ├── Admin.php       # Admin API endpoints
-│   ├── Client.php      # Client API endpoints
-│   └── Guest.php       # Guest/public API endpoints
-├── Controller/
-│   ├── Admin.php       # Admin routes/controllers
-│   ├── Client.php      # Client routes/controllers
-│   └── Guest.php       # Guest routes/controllers
-├── templates/          # Module templates
-│   ├── admin/          # Admin panel templates
-│   ├── client/         # Client area templates
-│   └── email/          # Email templates
-├── manifest.json       # Module metadata
-└── Service.php         # Business logic
-```
+{% filetree %}
+- ModuleName/
+  - Api/
+    - Admin.php       # Admin API endpoints
+    - Client.php      # Client API endpoints
+    - Guest.php       # Guest/public API endpoints
+  - Controller/
+    - Admin.php       # Admin routes/controllers
+    - Client.php      # Client routes/controllers
+    - Guest.php       # Guest routes/controllers
+  - templates/          # Module templates
+    - admin/          # Admin panel templates
+    - client/         # Client area templates
+    - email/          # Email templates
+  - manifest.json       # Module metadata
+  - Service.php         # Business logic
+{% /filetree %}
 
 [Guide: Creating a Module](/extensions-and-development/guides/creating-a-module/)
 
@@ -139,21 +139,17 @@ All installed themes.
 
 Theme structure:
 
-```
-theme-name/
-├── assets/                 # CSS, JS, images (built via esbuild)
-│   └── build/              # Generated theme assets and manifest
-├── config/
-│   └── settings.html.twig  # Theme settings UI
-├── html/                   # Twig templates
-├── html_custom/            # User overrides (overrides take priority)
-└── manifest.json           # Theme metadata
-```
+{% filetree %}
+- theme-name/
+  - assets/ CSS, JS, images (built via esbuild)
+    - build/ Generated theme assets and manifest
+  - config/
+    - settings.html.twig Theme settings UI
+  - html/ Twig templates
+  - html_custom/ User overrides (overrides take priority)
+  - manifest.json Theme metadata
+{% /filetree %}
 
 The `html_custom/` folder lets users override templates without editing the theme directly.
 
 [Guide: Creating a Theme](/extensions-and-development/guides/creating-a-theme/)
-
----
-
-For assistance, join our [Discord community](https://fossbilling.org/discord).

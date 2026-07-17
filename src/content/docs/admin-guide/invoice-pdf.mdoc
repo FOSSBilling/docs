@@ -24,8 +24,10 @@ Table cells can't span pages. Keep table rows compact enough to fit on one page.
 
 ### Creating a Custom Stylesheet
 
+{% steps %}
 1. Copy `/modules/Invoice/templates/pdf/default-invoice.css`
 2. Paste as `/modules/Invoice/templates/pdf/custom-invoice.css`
+{% /steps %}
 
 FOSSBilling automatically uses `custom-invoice.css` if it exists.
 
@@ -55,8 +57,10 @@ Customize the HTML structure by adding a custom Twig template.
 
 ### Creating a Custom Template
 
+{% steps %}
 1. Copy `/modules/Invoice/templates/pdf/default-invoice.twig`
 2. Paste as `/modules/Invoice/templates/pdf/custom-invoice.twig`
+{% /steps %}
 
 FOSSBilling uses `custom-invoice.twig` automatically.
 
@@ -82,14 +86,14 @@ The PDF renderer does not provide top-level `client`, `company`, or `currency` v
 
 ```twig
 <div class="custom-header">
-  {\% if logo_source %\}
+  {% if logo_source %\}
   <img src="{{ logo_source }}" alt="{{ seller['Name']|default(seller['Company']|default('Company logo'|trans)) }}">
-  {\% endif %\}
+  {% endif %\}
   <h1>{{ 'Invoice'|trans }} #{{ invoice.serie_nr }}</h1>
 </div>
 ```
 
-(Remove backslashes in actual template code; they are used here to prevent rendering in this documentation.)
+Remove backslashes in actual template code.
 
 ### Twig Filters
 
@@ -103,10 +107,12 @@ PDF templates support the same [Twig filters](/extensions-and-development/twig-f
 
 ## Testing Changes
 
+{% steps %}
 1. Make your edits to `custom-invoice.css` or `custom-invoice.twig`
 2. Generate a test invoice
 3. Download the PDF
 4. Review the output
+{% /steps %}
 
 {% aside type="tip" %}
 Twig templates may be cached. Clear the cache (**System → Tools → Clear cache**) if template changes do not appear.

@@ -148,18 +148,18 @@ The old `library_url` filter used for `{{ "Api/API.js" | library_url | script_ta
 
 Shared frontend source code has moved to a new `frontend/` directory at the repository root:
 
-```
-frontend/
-├── core/
-│   ├── api.js          # JavaScript API wrapper
-│   └── fossbilling.js  # Runtime helpers (message toasts, request utilities)
-├── editor/
-│   └── ckeditor.js     # CKEditor 5 bundle
-├── styles/
-│   └── markdown.css    # Markdown content styling
-└── tools/
-    └── esbuild-helpers.mjs  # Shared build utilities
-```
+{% filetree %}
+- frontend/
+  - core/
+    - api.js JavaScript API wrapper
+    - fossbilling.js Runtime helpers (message toasts, request utilities)
+  - editor/
+    - ckeditor.js CKEditor 5 bundle
+  - styles/
+    - markdown.css Markdown content styling
+  - tools/
+    - esbuild-helpers.mjs Shared build utilities
+{% /filetree %}
 
 ### Debug Bar
 
@@ -372,11 +372,13 @@ Gravatar has been removed. User avatars are now generated locally using DiceBear
 The new [Antispam module](/admin-guide/anti-spam/) enables honeypot spam prevention by default for supported forms such as signup. If you have custom signup or public submission forms, use the `antispam_honeypot` function to include honeypot fields:
 
 ```twig
-{\% set honeypot = antispam_honeypot() %}
-{\% if honeypot.enabled %}
+{% set honeypot = antispam_honeypot() %\}
+{% if honeypot.enabled %\}
   <input type="text" name="{{ honeypot.field }}" value="" tabindex="-1" autocomplete="off">
-{\% endif %}
+{% endif %\}
 ```
+
+Remove the backslash (`\`) from the closing `%}` in your template when copying the snippet above.
 
 ## Rate Limiter
 

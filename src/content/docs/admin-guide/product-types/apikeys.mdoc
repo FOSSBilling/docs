@@ -1,6 +1,8 @@
 ---
 title: API Keys
 description: Sell API keys for your custom applications and services.
+sidebar:
+  order: 6
 ---
 
 API key products let you sell access to your own APIs or services. After purchase, the customer receives a unique key that your application can validate against FOSSBilling.
@@ -22,42 +24,45 @@ Disabling or removing this extension will delete the database table storing API 
 
 ## Setting Up API Key Products
 
-### 1. Enable the Extension
+{% steps %}
 
-Go to **Extensions** and install "API Key Product".
+1. Enable the Extension
 
-### 2. Configure Key Generation
+    Go to **Extensions** and install "API Key Product".
 
-When creating the product, set these options:
+2. Configure Key Generation
 
-| Option | Default | Description |
-|--------|---------|-------------|
-| `Length` | 32 | Total characters in the key |
-| `Split` | Enabled | Add dashes for readability |
-| `Split Interval` | 8 | Characters between dashes |
-| `Capitalization` | Uppercase | Uppercase, lowercase, or mixed |
+    When creating the product, set these options:
 
-**Example key with default settings:**
+    | Option | Default | Description |
+    |--------|---------|-------------|
+    | `Length` | 32 | Total characters in the key |
+    | `Split` | Enabled | Add dashes for readability |
+    | `Split Interval` | 8 | Characters between dashes |
+    | `Capitalization` | Uppercase | Uppercase, lowercase, or mixed |
 
-```
-BA907863-47C1A4F5-3CB914D3-AC927BDD
-```
+    **Example key with default settings:**
 
-{% aside type="note" %}
-Dashes don't count toward the key length. If you disable splitting, the key would be `BA90786347C1A4F53CB914D3AC927BDD`.
-{% /aside %}
+    ```text
+    BA907863-47C1A4F5-3CB914D3-AC927BDD
+    ```
 
-### 3. Add Custom Parameters
+    {% aside type="note" %}
+    Dashes don't count toward the key length. If you disable splitting, the key would be `BA90786347C1A4F53CB914D3AC927BDD`.
+    {% /aside %}
 
-You can define custom parameters attached to each API key:
+3. Add Custom Parameters
 
-- `monthlyLimit` — number of allowed requests per month
-- `tier` — pricing tier (basic, pro, enterprise)
-- Any other metadata your application needs
+    You can define custom parameters attached to each API key:
 
-{% aside type="danger" %}
-Custom parameters are retrievable by anyone with the API key. **Don't store sensitive information here.**
-{% /aside %}
+    - `monthlyLimit` — number of allowed requests per month
+    - `tier` — pricing tier (basic, pro, enterprise)
+    - Any other metadata your application needs
+
+    {% aside type="danger" %}
+    Custom parameters are retrievable by anyone with the API key. **Don't store sensitive information here.**
+    {% /aside %}
+{% /steps %}
 
 ## API Endpoints
 
@@ -117,7 +122,7 @@ FOSSBilling includes rate limiting on all API requests (configured via the `rate
 Cache validation results in your application for a few minutes. This avoids hitting rate limits and reduces server load.
 {% /aside %}
 
-You can adjust rate limiting in the [configuration](/admin-guide/config#rate-limiter).
+You can adjust rate limiting in the [configuration](/admin-guide/config/#rate-limiter).
 
 ## Security Considerations
 
