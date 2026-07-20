@@ -18,6 +18,18 @@ FOSSBilling publishes release notes and tagged versions on GitHub. Use the links
 
 For the latest changes, start with the [most recent release](https://github.com/FOSSBilling/FOSSBilling/releases/latest).
 
+### Version 0.8.5
+
+| Area | Summary |
+|------|---------|
+| **Security** | Active user sessions invalidated after a password reset, preventing retained access after a credential change. |
+| **New Features** | Separate billing email address for invoice notifications, distinct from primary contact email; end-of-period order cancellation so clients retain access for the period they have paid for. |
+| **Enhancements** | Batch invoice reminders limited to once daily with invoice generation now running before reminders in cron; partial cron failures now exit non-zero for monitoring; support ticket edit history rendered as formatted Markdown; Twig URL filter arguments standardized across templates; admin list pages load faster via query optimization and Doctrine-based client list pagination. |
+| **Bug Fixes** | SQL `GROUP BY` error in product category query on newer database versions; Stripe subscription cancellation not syncing to Stripe; Stripe webhook routing for shared accounts; duplicate transactions on one-time Stripe payments; ClientBalance single-payment gateway flags; guest redirect when viewing invoices; footer link checkbox state not persisting; invoice approval discarding unsaved changes; Twig currency formatting in non-default locales; broken preview variables for invoice, staff signup, and support email templates; bulk email template regeneration failures and timeouts; email template upgrades from 0.7.2 installs via database patch; HTML entity double-encoding in KB article titles; client session handling, form field states, and error page rendering; Thai and Lao text in invoice PDFs via DejaVu Sans font stack; escaped CSS font styles in invoice PDFs; order expiry checks enforced across service modules. |
+| **Dependencies** | stripe/stripe-php v21 (#3984); league/commonmark v2.8.3; CKEditor 5 v48.3.1. |
+
+[View the full 0.8.5 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.5) for the complete list of changes.
+
 ### Version 0.8.4
 
 | Area | Summary |
