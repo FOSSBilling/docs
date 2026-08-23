@@ -18,6 +18,17 @@ FOSSBilling publishes release notes and tagged versions on GitHub. Use the links
 
 For the latest changes, start with the [most recent release](https://github.com/FOSSBilling/FOSSBilling/releases/latest).
 
+### Version 0.8.6
+
+| Area | Summary |
+|------|---------|
+| **Breaking: Cookies** | Cookie names standardized to `fossbilling_*` (`csrf_token` → `fossbilling_csrf`, `BBLANG`/`fb_locale`/`fb_timezone` etc.). Migrated transparently, but custom themes or scripts reading legacy names directly must update. |
+| **Security** | CSV exports hardened against secret columns and now require `view` + `export` permissions; cart config injection via downloadable products blocked; `manage_extensions` enforced for inactive modules; update archives verified via SHA-256 before extraction; hosting plan listings scoped to enabled products with order values cross-checked. |
+| **New Features** | Currency format patterns and fraction digits with per-currency manual rate overrides; promo redemption history and duplicate action; `Enable Add Funds` toggle for client top-ups; global Bcc for outgoing mail; ticket priority in email previews; failed invoice-item tracking with attempt counter and Failed Items page; opt-in cron to prune stale never-paid `pending_setup` orders; TLD periods can be restricted to an explicit list; order details show discount and post-discount amount; Update page surfaces preview build. |
+| **Bug Fixes** | PayPal IPN backslash stripping; Namecheap expiration dates; Plesk hosting-plan assignment and invalid webspace `set`; DirectAdmin package value reset; WHM reseller ACL; domain expiry sync not refreshing and sync marker advancing on failure; hosting orders stuck in `pending_setup` with duplicate `createacct`; checkout rolling back entire cart on partial failure; promo setup-fee waiver on non-applicable products; duplicate balance credits; race conditions: invoice-number collisions, credit double-spend, stock oversell, and Stripe webhook double-processing serialized; Stripe non-integer amount validation; cron client emails failing without admin session; session regeneration grace period hardcoded to zero and stale admin identity on client login; password reset confirmation and signup country selector timeout; new-order form crash for products missing period prices; one-time product checkout, TLD handler, and undefined `addons` variable; Cookie Consent crash when unconfigured; currency table missing columns and incomplete custom fields; client group not persisting and group-0 search errors; core-update login lockout and file-swap race; exception handler on non-integer codes; mass mailer preview, order button settings, and Service Management tab fatals; gateway highlight and dark border; inconsistent overdue invoice cleanup now routed through normal deletion. |
+
+[View the full 0.8.6 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.6) for the complete list of changes.
+
 ### Version 0.8.5
 
 | Area | Summary |

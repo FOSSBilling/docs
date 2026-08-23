@@ -180,10 +180,10 @@ The `DebugBar_renderHead()` Twig function has been renamed to `debug_bar_render_
 
 ### CSRF Meta Tag Removed
 
-The `<meta name="csrf-token" content="{{ CSRFToken }}">` tag has been removed from bundled themes. CSRF tokens are now sent via cookie (`csrf_token`) and handled automatically by the JavaScript API wrapper. If your custom theme relies on the meta tag, switch to reading the cookie:
+The `<meta name="csrf-token" content="{{ CSRFToken }}">` tag has been removed from bundled themes. CSRF tokens are now sent via cookie (`fossbilling_csrf` since 0.8.6, `csrf_token` before) and handled automatically by the JavaScript API wrapper. If your custom theme relies on the meta tag, switch to reading the cookie:
 
 ```javascript
-const token = document.cookie.match(/csrf_token=([^;]*)/)?.[1] || '';
+const token = document.cookie.match(/fossbilling_csrf=([^;]*)/)?.[1] || '';
 ```
 
 Build output is written to theme/public asset directories such as `src/public/assets`, not to a tracked `frontend/build` directory.
@@ -515,6 +515,31 @@ Custom modules or themes that check permissions directly via `$staff->hasPermiss
 {% /aside %}
 
 Existing staff group assignments are migrated automatically, with legacy non-admin staff from the old default group assigned to the **Migrated staff** group. For untouched legacy groups, `manage_settings` is backfilled on selected core modules where access was already granted to preserve prior behavior. After updating, review staff group assignments and permissions in the admin panel. Use the `has_permission` Twig function for template checks; in PHP, use the staff service's group-aware methods instead of reading the `permissions` field directly.
+
+## Cookie Standardization & Security Hardening (0.8.6)
+
+### Breaking: Cookie Names
+
+{% aside type="caution" %}
+FOSSBilling cookies now use standardized `fossbilling_*` names. Existing sessions and CSRF, locale, and timezone cookies are migrated transparently, but custom themes or scripts that read the legacy cookie names (`csrf_token`, `BBLANG`, `fb_locale`, `fb_timezone`) directly will need updating.
+{% /aside %}
+
+The patcher migrates existing cookies automatically. Update any custom code that reads cookies directly:
+
+```javascript
+// Before (0.8.5 and earlier)
+const token = document.cookie.match(/csrf_token=([^;]*)/)?.[1] || '';
+
+// After (0.8.6)
+const token = document.cookie.match(/fossbilling_csrf=([^;]*)/)?.[1] || '';
+```
+
+The bundled JavaScript API wrapper (`js/api.js`) already handles the new name, so themes using `API.*` or `fb_api_form`/`fb_api_link` require no change. The old names are no longer set after the upgrade.
+
+### Security
+
+- **CSV exports** (clients, invoices, orders) now strip secret columns and require both `view` and `export` permissions. Staff with only `export` will no longer see full records - review group permissions if exports appear empty.
+- **Extension permissions:** `manage_extensions` is now enforced for inactive modules. Staff without that permission can no longer open their configuration pages.
 
 ## Deprecations & Removals (Summary)
 

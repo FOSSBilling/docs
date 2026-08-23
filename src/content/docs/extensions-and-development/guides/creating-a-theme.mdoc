@@ -77,7 +77,7 @@ For links that trigger API actions:
 </a>
 ```
 
-Session-authenticated `client` and `admin` browser API calls require CSRF protection. The [JavaScript API wrapper](/extensions-and-development/javascript/) reads the `csrf_token` cookie and sends the token automatically.
+Session-authenticated `client` and `admin` browser API calls require CSRF protection. The [JavaScript API wrapper](/extensions-and-development/javascript/) reads the `fossbilling_csrf` cookie and sends the token automatically.
 
 Use `role: 'guest'` for public actions such as login, signup, and password reset:
 
