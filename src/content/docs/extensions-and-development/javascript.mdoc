@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 ## CSRF Tokens
 
-FOSSBilling uses a double-submit style token for browser API calls. Browser-rendered Twig pages expose `CSRFToken` and set a `csrf_token` cookie.
+FOSSBilling uses a double-submit style token for browser API calls. Browser-rendered Twig pages expose `CSRFToken` and set a `fossbilling_csrf` cookie.
 
 | Call type | CSRF requirement |
 |-----------|------------------|
@@ -45,7 +45,7 @@ FOSSBilling uses a double-submit style token for browser API calls. Browser-rend
 | `client` or `admin` API calls with the browser session | Required. |
 | External `client` or `admin` API calls using an API key | Not required. |
 
-The JavaScript wrapper reads the `csrf_token` cookie and sends it automatically where applicable. You don't need to manually attach the token to form data when using the wrapper.
+The JavaScript wrapper reads the `fossbilling_csrf` cookie and sends it automatically where applicable. You don't need to manually attach the token to form data when using the wrapper.
 
 ## Making Requests
 
@@ -219,7 +219,7 @@ Use manual `fetch()` only when the wrapper does not fit. For session-authenticat
 
 ```javascript
 function getCsrfToken() {
-  const match = document.cookie.match(/csrf_token=([^;]*)/);
+  const match = document.cookie.match(/fossbilling_csrf=([^;]*)/);
   return match ? decodeURIComponent(match[1]) : '';
 }
 

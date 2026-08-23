@@ -52,7 +52,7 @@ For browser calls, FOSSBilling accepts the token in any of these places:
 - `CSRFToken` in form data or query parameters
 - `X-CSRF-Token` request header
 
-The token must match the `csrf_token` cookie or the session token. The bundled [JavaScript API wrapper](/extensions-and-development/javascript/) reads the cookie and adds the token automatically.
+The token must match the `fossbilling_csrf` cookie or the session token. The bundled [JavaScript API wrapper](/extensions-and-development/javascript/) reads the cookie and adds the token automatically.
 
 Use Twig helpers for theme and module templates. This way, you don't need to manually attach CSRF tokens to the requests:
 
@@ -66,7 +66,7 @@ Use Twig helpers for theme and module templates. This way, you don't need to man
 For raw `fetch()` requests, send the token yourself:
 
 ```javascript
-const token = document.cookie.match(/csrf_token=([^;]*)/)?.[1] || '';
+const token = document.cookie.match(/fossbilling_csrf=([^;]*)/)?.[1] || '';
 
 fetch('/api/client/profile/update', {
   method: 'POST',
