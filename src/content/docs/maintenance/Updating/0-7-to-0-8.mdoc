@@ -524,7 +524,7 @@ Existing staff group assignments are migrated automatically, with legacy non-adm
 FOSSBilling cookies now use standardized `fossbilling_*` names. Existing sessions and CSRF, locale, and timezone cookies are migrated transparently, but custom themes or scripts that read the legacy cookie names (`csrf_token`, `BBLANG`, `fb_locale`, `fb_timezone`) directly will need updating.
 {% /aside %}
 
-The patcher migrates existing cookies automatically. Update any custom code that reads cookies directly:
+FOSSBilling migrates existing cookies automatically during browser requests. Update any custom code that reads cookies directly:
 
 ```javascript
 // Before (0.8.5 and earlier)
