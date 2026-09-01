@@ -18,6 +18,19 @@ FOSSBilling publishes release notes and tagged versions on GitHub. Use the links
 
 For the latest changes, start with the [most recent release](https://github.com/FOSSBilling/FOSSBilling/releases/latest).
 
+### Version 0.8.7
+
+| Area | Summary |
+|------|---------|
+| **Security** | Guest signup flow hardened against email address enumeration; password hashes and API tokens no longer leaked in staff and client listing responses; payment gateway and domain registrar secrets masked in API responses and admin forms (admins see a "Configured" badge, and leaving a field blank keeps the existing secret); ResellerClub API credentials redacted from request logs; template existence checks hardened against invalid paths; install filesystem paths stripped from Sentry stack traces. |
+| **New Features** | Configurable Redis/Memcached cache backend with an admin cache settings page, Redis TLS support, and per-installation namespace isolation; per-TLD option to require a domain transfer code; "Sync Now" action to refresh domain status, WHOIS contacts, and dates from the registrar on demand. |
+| **Enhancements** | WHOIS domain availability lookups replaced with RDAP, with graceful fallback for the Custom and Email adapters; release archives mirrored to Cloudflare R2 so IPv6-only hosts can download updates. |
+| **Bug Fixes** | `Order\Service::assertOrderUsable()` restored, fixing client service endpoints failing with error 9998; checkout `TypeError` when a gateway left an invoice unpaid; ResellerClub mixed-case availability lookups, bare-scalar API responses, whois/contact edits, `.FR` contact types, renewals without cached expiration, and non-JSON responses (which previously crashed and leaked credentials); admin-role client/staff logins no longer throttled under the guest anti-brute-force policy; maintenance page crash with "hide company public" enabled; failed public suffix list download no longer breaking checkout; multi-byte UTF-8 corruption in the guest countries response; "change password" error in the client area; subscription renewal invoices allowed for `suspended`/`failed_renew` orders; Stripe checkout race creating duplicate customers and unhandled invalid UTF-8 in API responses; admin order creation with immediate invoice issuance; stale reads causing "has no active service"; extension hook listener rebuild on failure; theme settings fallback when `settings_data.json` is missing; Massmailer crash on mail sending and test client fetching. |
+| **Changes** | Native PHP deprecation notices no longer reported to Sentry. |
+| **Dependencies** | `io-developer/php-whois` dropped in favor of RDAP availability checks; PHP and frontend dependencies refreshed. |
+
+[View the full 0.8.7 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.7) for the complete list of changes.
+
 ### Version 0.8.6
 
 | Area | Summary |

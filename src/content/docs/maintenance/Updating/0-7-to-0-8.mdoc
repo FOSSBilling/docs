@@ -541,6 +541,15 @@ The bundled JavaScript API wrapper (`js/api.js`) already handles the new name, s
 - **CSV exports** (clients, invoices, orders) now strip secret columns and require both `view` and `export` permissions. Staff with only `export` will no longer see full records - review group permissions if exports appear empty.
 - **Extension permissions:** `manage_extensions` is now enforced for inactive modules. Staff without that permission can no longer open their configuration pages.
 
+## Security Hardening & API Secrets (0.8.7)
+
+{% aside type="caution" %}
+**0.8.7 is a security release** addressing several vulnerabilities, including leaked credentials in API responses. If you are running a version older than 0.8.0, update immediately.
+{% /aside %}
+
+- Staff and client listing responses no longer include password hashes or API tokens.
+- Payment gateway and domain registrar secrets are now masked in API responses and admin forms. Admins see a "Configured" badge instead of the raw value, and leaving a field blank preserves the existing secret.
+
 ## Deprecations & Removals (Summary)
 
 | Component | Status | Notes |
