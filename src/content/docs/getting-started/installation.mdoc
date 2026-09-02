@@ -42,9 +42,8 @@ server {
 }
 
 server {
-	listen 443 ssl;
-	listen [::]:443 ssl;
-	http2 on;
+	listen 443 ssl http2;
+	listen [::]:443 ssl http2;
 	ssl_certificate      /path/to/ssl/certificate.crt;
 	ssl_certificate_key  /path/to/ssl/certificate.key;
 	ssl_stapling on;
@@ -102,6 +101,10 @@ server {
 	}
 }
 ```
+
+    {% aside type="caution" title="Migrating from BoxBilling?" %}
+      The `.htaccess` file aliases the old `bb-ipn.php` callback to `ipn.php` and translates its legacy `bb_invoice_id`, `bb_gateway_id`, `bb_redirect`, and `bb_invoice_hash` query parameters, since old PayPal recurring-payment IPN URLs can't be updated after the fact. The NGINX config above doesn't replicate this. If you still receive callbacks at the old URL or parameter names, either use Apache/LiteSpeed instead, or add an equivalent rewrite for your NGINX setup.
+    {% /aside %}
   {% /tabitem %}
 {% /tabs %}
 
