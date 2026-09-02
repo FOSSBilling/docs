@@ -31,7 +31,7 @@ Apache usually requires no extra application-specific configuration. The templat
 	**OpenLiteSpeed users:** After installation, remember to reload the web server so it picks up the new `.htaccess` file.
   {% /tabitem %}
   {% tabitem label="NGINX" %}
-    Use the configuration below as a starting point for running FOSSBilling on NGINX. Be sure to replace placeholder values (like `%%DOMAIN%%` and `%%SOURCE_PATH%%`) and adjust SSL paths to match your environment. `%%SOURCE_PATH%%` is the directory you extracted the release archive into — the one that directly contains `index.php`, not a `src` subfolder.
+    Use the configuration below as a starting point for running FOSSBilling on NGINX. Be sure to replace placeholder values (like `%%DOMAIN%%` and `%%SOURCE_PATH%%`) and adjust SSL paths to match your environment.
 
 ```nginx
 server {
