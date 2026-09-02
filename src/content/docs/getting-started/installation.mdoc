@@ -36,28 +36,30 @@ Apache usually requires no extra application-specific configuration. The templat
 ```nginx
 server {
 	listen 80;
+	listen [::]:80;
 	server_name %%DOMAIN%%;
 	return 301 https://$host$request_uri;
 }
 
 server {
 	listen 443 ssl http2;
+	listen [::]:443 ssl http2;
 	ssl_certificate      /path/to/ssl/certificate.crt;
 	ssl_certificate_key  /path/to/ssl/certificate.key;
 	ssl_stapling on;
 	ssl_stapling_verify on;
 
-	set $root_path %%SOURCE_PATH%%;
 	server_name %%DOMAIN%%;
-
+	root %%SOURCE_PATH%%;
 	index index.php;
-	root $root_path;
-	try_files $uri $uri/ @rewrite;
 	sendfile off;
 	include /etc/nginx/mime.types;
 
-	# Block access to sensitive files
-	location ~* .(ini|sh|inc|bak|twig|sql)$ {
+	# Serve existing files directly; otherwise hand off to the front controller.
+	try_files $uri $uri/ /index.php$is_args$args;
+
+	# Block access to sensitive files and file types
+	location ~* \.(ini|sh|inc|bak|twig|sql|conf|lock|log|old|ya?ml|htaccess|htpasswd)$ {
 		return 403;
 	}
 
@@ -65,13 +67,13 @@ server {
 	location ^~ /vendor/ {
 		return 403;
 	}
-	
-	# Block direct access to config.php
-	location = /config.php {
+
+	# Block access to per-theme configuration directories
+	location ~* ^/themes/[^/]+/config/ {
 		return 403;
 	}
 
-	# Block access to hidden files except .well-known
+	# Block access to hidden files except .well-known (needed for ACME challenges)
 	location ~ /\.(?!well-known\/) {
 		return 403;
 	}
@@ -81,33 +83,26 @@ server {
 		return 403;
 	}
 
-	location @rewrite {
-		rewrite ^/page/(.*)$ /index.php?_url=/custompages/$1;
-		rewrite ^/(.*)$ /index.php?_url=/$1;
+	# Only these entry points are allowed to run through PHP-FPM.
+	location ~ ^/(index\.php|ipn\.php|install/index\.php|install/install\.php)$ {
+		# fastcgi_pass needs to match your PHP-FPM setup. FOSSBilling requires PHP 8.3+,
+		# so the socket is often something like /run/php/php8.3-fpm.sock.
+		# A TCP address such as 127.0.0.1:9000 also works.
+		# Please check your server setup.
+		fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+		fastcgi_intercept_errors on;
+		include fastcgi_params;
 	}
 
-	location ~ \.php$ {
-		fastcgi_split_path_info ^(.+\.php)(/.+)$;
-
-		# fastcgi_pass need to be changed according your server setup:
-		# phpx.x is your server setup
-		# examples: /var/run/phpx.x-fpm.sock, /var/run/php/phpx.x-fpm.sock or /run/php/phpx.x-fpm.sock are all valid options
-		# Or even localhost:port (Default 9000 will work fine)
-		# Please check your server setup
-
-		fastcgi_pass unix:/run/php/phpx.x-fpm.sock;
-			fastcgi_param PATH_INFO       $fastcgi_path_info;
-			fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-			fastcgi_intercept_errors on;
-			include fastcgi_params;
-		}
-
-		location ~* ^/(css|img|js|flv|swf|download)/(.+)$ {
-			root $root_path;
-			expires off;
-		}
+	# Block direct execution of every other PHP file
+	location ~* \.php$ {
+		return 403;
+	}
 }
 ```
+
+    **Migrating from BoxBilling?** The `.htaccess` file aliases the old `bb-ipn.php` callback to `ipn.php` and translates its legacy `bb_invoice_id`, `bb_gateway_id`, `bb_redirect`, and `bb_invoice_hash` query parameters, since old PayPal recurring-payment IPN URLs can't be updated after the fact. The NGINX config above doesn't replicate this. If you still receive callbacks at the old URL or parameter names, either use Apache/LiteSpeed instead, or add an equivalent rewrite for your NGINX setup.
   {% /tabitem %}
 {% /tabs %}
 
