@@ -18,6 +18,19 @@ FOSSBilling publishes release notes and tagged versions on GitHub. Use the links
 
 For the latest changes, start with the [most recent release](https://github.com/FOSSBilling/FOSSBilling/releases/latest).
 
+### Version 0.8.8
+
+| Area | Summary |
+|------|---------|
+| **Breaking** | Stored values are no longer HTML-escaped before saving; escaping now happens at render time, with a database patch repairing previously double-escaped rows. Custom themes or modules that pre-escape output or rely on stored escaped values should verify rendering. |
+| **Security** | PayPal notifications bound to their invoice with signed callback URLs; Stripe redirect PaymentIntent ownership and currency verified before applying; PayPal IPN currency validated; gateway cancellations restricted to the stored subscription; once-per-client promo race, client-bound email recipient, reCAPTCHA v3 fast-submit bypass, and signup quota fixes; admin and client sessions invalidated on API token rotation; promo history and order/ticket details exposure limited; `cron.php` now refuses non-CLI execution (use the hash-protected guest cron endpoint when enabled in System → Cron instead); theme config directories protected; installer removed from production debug builds. |
+| **New Features** | Addon quantity selection with validation, storage on the addon order, order-form input, and admin toggles. |
+| **Enhancements** | Open hosting plan limits shown as "Unlimited"; domain transfers through the Email and Custom registrars; transfer codes collected for hosting domain orders. |
+| **Bug Fixes** | Client signup CAPTCHA double-verification; multi-item cart orders missing from client list; invoice PDF failure on missing company address; `Server_Manager::getPasswordLength()` cron fatal; promo redemption `serie_nr` column; restored product quantity toggle; Namecheap nameservers and Plesk credential preservation; renewal, balance, Add Funds deposit, ticket, gateway, tax math, and theme CSS fixes. |
+| **Changes** | Template-cache write failures render an error page instead of a raw 500; cache-backend configuration errors surfaced as settings-form validation errors. |
+
+[View the full 0.8.8 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.8) for the complete list of changes.
+
 ### Version 0.8.7
 
 | Area | Summary |

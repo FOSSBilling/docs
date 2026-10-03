@@ -550,6 +550,32 @@ The bundled JavaScript API wrapper (`js/api.js`) already handles the new name, s
 - Staff and client listing responses no longer include password hashes or API tokens.
 - Payment gateway and domain registrar secrets are now masked in API responses and admin forms. Admins see a "Configured" badge instead of the raw value, and leaving a field blank preserves the existing secret.
 
+## Escaping, Cron & Payment Hardening (0.8.8)
+
+{% aside type="caution" %}
+**0.8.8 is a security release** hardening payment handling, checkout, and session management. Update as soon as possible.
+{% /aside %}
+
+### Breaking: Stored Escaping
+
+Stored values are no longer HTML-escaped before saving; escaping now happens at the rendering boundary, and a database patch repairs rows that were previously stored double-escaped. If your custom themes or modules pre-escape output or rely on stored escaped values, verify their rendering after updating.
+
+### Cron Entry Point Now CLI-Only
+
+The `cron.php` entry point now refuses non-CLI execution, closing direct HTTP triggering of the scheduler script. If you triggered `cron.php` over HTTP, switch to a system cron job or to the hash-protected guest cron endpoint (`guest/cron/run`) when enabled in **System → Cron**.
+
+### Sessions
+
+Admin and client sessions are now invalidated when API tokens are rotated, matching the existing password-change behavior.
+
+### Payment Gateway Hardening
+
+PayPal notifications are bound to their invoice with signed callback URLs, Stripe redirect PaymentIntents are verified for ownership and currency before applying, PayPal IPN currencies are validated, and gateway cancellations are restricted to the stored subscription. This is transparent unless you maintain a custom payment gateway — test payments, refunds, and cancellations after updating.
+
+### Addon Quantity Selection
+
+Addons now support quantity selection: the requested quantity is validated against the addon's flag and stored on the addon order, with an order-form quantity input and admin toggles. Review addon configurations after updating if you sell quantity-based addons.
+
 ## Deprecations & Removals (Summary)
 
 | Component | Status | Notes |
