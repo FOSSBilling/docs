@@ -12,8 +12,8 @@ export default defineConfig({
       description:
         'Official FOSSBilling documentation for installation, maintenance, customization, and development.',
       logo: {
-        light: './src/assets/logo-black.svg',
-        dark: './src/assets/logo-white.svg',
+        light: './src/assets/logo-light.svg',
+        dark: './src/assets/logo-dark.svg',
         alt: 'FOSSBilling',
         replacesTitle: true,
       },
