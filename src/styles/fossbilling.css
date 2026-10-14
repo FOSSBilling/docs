@@ -136,6 +136,7 @@
 
   .site-title img {
     height: 2.5rem;
+    width: auto;
   }
 
   .sl-markdown-content {
