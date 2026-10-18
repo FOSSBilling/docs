@@ -42,7 +42,7 @@ Pull requests to `main` are also validated in CI with formatting checks, `astro 
 ```text
 .
 ├── astro.config.ts     # Astro, Starlight, sidebar, and social links
-├── markdoc.config.ts   # Starlight Markdoc integration
+├── markdoc.config.mjs  # Starlight Markdoc integration
 ├── public/             # Static files copied as-is
 src/
 ├── assets/             # Bundled images and logos used by docs pages
