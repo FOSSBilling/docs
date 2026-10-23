@@ -148,7 +148,7 @@ FOSSBilling injects these into `$this->config`:
 
 ## Browser Returns
 
-Use the injected `return_url`, `cancel_url`, and `thankyou_url` unchanged. These route through `/invoice/payment-return`, which navigates only to fixed invoice destinations using the supplied invoice hash and status. It does not accept arbitrary redirect URLs or restore a client session. The destination applies normal invoice authorization using the browser's session.
+Use the injected `return_url`, `cancel_url`, and `thankyou_url` unchanged. These route through `/invoice/payment-return`, which navigates only to fixed invoice destinations using the supplied invoice hash and status. It does not accept arbitrary redirect URLs or restore a client session. The destination applies the normal invoice access checks.
 
 Use top-level browser navigation for the return flow, as the bundled PayPal adapter does.
 
