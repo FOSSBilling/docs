@@ -16,11 +16,12 @@ FOSSBilling integrates with CWP (Control-WebPanel) using its API. Here's how to 
 3. Give the API key a friendly name (like "FOSSBilling"), generate an API key, and enter your FOSSBilling server IP in the **IP Origin** field
    - You can enter `%` to allow any IP, but this isn't recommended for security reasons
 4. Leave **Format Request** set to `JSON`
-5. Assign these permissions to the API key (as of FOSSBilling 0.4.0):
+5. Assign these permissions to the API key:
    - **Account**: `Add`, `Update`, `Delete`, `List`, `Suspend`, `Unsuspend`
    - **Account Details**: `List`
    - **Account Package Change**: `Update`
    - **Change Password**: `Update`
+   - For single sign-on (0.8.9+), allow the `user_session` API's `list` action
 6. Copy the API key and save your changes
 {% /steps %}
 
@@ -50,3 +51,7 @@ Because of CWP API limitations, FOSSBilling cannot create hosting packages for y
 2. Create matching plans in FOSSBilling with the **exact same name**
 
 If the names don't match exactly, FOSSBilling won't be able to create accounts with that package.
+
+## Control-Panel Single Sign-On
+
+Since 0.8.9, opening the hosting control panel for an account requests a single-use CWP login URL through `user_session`. Ensure the API key can use that action. If CWP does not provide a session URL, FOSSBilling falls back to the standard panel URL (`https://your-hostname:2083`), where the client can log in normally.

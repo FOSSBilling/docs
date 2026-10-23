@@ -8,7 +8,7 @@ sidebar:
     text: New
 ---
 
-The 0.8.0 release includes significant database, structural, and frontend changes. Read every section below before upgrading.
+The 0.8.0 release includes significant database, structural, and frontend changes. Read every section below before upgrading from 0.7.x. When updating within 0.8.x, review the sections for releases newer than your installed version.
 
 {% aside type="caution" %}
 **Review custom themes and modules carefully.** 0.8.0 removes jQuery, switches from Webpack Encore to esbuild, replaces the routing layer with Symfony HttpKernel, and introduces multiple Twig filter removals and renames. Custom code that depends on the old infrastructure will break.
@@ -575,6 +575,32 @@ PayPal notifications are bound to their invoice with signed callback URLs, Strip
 ### Addon Quantity Selection
 
 Addons now support quantity selection: the requested quantity is validated against the addon's flag and stored on the addon order, with an order-form quantity input and admin toggles. Review addon configurations after updating if you sell quantity-based addons.
+
+## Authentication, API & Payment Hardening (0.8.9)
+
+0.8.9 includes security fixes; update as soon as possible. Review these compatibility changes if you maintain custom themes, modules, or integrations.
+
+### API Error Statuses
+
+API error codes in the HTTP range `400`–`599` now use that HTTP status, except application codes `413`, `436`, `437`, and `498`, which return HTTP `400`. The JSON envelope and original `error.code` are unchanged. Read error bodies on non-200 responses and continue checking `error` on HTTP `200`, since some application errors still use it. See the [API reference](/extensions-and-development/api/#http-status-and-error-handling).
+
+### Guest Authentication and Cart Requests
+
+Guest client login/signup and staff login now require POST with the pre-login session's CSRF token in the JSON/form body (`CSRFToken`) or `X-CSRF-Token` header. Guest cart mutations also require a session-bound token. Both reject cross-origin browser requests, even when `api.CSRFPrevention` is disabled.
+
+Update custom login, signup, order-button, embed, and cart forms to use the current session token and the updated [JavaScript wrapper](/extensions-and-development/javascript/#csrf-tokens). Raw requests must retain the session cookie and submit its token; authentication tokens cannot be sent in query parameters. See the [protected endpoint list](/extensions-and-development/api/#guest-authentication-and-cart-calls).
+
+### Payment Returns
+
+Use the gateway-injected `return_url`, `cancel_url`, and `thankyou_url`, which now route through `/invoice/payment-return` to fixed invoice destinations. The legacy `restore_token` session restoration flow is removed, and PayPal returns use browser redirects. Update custom adapters that depend on the old flow; payment verification still belongs in the server-side callback. See the [gateway guide](/extensions-and-development/guides/creating-a-payment-gateway/#browser-returns).
+
+### Invoice PDFs and Settings
+
+Dompdf no longer fetches remote assets directly. Custom PDF templates should use local or embedded assets and the supplied `css` and `logo_source` variables. Remote company logos are fetched separately with private-network blocking and image validation; rejected logos are omitted. [Review custom invoice PDFs](/admin-guide/invoice-pdf/#logos-and-remote-assets) after updating.
+
+Extension/theme configuration reads no longer persist settings as a side effect; use authorized write paths. Guest extension settings expose only public settings of core or active modules. Theme settings enforce authorization and CSRF checks. Custom admin templates must render ticket notes as plain text.
+
+Complete [update finalization](/maintenance/updating/#update-finalization) to apply database repairs and category priority backfills. Test custom authentication, cart, payment return, and PDF flows after updating.
 
 ## Deprecations & Removals (Summary)
 

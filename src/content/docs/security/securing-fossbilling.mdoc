@@ -69,6 +69,8 @@ If you are running behind a reverse proxy, configure the `trusted_proxies` setti
 
 The bundled [JavaScript API wrapper](/extensions-and-development/javascript/) sends the CSRF token automatically. External API calls authenticated with an API key do not need a CSRF token.
 
+Since 0.8.9, guest client login/signup, staff login, and cart mutations require a session-bound token and reject cross-origin browser requests even when `api.CSRFPrevention` is disabled. See the [API reference](/extensions-and-development/api/#csrf-tokens) for endpoint and token requirements.
+
 ### Rate Limiter
 
 Rate limiting is configured under the `rate_limiter` block, replacing the old `api.rate_*` keys:

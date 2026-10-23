@@ -18,6 +18,24 @@ FOSSBilling publishes release notes and tagged versions on GitHub. Use the links
 
 For the latest changes, start with the [most recent release](https://github.com/FOSSBilling/FOSSBilling/releases/latest).
 
+### Version 0.8.9
+
+**Released: 2026-10-23.** This patch release hardens authentication, payments, and extension handling and includes several security fixes. Update as soon as possible, after reviewing the [0.8.9 migration notes](/maintenance/updating/0-7-to-0-8/#authentication-api--payment-hardening-089).
+
+| Area | Summary |
+|------|---------|
+| **Breaking: API Errors** | Error codes in the HTTP range `400`–`599` now use that status, except application codes `413`, `436`, `437`, and `498`, which map to HTTP `400`. Existing application-code mappings remain. The JSON envelope and original error code are unchanged; integrations must read error bodies on non-200 responses. (#4266) |
+| **Breaking: Guest Requests** | Client login/signup and staff login require POST with a pre-login session CSRF token. Guest cart mutations also require a session-bound token. Both reject cross-origin browser requests; review custom themes, storefronts, order buttons, and embed forms. (#4474, #4546) |
+| **Breaking: Payment Returns and PDFs** | Gateway return/cancel/thank-you URLs use `/invoice/payment-return` with fixed invoice destinations; the legacy session `restore_token` flow is removed and PayPal uses browser redirects. Dompdf no longer fetches remote assets directly; custom invoice PDF templates must use local or embedded assets. (#4474) |
+| **Security** | Transactional password resets with row locking; email-confirmation tokens bound to the current email with 24-hour expiry and atomic consume/revoke; stricter guest session/cookie handling; bounded IPN bodies; installer reinstall protection; secure staged extension extraction; configuration reads without writes and gated guest settings; authorization and CSRF checks for theme settings; validated PDF logo downloads that block private networks; plain-text ticket notes and sandboxed mass-mailer previews; hardened transaction-error rendering, public mutation IDs, client deletion IDs, product icon URLs, DirectAdmin requests, HTTP bootstrap overrides, Formbuilder permissions, Hestia hostnames, encrypted values, PayPal IPN fields, CWP synchronization data, and extension directory metadata. (#4474, #4546, #4548, #4466, #4464, #4493) |
+| **New Features** | Sitemap coverage for the homepage and custom pages, product `lastmod`, and a Custompages guest API. (#4566) |
+| **Enhancements** | CWP single sign-on with panel URL fallback and bounded timeouts; hosting order pages survive panel URL lookup failures; extension directory caching with a last-known-good fallback for up to 48 hours; cron emails use the recipient's locale; configurable invoice reminder send time (`HH:MM`) with deferred reminders; product category priority ordering and bulk `category_update_priority` API with migration backfill; corrected Stripe currency conversion for COP, HUF, IDR, ISK, PKR, and UGX, safer renewal paid-skip handling, and renewal payment recording after the first invoice; PayPal `item_number` mismatch reduced to a warning; WHM activation handles an existing package; invalid extension manifests produce user-facing errors; translatable support message dates. (#4459, #4462, #4493, #4496, #4535, #4520, #4569, #4541, #4536, #4523, #4534, #4565, #4513) |
+| **Bug Fixes** | Duplicate activation after credit checkout; API key settings and order pages; domain sync retries after programming errors; services pagination route; custom-page `utf8mb4` repair including MariaDB UCA collations; invoice-counter validation and upgrade checks; domain period validation; abandoned session cleanup; registrar phone normalization; Internet.bs missing registrant fields and French TLD matching; sparse extension directory metadata/icons; CWP suspension messages; standalone Form Builder rendering; product settings permissions; unavailable news returns 404; product pricing and form-answer validation. (#4456, #4463, #4521, #4491) |
+| **Changes** | Expected user-facing API errors are no longer sent to Sentry; unexpected failures remain reportable. (#4512) |
+| **Dependencies** | PHP dependencies refreshed, including Doctrine ORM 3.7.5, Persistence 4.2.1, Symfony components 7.4.21, Sentry 4.34.0, League URI 7.9.0, Guzzle PSR-7 3.2.0, and Nette Schema 1.4.0, plus development tools. Frontend updates include Tabler 1.7.0, Chart.js 4.6.1, flag-icons 7.6.0, and intl-tel-input 29.5.6; Composer Docker image digest refreshed. |
+
+[View the full 0.8.9 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.9) for the complete list of changes.
+
 ### Version 0.8.8
 
 | Area | Summary |

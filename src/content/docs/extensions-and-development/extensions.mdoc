@@ -9,6 +9,8 @@ You can also browse the [Extension Directory](https://extensions.fossbilling.org
 
 Where supported, you can install listed extensions directly from within your FOSSBilling installation.
 
+Since 0.8.9, successful extension directory responses are cached. If a refresh fails, FOSSBilling can serve a validated last-known-good copy within a 48-hour fallback window. Invalid metadata does not replace that copy. If listings appear stale during a directory outage, retry after service is restored; a cached listing does not guarantee the extension download is available.
+
 ## Payment Adapters
 
 | Adapter | Single Payment | Subscriptions | Developer | Status |

@@ -141,10 +141,18 @@ FOSSBilling injects these into `$this->config`:
 | Key | Purpose |
 |-----|---------|
 | `notify_url` | IPN/webhook callback URL |
-| `return_url` | Redirect after successful payment |
-| `cancel_url` | Redirect if client cancels |
-| `thankyou_url` | Thank you page URL |
+| `return_url` | Browser return through `/invoice/payment-return` with status `ok` |
+| `cancel_url` | Browser return through `/invoice/payment-return` with status `cancel` |
+| `thankyou_url` | Browser return through `/invoice/payment-return` with status `thankyou` |
 | `test_mode` | Whether in sandbox mode |
+
+## Browser Returns
+
+Since 0.8.9, use the injected `return_url`, `cancel_url`, and `thankyou_url` unchanged. These route through `/invoice/payment-return`, which navigates only to fixed invoice destinations using the supplied invoice hash and status. It does not accept arbitrary redirect URLs or restore a client session. The destination applies normal invoice authorization using the browser's session.
+
+The legacy `restore_token` flow has been removed. Update custom adapters that constructed restore URLs or depended on restoring authentication after a provider return. Use top-level browser navigation for the return flow, as the bundled PayPal adapter does.
+
+Keep `notify_url` for server-to-server notifications. A successful browser return is not proof of payment; verify the provider callback and payment details before applying funds or marking the invoice paid.
 
 ## Best Practices
 
@@ -161,6 +169,7 @@ FOSSBilling injects these into `$this->config`:
 2. Create a test invoice
 3. Check **Invoicing → Transactions** for results
 4. Test the full flow: payment → verification → invoice marking
+5. Test browser returns for success and cancellation, including an expired browser session
 {% /steps %}
 
 ## Examples

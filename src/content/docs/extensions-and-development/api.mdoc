@@ -21,7 +21,7 @@ Three main entrypoints:
 
 ## Request Format
 
-- **Method:** Core API routes accept GET and POST. Use POST for requests with a JSON body or form data.
+- **Method:** Core API routes generally accept GET and POST. Guest client login/signup and staff login require POST. Use POST for mutations and requests with a JSON body or form data.
 - **Format:** JSON responses. POST requests may send JSON or form data.
 - **Naming:** Lowercase with underscores (`change_password`)
 - **Nulls:** Blank fields are included as `null`, not omitted
@@ -44,15 +44,26 @@ Browser requests from an active client or admin session use the session cookie i
 
 ## CSRF Tokens
 
-CSRF protection applies to session-authenticated `client` and `admin` browser API calls. It does not apply to `guest` calls or external API calls authenticated with API tokens.
+CSRF protection applies to session-authenticated `client` and `admin` browser API calls. Since 0.8.9, it also applies to guest client login/signup, staff login, and cart mutations. External `client` and `admin` calls authenticated with API keys do not require CSRF tokens.
 
 For browser calls, FOSSBilling accepts the token in any of these places:
 
 - `CSRFToken` in the JSON body
-- `CSRFToken` in form data or query parameters
+- `CSRFToken` in form data (query parameters are also accepted except for guest authentication)
 - `X-CSRF-Token` request header
 
-The token must match the `fossbilling_csrf` cookie or the session token. The bundled [JavaScript API wrapper](/extensions-and-development/javascript/) reads the cookie and adds the token automatically.
+The token must match the server-side session token. For session-authenticated `client` and `admin` calls, a nonempty CSRF cookie must match it too. The bundled [JavaScript API wrapper](/extensions-and-development/javascript/) reads the `fossbilling_csrf` cookie and adds the token automatically to same-origin requests. Sending a cookie without a token in the request is insufficient.
+
+### Guest Authentication and Cart Calls
+
+Load a FOSSBilling page first to establish the session, then retain the session cookie and submit its token. These guest endpoints require a session-bound CSRF token:
+
+- `client/login`, `client/create`, and `staff/login`: POST only, with the token in the JSON/form body or `X-CSRF-Token` header.
+- `cart/add_item`, `cart/remove_item`, `cart/apply_promo`, `cart/remove_promo`, `cart/reset`, and `cart/set_currency`: GET or POST, with the token in the request. Prefer POST for mutations.
+
+These checks apply even when `api.CSRFPrevention` is disabled. A supplied `Origin` must match the configured FOSSBilling origin, and `Sec-Fetch-Site: cross-site` is rejected. Serve custom browser forms from the same origin. Server-side guest integrations must retain the session and submit its token too.
+
+Other guest calls are not subject to this authentication/cart CSRF check. See the [0.8.9 migration notes](/maintenance/updating/0-7-to-0-8/#authentication-api--payment-hardening-089) for migration details.
 
 Use Twig helpers for theme and module templates. This way, you don't need to manually attach CSRF tokens to the requests:
 
@@ -169,6 +180,29 @@ fetch(url, {
   }
 }
 ```
+
+### HTTP Status and Error Handling
+
+Since 0.8.9, error codes in the HTTP range `400`–`599` use that HTTP status, except application codes `413`, `436`, `437`, and `498`, which use HTTP `400`. The original code stays in `error.code`. Existing mappings also remain: `201`–`206`, `1002`, and `1004` use HTTP `401`; `701` and `879` use `400`; and `740` uses `404`. Other application errors can still return HTTP `200`.
+
+Read the JSON body on non-200 responses and check both the HTTP status and the `error` field. For example:
+
+```javascript
+const response = await fetch('/api/guest/currency/get_pairs', {
+  headers: { Accept: 'application/json' },
+});
+const data = await response.json();
+
+if (data.error) {
+  throw new Error(`${data.error.message} (code ${data.error.code})`);
+}
+if (!response.ok) {
+  throw new Error(`HTTP ${response.status}`);
+}
+console.log(data.result);
+```
+
+For HTTP libraries that throw on non-2xx responses, read the JSON body from the exception's response. Handle non-JSON proxy or web-server failures separately.
 
 ## Common Patterns
 
