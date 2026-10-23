@@ -104,6 +104,12 @@ For full control, use HTML:
 **Custom HTML:**
 ![Custom template](../../../assets/guides/emails/custom-template-preview.png)
 
+## Locale and Invoice Reminder Timing
+
+Cron-sent emails use each recipient's configured locale. Check custom templates in the languages your clients use.
+
+In invoice settings, **Send Payment Reminders At** accepts `HH:MM` in the configured timezone. Before-due and after-due reminders are sent on the first cron run at or after that time. Leave the field empty to send on the first cron run after midnight. Keep cron running regularly; reminder day intervals still determine which invoices are eligible.
+
 ## Storage Location
 
 Templates exist in two places:

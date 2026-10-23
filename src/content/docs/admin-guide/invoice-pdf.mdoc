@@ -5,6 +5,14 @@ description: Make your invoice PDFs match your brand with custom CSS and HTML te
 
 FOSSBilling generates invoice PDFs with [Dompdf](https://github.com/dompdf/dompdf), which renders HTML and CSS into a printable document.
 
+## Logos and Remote Assets
+
+Dompdf cannot fetch remote assets directly. Custom PDF templates must use local or embedded images, styles, and fonts. Use the supplied `logo_source` variable for the company logo and `css` for the invoice stylesheet instead of adding remote URLs.
+
+FOSSBilling fetches remote company logos separately, blocking private networks and checking image types, contents, and dimensions. Downloads are limited to 2 MiB, and SVG logos must be self-contained. Unavailable or rejected remote logos are omitted from the PDF.
+
+If a logo is missing, check that it is publicly reachable, uses a supported image format (PNG, JPEG, GIF, BMP, WebP, or self-contained SVG), and meets the size limits. Internal-only logo services cannot be used as remote sources. Generate a test PDF after changing the logo or custom assets.
+
 ## CSS Limitations
 
 Dompdf is not a complete PDF engine. FOSSBilling uses Dompdf 3.x, which supports many print-friendly CSS features but still has layout limitations:
@@ -72,7 +80,7 @@ Available in PDF templates:
 |----------|-------------|
 | `currency_code` | Invoice currency code for `format_currency`. |
 | `css` | Contents of `custom-invoice.css` or `default-invoice.css`, inserted into the template's `<style>` block. |
-| `logo_source` | Resolved company logo source. This can be a local path, a remote URL, an SVG data URI, or an empty string. |
+| `logo_source` | Resolved company logo source: a local path, an image data URI (including validated remote logos), or an empty string. Dompdf does not fetch remote URLs. |
 | `seller` | Display-ready seller/company lines keyed by labels such as `Name`, `Address 1`, `Phone`, and `VAT Number`. |
 | `seller_lines` | Number of seller lines used by the default template for layout calculations. |
 | `footer` | Company footer details, including company name, bank details, address fields, email, phone, VAT/company number, website, and signature. |

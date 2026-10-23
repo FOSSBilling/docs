@@ -77,17 +77,20 @@ For links that trigger API actions:
 </a>
 ```
 
-Session-authenticated `client` and `admin` browser API calls require CSRF protection. The [JavaScript API wrapper](/extensions-and-development/javascript/) reads the `fossbilling_csrf` cookie and sends the token automatically.
+Session-authenticated `client` and `admin` browser API calls require CSRF protection. Guest client login/signup, staff login, and cart mutations require a session-bound token too, and reject cross-origin browser requests. The [JavaScript API wrapper](/extensions-and-development/javascript/) reads the `fossbilling_csrf` cookie and sends the token automatically on same-origin requests. Guest authentication requires POST.
 
 Use `role: 'guest'` for public actions such as login, signup, and password reset:
 
 ```twig
 <form action="{{ 'client/login'|api_url(role: 'guest') }}" {{ fb_api_form({ redirect: '/'|url }) }}>
+  <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}">
   <input type="email" name="email" required>
   <input type="password" name="password" required>
   <button type="submit">{{ 'Login'|trans }}</button>
 </form>
 ```
+
+Theme settings forms submit to the admin `/theme/{theme}` route using POST. Include `<input type="hidden" name="CSRFToken" value="{{ CSRFToken }}">`; saving requires the `theme.manage_settings` permission.
 
 ## Server-Side API Globals
 

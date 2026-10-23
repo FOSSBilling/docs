@@ -35,6 +35,8 @@ Only what's needed to fix bugs:
 
 Sensitive data is automatically filtered out before sending.
 
+Expected API errors, such as validation failures, are not sent to Sentry. Unexpected failures are reported when error reporting is enabled.
+
 ## Error Reporting History
 
 | Version | Changes |

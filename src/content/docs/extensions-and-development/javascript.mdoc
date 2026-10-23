@@ -37,15 +37,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 ## CSRF Tokens
 
-FOSSBilling uses a double-submit style token for browser API calls. Browser-rendered Twig pages expose `CSRFToken` and set a `fossbilling_csrf` cookie.
+FOSSBilling uses session-bound CSRF tokens for protected browser API calls. Browser-rendered Twig pages expose `CSRFToken` and set a `fossbilling_csrf` cookie. The submitted token must match the server-side session token.
 
 | Call type | CSRF requirement |
 |-----------|------------------|
-| `guest` API calls | Not required. |
+| Guest client login/signup and staff login | Required; POST only, same-origin browser context. |
+| Guest cart mutations | Required; same-origin browser context. |
+| Other `guest` API calls | Not required. |
 | `client` or `admin` API calls with the browser session | Required. |
 | External `client` or `admin` API calls using an API key | Not required. |
 
-The JavaScript wrapper reads the `fossbilling_csrf` cookie and sends it automatically where applicable. You don't need to manually attach the token to form data when using the wrapper.
+The JavaScript wrapper reads the `fossbilling_csrf` cookie and sends it automatically on same-origin requests, including protected guest calls. Load a FOSSBilling page first to establish the session and token. If you include a `CSRFToken` form field explicitly, use the current page's token. Guest authentication requires the token in the body or header, not the query string. See the [API reference](/extensions-and-development/api/#csrf-tokens) for the protected endpoints.
 
 ## Making Requests
 
@@ -58,8 +60,8 @@ API.{role}.{method}(endpoint, params, onSuccess, onError, showSpinner)
 | Parameter | Description |
 |-----------|-------------|
 | `role` | `admin`, `client`, or `guest` |
-| `method` | Use `get` or `post` for core FOSSBilling API routes. |
-| `endpoint` | The API endpoint (e.g., `"system/version"`) |
+| `method` | Use `get` or `post` for core routes; guest authentication requires `post`. Prefer `post` for mutations. |
+| `endpoint` | The API endpoint (e.g., `"currency/get_pairs"`) |
 | `params` | Request parameters (object) |
 | `onSuccess` | Callback function for successful responses |
 | `onError` | Callback function for errors. Receives `{ message, code }`. |
@@ -213,9 +215,11 @@ function(error) {
 }
 ```
 
+The wrapper passes the API error's `message` and `code` to `onError`, including on non-200 responses. Custom wrappers must check both the HTTP status and the JSON `error` field.
+
 ## Manual Requests
 
-Use manual `fetch()` only when the wrapper does not fit. For session-authenticated `admin` or `client` calls, include the CSRF token in the JSON body, query string, form data, or `X-CSRF-Token` header:
+Use manual `fetch()` only when the wrapper does not fit. Include the CSRF token for session-authenticated `admin`/`client` calls and protected guest authentication/cart calls. Use the JSON body, form data, or `X-CSRF-Token` header; query tokens are not accepted for guest authentication:
 
 ```javascript
 function getCsrfToken() {
