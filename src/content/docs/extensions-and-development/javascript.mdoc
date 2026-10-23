@@ -43,7 +43,7 @@ FOSSBilling uses session-bound CSRF tokens for protected browser API calls. Brow
 |-----------|------------------|
 | Guest client login/signup and staff login | Required; POST only, same-origin browser context. |
 | Guest cart mutations | Required; same-origin browser context. |
-| Other `guest` API calls | Not required by the authentication/cart check. |
+| Other `guest` API calls | Not required. |
 | `client` or `admin` API calls with the browser session | Required. |
 | External `client` or `admin` API calls using an API key | Not required. |
 
@@ -215,7 +215,7 @@ function(error) {
 }
 ```
 
-The bundled wrapper reads API error envelopes on non-200 responses and passes the API error to `onError`. If you maintain a fork of the wrapper, preserve that behavior: API errors can return non-200 statuses, while some application errors still return HTTP 200.
+The wrapper passes the API error's `message` and `code` to `onError`, including on non-200 responses. Custom wrappers must check both the HTTP status and the JSON `error` field.
 
 ## Manual Requests
 

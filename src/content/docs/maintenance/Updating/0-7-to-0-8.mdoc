@@ -598,7 +598,7 @@ Use the gateway-injected `return_url`, `cancel_url`, and `thankyou_url`, which n
 
 Dompdf no longer fetches remote assets directly. Custom PDF templates should use local or embedded assets and the supplied `css` and `logo_source` variables. Remote company logos are fetched separately with private-network blocking and image validation; rejected logos are omitted. [Review custom invoice PDFs](/admin-guide/invoice-pdf/#logos-and-remote-assets) after updating.
 
-Extension/theme configuration reads no longer persist settings as a side effect; use authorized write paths. Guest extension settings expose only public settings of core or active modules. Theme settings enforce authorization and CSRF checks. Custom admin templates must render ticket notes as plain text.
+Reading extension or theme settings no longer saves them; custom code must save changes explicitly. Guest extension settings expose only public settings of core or active modules. Custom theme settings forms must POST a `CSRFToken` field and require the `theme.manage_settings` permission. Custom admin templates must render ticket notes as plain text.
 
 Complete [update finalization](/maintenance/updating/#update-finalization) to apply database repairs and category priority backfills. Test custom authentication, cart, payment return, and PDF flows after updating.
 

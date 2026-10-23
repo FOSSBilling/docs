@@ -35,7 +35,7 @@ Only what's needed to fix bugs:
 
 Sensitive data is automatically filtered out before sending.
 
-Expected user-facing API errors (such as validation errors) are not sent to Sentry. Unexpected failures remain reportable when error reporting is enabled. A validation error shown in the interface may therefore have no corresponding Sentry event.
+Expected API errors, such as validation failures, are not sent to Sentry. Unexpected failures are reported when error reporting is enabled.
 
 ## Error Reporting History
 

@@ -90,6 +90,8 @@ Use `role: 'guest'` for public actions such as login, signup, and password reset
 </form>
 ```
 
+Theme settings forms submit to the admin `/theme/{theme}` route using POST. Include `<input type="hidden" name="CSRFToken" value="{{ CSRFToken }}">`; saving requires the `theme.manage_settings` permission.
+
 ## Server-Side API Globals
 
 The `guest`, `client`, and `admin` Twig globals call FOSSBilling APIs during server-side template rendering. They are not browser HTTP requests and do not use CSRF tokens.
