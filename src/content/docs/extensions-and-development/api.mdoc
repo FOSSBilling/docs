@@ -44,7 +44,7 @@ Browser requests from an active client or admin session use the session cookie i
 
 ## CSRF Tokens
 
-CSRF protection applies to session-authenticated `client` and `admin` browser API calls. Since 0.8.9, it also applies to guest client login/signup, staff login, and cart mutations. External `client` and `admin` calls authenticated with API keys do not require CSRF tokens.
+CSRF protection applies to session-authenticated `client` and `admin` browser API calls. It also applies to guest client login/signup, staff login, and cart mutations. External `client` and `admin` calls authenticated with API keys do not require CSRF tokens.
 
 For browser calls, FOSSBilling accepts the token in any of these places:
 
@@ -63,7 +63,7 @@ Load a FOSSBilling page first to establish the session, then retain the session 
 
 These checks apply even when `api.CSRFPrevention` is disabled. A supplied `Origin` must match the configured FOSSBilling origin, and `Sec-Fetch-Site: cross-site` is rejected. Serve custom browser forms from the same origin. Server-side guest integrations must retain the session and submit its token too.
 
-Other guest calls are not subject to this authentication/cart CSRF check. See the [0.8.9 migration notes](/maintenance/updating/0-7-to-0-8/#authentication-api--payment-hardening-089) for migration details.
+Other guest calls are not subject to this authentication/cart CSRF check. See the [migration guide](/maintenance/updating/0-7-to-0-8/#authentication-api--payment-hardening-089) for migration details.
 
 Use Twig helpers for theme and module templates. This way, you don't need to manually attach CSRF tokens to the requests:
 
@@ -183,7 +183,7 @@ fetch(url, {
 
 ### HTTP Status and Error Handling
 
-Since 0.8.9, error codes in the HTTP range `400`–`599` use that HTTP status, except application codes `413`, `436`, `437`, and `498`, which use HTTP `400`. The original code stays in `error.code`. Existing mappings also remain: `201`–`206`, `1002`, and `1004` use HTTP `401`; `701` and `879` use `400`; and `740` uses `404`. Other application errors can still return HTTP `200`.
+Error codes in the HTTP range `400`–`599` use that HTTP status, except application codes `413`, `436`, `437`, and `498`, which use HTTP `400`. The original code stays in `error.code`. Application codes `201`–`206`, `1002`, and `1004` use HTTP `401`; `701` and `879` use `400`; and `740` uses `404`. Other application errors can still return HTTP `200`.
 
 Read the JSON body on non-200 responses and check both the HTTP status and the `error` field. For example:
 

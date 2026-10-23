@@ -106,7 +106,7 @@ For full control, use HTML:
 
 ## Locale and Invoice Reminder Timing
 
-Since 0.8.9, cron-sent emails render in each recipient's configured locale. Review translated subjects and content for the locales your clients use, especially for customized reminder templates.
+Cron-sent emails render in each recipient's configured locale. Review translated subjects and content for the locales your clients use, especially for customized reminder templates.
 
 Invoice settings also include **Send Payment Reminders At**, using `HH:MM` in the configured timezone. Eligible reminders are sent on the first cron run at or after that time. Before-due and after-due reminders are deferred until then. Leave the field empty to preserve sending on the first cron run after midnight. Cron must run regularly; this setting does not schedule cron itself or change the configured reminder day intervals.
 

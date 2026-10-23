@@ -7,11 +7,11 @@ FOSSBilling generates invoice PDFs with [Dompdf](https://github.com/dompdf/dompd
 
 ## Logos and Remote Assets
 
-Since 0.8.9, Dompdf cannot fetch remote assets directly. Custom PDF templates must use local or embedded images, styles, and fonts. Use the supplied `logo_source` variable for the company logo and `css` for the invoice stylesheet instead of adding remote URLs.
+Dompdf cannot fetch remote assets directly. Custom PDF templates must use local or embedded images, styles, and fonts. Use the supplied `logo_source` variable for the company logo and `css` for the invoice stylesheet instead of adding remote URLs.
 
 FOSSBilling fetches remote company logos separately through an HTTP client that blocks private networks. Downloads are limited to 2 MiB, raster images are limited to 16 megapixels, and image MIME types and contents are checked. SVG logos must be self-contained. If a remote logo is unavailable or rejected, it is omitted so the invoice can still be generated.
 
-If a logo disappears after updating, check that it is publicly reachable, uses a supported image format (PNG, JPEG, GIF, BMP, WebP, or self-contained SVG), and meets the size limits. Internal-only logo services cannot be used as remote sources. Generate a test PDF after changing the logo or custom assets.
+If a logo is missing, check that it is publicly reachable, uses a supported image format (PNG, JPEG, GIF, BMP, WebP, or self-contained SVG), and meets the size limits. Internal-only logo services cannot be used as remote sources. Generate a test PDF after changing the logo or custom assets.
 
 ## CSS Limitations
 

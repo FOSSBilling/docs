@@ -21,7 +21,7 @@ FOSSBilling integrates with CWP (Control-WebPanel) using its API. Here's how to 
    - **Account Details**: `List`
    - **Account Package Change**: `Update`
    - **Change Password**: `Update`
-   - For single sign-on (0.8.9+), allow the `user_session` API's `list` action
+   - For single sign-on, allow the `user_session` API's `list` action
 6. Copy the API key and save your changes
 {% /steps %}
 
@@ -54,4 +54,4 @@ If the names don't match exactly, FOSSBilling won't be able to create accounts w
 
 ## Control-Panel Single Sign-On
 
-Since 0.8.9, opening the hosting control panel for an account requests a single-use CWP login URL through `user_session`. Ensure the API key can use that action. If CWP does not provide a session URL, FOSSBilling falls back to the standard panel URL (`https://your-hostname:2083`), where the client can log in normally.
+Opening the hosting control panel for an account requests a single-use CWP login URL through `user_session`. Ensure the API key can use that action. If CWP does not provide a session URL, FOSSBilling falls back to the standard panel URL (`https://your-hostname:2083`), where the client can log in normally.
