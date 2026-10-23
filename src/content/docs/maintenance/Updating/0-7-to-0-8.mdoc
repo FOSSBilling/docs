@@ -588,7 +588,7 @@ API error codes in the HTTP range `400`–`599` now use that HTTP status, except
 
 Guest client login/signup and staff login now require POST with the pre-login session's CSRF token in the JSON/form body (`CSRFToken`) or `X-CSRF-Token` header. Guest cart mutations also require a session-bound token. Both reject cross-origin browser requests, even when `api.CSRFPrevention` is disabled.
 
-Update custom login, signup, order-button, embed, and cart forms to use the current session token and the updated [JavaScript wrapper](/extensions-and-development/javascript/#csrf-tokens). Raw requests must retain the session cookie and submit its token; authentication tokens cannot be sent in query parameters. See the [protected endpoint list](/extensions-and-development/api/#guest-authentication-and-cart-calls).
+Update custom login, signup, order-button, embed, and cart forms to use the current session token and the updated [JavaScript wrapper](/extensions-and-development/javascript/#csrf-tokens). Raw requests must retain the session cookie and submit its CSRF token; guest authentication requests must send it in the body or header, not the query string. See the [protected endpoint list](/extensions-and-development/api/#guest-authentication-and-cart-calls).
 
 ### Payment Returns
 
