@@ -92,7 +92,7 @@ jobs:
     permissions:
       actions: read
       pull-requests: write
-    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@99d34fa9d93cf55d46adaa3babc715e9c76957ec # main
+    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@384ecc11e315c77cf3d6abb947e859ce62b38cf5 # main
     with:
       operation: deploy
       mode: preview
@@ -113,7 +113,7 @@ jobs:
     name: Deploy Production
     needs: [validation, build]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@99d34fa9d93cf55d46adaa3babc715e9c76957ec # main
+    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@384ecc11e315c77cf3d6abb947e859ce62b38cf5 # main
     with:
       operation: deploy
       mode: production
