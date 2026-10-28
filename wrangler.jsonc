@@ -1,12 +1,15 @@
 {
 	"name": "docs",
-	"compatibility_date": "2026-04-21",
+	"compatibility_date": "2026-10-01",
 	"compatibility_flags": [ "global_fetch_strictly_public" ],
 	"observability": {
     "logs": {
       "enabled": true
     },
     "traces": {
+      "enabled": true
+    },
+    "issues": {
       "enabled": true
     }
   },

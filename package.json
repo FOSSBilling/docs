@@ -3,6 +3,8 @@
   "type": "module",
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
+    "cf-deploy": "wrangler deploy",
+    "cf-preview": "wrangler preview",
     "dev": "astro dev",
     "start": "astro dev",
     "check": "astro check",
