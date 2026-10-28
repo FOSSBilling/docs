@@ -12,6 +12,10 @@ permissions:
   actions: read
   pull-requests: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.event.workflow_run.pull_requests[0].number || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   comment:
     uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@99d34fa9d93cf55d46adaa3babc715e9c76957ec # main
