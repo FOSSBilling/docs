@@ -18,7 +18,8 @@
     "@astrojs/check": "0.9.12",
     "prettier": "3.9.10",
     "prettier-plugin-astro": "1.1.2",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "wrangler": "^4.155.0"
   },
   "dependencies": {
     "@astrojs/markdoc": "^2.0.0",
