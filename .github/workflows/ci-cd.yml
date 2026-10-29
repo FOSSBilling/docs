@@ -121,7 +121,7 @@ jobs:
       environment: production
       artifact-name: worker-build
       artifact-path: dist/
-      config-path: wrangler.json
+      config-path: wrangler.jsonc
       wrangler-version: ${{ needs.build.outputs.wrangler-version }}
     secrets:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
