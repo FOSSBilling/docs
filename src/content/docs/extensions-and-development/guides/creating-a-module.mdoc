@@ -116,3 +116,27 @@ Key points:
 3. Start building your functionality
 4. Test in a development environment
 {% /steps %}
+
+## The Manifest
+
+The `manifest.json` file describes your module. The canonical specification is [`manifest.schema.json`](https://github.com/FOSSBilling/modules/blob/main/manifest.schema.json) in the [FOSSBilling/modules](https://github.com/FOSSBilling/modules) repository, which CI validates every published module against.
+
+Required fields:
+
+| Field | Description |
+|---|---|
+| `manifest_version` | Specification version — use `1` |
+| `type` | Must be `"module"` |
+| `id` | Lowercase module identifier; must match the directory name (case-insensitive) |
+| `name` | Display name shown in the admin panel |
+| `version` | Semantic version (no `v` prefix) |
+| `description` | One-line description |
+| `author` | Object with `name` and optional `url` |
+| `license` | SPDX license identifier (e.g. `Apache-2.0`) |
+| `requires` | Compatibility requirements (`fossbilling`, `php`, `modules`) |
+
+Optional fields: `homepage_url` (an http(s) URL).
+
+### Icons
+
+Module icons are shipped as a file in the module folder rather than declared in the manifest: `icon.svg`, `icon.png`, `icon.webp` or `icon.avif` (at most one; SVG preferred). FOSSBilling picks it up automatically — no manifest entry is needed.

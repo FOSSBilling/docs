@@ -56,6 +56,17 @@ Make sure you have:
 
 After these steps, your checkout is ready for local development or for packaging into a deployment build.
 
+## Developer Tooling
+
+FOSSBilling bundles its development and CI tooling as a single console package in `tools/`. The tools package requires PHP 8.5 — a tighter requirement than FOSSBilling itself. After installing dependencies, the commands are available via:
+
+```bash
+composer install --working-dir=tools
+tools/bin/console list
+```
+
+This provides `manifest:validate` (validates bundled module manifests), `i18n:*` commands (translation extraction used by the locale repository's workflows), and `demo:seed` (populates an install with demo data).
+
 ## Development Mode
 
 For active theme development, use the theme workspace scripts:
