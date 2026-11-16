@@ -115,6 +115,10 @@ export default defineConfig({
               label: 'Guest API: Domains & Currency',
               slug: 'extensions-and-development/api-guest-domains-currency',
             },
+                        {
+              label: 'Guest API: Products',
+              slug: 'extensions-and-development/api-guest-products',
+            },
             {
               label: 'JavaScript Wrapper',
               slug: 'extensions-and-development/javascript',
