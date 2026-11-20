@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import markdoc from '@astrojs/markdoc';
+import { cloudflare } from '@cloudflare/vite-plugin';
 
 // https://astro.build/config
 export default defineConfig({
@@ -162,4 +163,7 @@ export default defineConfig({
     }),
     markdoc(),
   ],
+  vite: {
+    plugins: [cloudflare()],
+  },
 });
