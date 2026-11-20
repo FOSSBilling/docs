@@ -101,7 +101,7 @@ The production build writes static assets into the Cloudflare Build Output at `.
 npm run build
 ```
 
-The Worker is configured in [`cloudflare.config.ts`](./cloudflare.config.ts) and managed with the Cloudflare CLI (`cf`). To deploy locally, run `cf auth login`, then `npm run cf-deploy` or `npm run cf-preview`. The Worker declares no variables or bindings (verified against the live `docs` Worker), so the old `keep_vars` option was dropped together with `wrangler.jsonc`.
+The Worker is configured in [`cloudflare.config.ts`](./cloudflare.config.ts) and managed with the Cloudflare CLI (`cf`). To deploy locally, run `cf auth login`, then `npm run cf-deploy` or `npm run cf-preview`.
 
 ## Contributing
 
