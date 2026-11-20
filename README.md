@@ -33,7 +33,7 @@ npm run build
 | `npm run format`       | Format Astro, CSS, JS, TS, MJS, and JSON files |
 | `npm run format:check` | Check formatting without writing changes       |
 
-For Cloudflare deployments, run `npm run build` first so the Build Output in `.cloudflare/output/` exists before `cf deploy` (`cf auth login` to authenticate). `npm run cf-deploy` deploys to production and `npm run cf-preview` deploys a Worker Preview.
+For Cloudflare deployments, authenticate with `cf auth login`, then run `npm run cf-deploy` for production or `npm run cf-preview` for a Worker Preview. Build first only when deploying with `cf deploy --prebuilt`.
 
 Pull requests to `main` are also validated in CI with formatting checks, `astro check`, and a production build.
 
@@ -101,7 +101,7 @@ The production build writes static assets into the Cloudflare Build Output at `.
 npm run build
 ```
 
-The Worker is configured in [`cloudflare.config.ts`](./cloudflare.config.ts) and managed with the Cloudflare CLI (`cf`). To deploy locally, run `cf auth login`, then `npm run cf-deploy` or `npm run cf-preview`.
+The Worker is configured in [`cloudflare.config.ts`](./cloudflare.config.ts) and managed with the Cloudflare CLI (`cf`). To deploy locally, run `cf auth login`, then `npm run cf-deploy` or `npm run cf-preview`. The Worker declares no variables or bindings (verified against the live `docs` Worker), so the old `keep_vars` option was dropped together with `wrangler.jsonc`.
 
 ## Contributing
 
