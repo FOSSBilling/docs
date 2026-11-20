@@ -20,8 +20,9 @@ pnpm-debug.log*
 # macOS-specific files
 .DS_Store
 
-# wrangler files
+# cloudflare cli files
 .wrangler
+.cloudflare/
 .dev.vars*
 !.dev.vars.example
 !.env.example

@@ -44,8 +44,6 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    outputs:
-      wrangler-version: ${{ steps.wrangler-version.outputs.version }}
 
     steps:
       - name: Checkout Repository
@@ -59,20 +57,11 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Read Wrangler Version
-        id: wrangler-version
-        run: |
-          node <<'NODE'
-          const fs = require('node:fs');
-          const { version } = require('./node_modules/wrangler/package.json');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT, `version=${version}\n`);
-          NODE
-
       - name: Build
         run: npm run build
 
       - name: Validate Worker Deployment
-        run: npm run cf-deploy -- --dry-run --config wrangler.jsonc
+        run: npm run cf-deploy -- --prebuilt --dry-run --mode production
 
       - name: Upload Worker Build
         if: github.event_name == 'push'
@@ -80,7 +69,7 @@ jobs:
         with:
           name: worker-build
           overwrite: true
-          path: dist/
+          path: .cloudflare/output/
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 1
@@ -93,19 +82,18 @@ jobs:
       contents: read
       actions: read
       pull-requests: write
-    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@9b028b33ffaca94c7656231da6704387d19d14ac # main
+    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@02d68f7e74691aea42cff28777c6e386ae345dbc # main
     with:
       operation: deploy
       mode: preview
+      cli: cf
       build-result: ${{ needs.build.result }}
       checks-result: ${{ needs.validation.result }}
       pr-comment: true
       pr-base-branch: main
       environment: preview
       artifact-name: worker-build
-      artifact-path: dist/
-      config-path: wrangler.jsonc
-      wrangler-version: ${{ needs.build.outputs.wrangler-version }}
+      artifact-path: .cloudflare/output/
     secrets:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
@@ -114,15 +102,15 @@ jobs:
     name: Deploy Production
     needs: [validation, build]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@9b028b33ffaca94c7656231da6704387d19d14ac # main
+    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@02d68f7e74691aea42cff28777c6e386ae345dbc # main
     with:
       operation: deploy
       mode: production
+      cli: cf
+      prebuilt: true
       environment: production
       artifact-name: worker-build
-      artifact-path: dist/
-      config-path: wrangler.jsonc
-      wrangler-version: ${{ needs.build.outputs.wrangler-version }}
+      artifact-path: .cloudflare/output/
     secrets:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
