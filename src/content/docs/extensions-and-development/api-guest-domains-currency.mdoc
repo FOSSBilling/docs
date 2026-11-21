@@ -1,0 +1,252 @@
+---
+title: "Guest API: Domains & Currency"
+description: Public (unauthenticated) endpoints for TLD listings, domain pricing, availability checks and currency formatting.
+---
+
+The endpoints on this page belong to the **guest** API role. They require no
+authentication and no CSRF token, and can be called from any server-side
+integration (for example a WordPress price list or a custom domain search form).
+
+All endpoints follow the standard pattern `/api/guest/{module}/{action}`, accept
+`GET` or `POST`, and take parameters as JSON or form data. See the
+[API Reference](/extensions-and-development/api/#response-format) for the general response and error format.
+
+{% aside type="note" %}
+Successful calls return `{"result": ..., "error": null}`. On failure, `result`
+is `null` and `error` contains `message` and `code`. Some application errors are
+returned with HTTP 200, so always check the `error` field as well as the status
+code.
+{% /aside %}
+
+## Domains (`servicedomain`)
+
+TLD values are always written **with the leading dot**, e.g. `.com`, `.se`.
+
+### `guest/servicedomain/tlds`
+
+Lists all **active** TLDs with their pricing.
+
+| Parameter        | Type | Required | Description |
+|------------------|------|----------|-------------|
+| `allow_register` | any  | No       | If present, only TLDs that allow registration are returned. |
+| `allow_transfer` | any  | No       | If present, only TLDs that allow transfers are returned. |
+
+{% aside type="caution" %}
+The filters are enabled by the *presence* of the parameter, not its value.
+Sending `allow_register=0` or `allow_register=false` still applies the filter.
+Omit the parameter entirely to disable it.
+{% /aside %}
+
+```bash
+curl -s -X POST https://example.com/api/guest/servicedomain/tlds
+```
+
+```json
+{
+  "result": [
+    {
+      "id": 1,
+      "tld": ".com",
+      "price_registration": "11.99",
+      "price_renew": "11.99",
+      "price_transfer": "11.99",
+      "active": 1,
+      "allow_register": 1,
+      "allow_transfer": 1,
+      "require_transfer_code": false,
+      "min_years": 1,
+      "periods": null
+    }
+  ],
+  "error": null
+}
+```
+
+| Field                   | Description |
+|-------------------------|-------------|
+| `price_registration`    | Price per year for registration, in the **default currency**. |
+| `price_renew`           | Price per year for renewal. |
+| `price_transfer`        | Price for transfer. |
+| `require_transfer_code` | Whether an EPP/auth code is required for transfers. |
+| `min_years`             | Minimum registration period in years. |
+| `periods`               | Allowed registration periods in years, or `null` if not restricted. |
+
+Prices are returned unformatted and in the system's default currency. Use
+[`guest/currency/format`](#guestcurrencyformat) to convert and format them.
+
+### `guest/servicedomain/pricing`
+
+Returns pricing for a single TLD. The response object has the same fields as
+one entry from [`tlds`](#guestservicedomaintlds).
+
+| Parameter | Type   | Required | Description |
+|-----------|--------|----------|-------------|
+| `tld`     | string | Yes      | TLD including the leading dot, e.g. `.se`. |
+
+```bash
+curl -s -X POST https://example.com/api/guest/servicedomain/pricing -d 'tld=.com'
+```
+
+**Errors**
+
+| Message         | Cause |
+|-----------------|-------|
+| `TLD not found` | The TLD does not exist in FOSSBilling. |
+
+{% aside type="note" %}
+Unlike `tlds`, this endpoint does not check whether the TLD is active.
+{% /aside %}
+
+### `guest/servicedomain/check`
+
+Checks whether a domain is available for registration. The result comes from
+the registrar module configured for the TLD, so a registrar must be set up for
+the answer to be accurate.
+
+| Parameter | Type   | Required | Description |
+|-----------|--------|----------|-------------|
+| `sld`     | string | Yes      | Second-level part of the domain, e.g. `example` for `example.com`. |
+| `tld`     | string | Yes      | TLD including the leading dot. |
+
+```bash
+curl -s -X POST https://example.com/api/guest/servicedomain/check \
+  -d 'sld=example' -d 'tld=.com'
+```
+
+Returns `true` when the domain is available:
+
+```json
+{ "result": true, "error": null }
+```
+
+A registered domain does **not** return `false`. It returns an error instead:
+
+```json
+{
+  "result": null,
+  "error": { "message": "Domain is not available.", "code": 9999 }
+}
+```
+
+**Errors**
+
+| Message | Cause |
+|---------|-------|
+| `Domain is not available.` | The domain is already registered. |
+| `Domain example is invalid` | The `sld` failed validation (the message includes the submitted value). |
+| `Domain availability could not be determined. TLD is not configured.` | Unknown TLD. |
+| `Domain availability could not be determined. TLD is not active.` | TLD exists but is inactive. |
+
+Registrar modules may return their own error messages when the registry cannot be
+reached, for example `Domain availability check failed. Please try again later.`
+
+{% aside type="caution" title="All errors use code 9999" %}
+Every error above, including `Domain is not available.`, is returned with
+`code: 9999` and HTTP 200. Your integration cannot tell a taken domain from a
+configuration or registry error by the code alone. Compare the message, or
+treat any error as "not available" and log it.
+{% /aside %}
+
+{% aside type="caution" title="Rate limited" %}
+This endpoint is rate limited per client IP (`domain_lookup_ip` limiter).
+Server-side integrations that proxy many visitors through a single IP should
+cache results or throttle requests.
+{% /aside %}
+
+### `guest/servicedomain/can_be_transferred`
+
+Checks whether a domain can be transferred in.
+
+| Parameter | Type   | Required | Description |
+|-----------|--------|----------|-------------|
+| `sld`     | string | Yes      | Second-level part of the domain. |
+| `tld`     | string | Yes      | TLD including the leading dot. |
+
+```bash
+curl -s -X POST https://example.com/api/guest/servicedomain/can_be_transferred \
+  -d 'sld=example' -d 'tld=.com'
+```
+
+Returns `true` if the domain can be transferred.
+
+**Errors**
+
+| Message | Cause |
+|---------|-------|
+| `TLD is missing` / `SLD is missing` | A required parameter was not sent. |
+| `TLD is not configured.` | Unknown TLD. |
+| `TLD is not active.` | TLD exists but is inactive. |
+| `Domain cannot be transferred.` | The registrar reported that the domain cannot be transferred. |
+
+This endpoint shares the `domain_lookup_ip` rate limit with `check`.
+
+## Currency (`currency`)
+
+### `guest/currency/get_pairs`
+
+Returns the configured currencies as an object mapping currency code to title.
+Takes no parameters.
+
+```bash
+curl -s -X POST https://example.com/api/guest/currency/get_pairs
+```
+
+```json
+{
+  "result": {
+    "USD": "US Dollar",
+    "EUR": "Euro"
+  },
+  "error": null
+}
+```
+
+### `guest/currency/get`
+
+Returns details of a currency, including its `conversion_rate`.
+
+| Parameter | Type   | Required | Description |
+|-----------|--------|----------|-------------|
+| `code`    | string | No       | Currency code, e.g. `SEK`. If omitted, the **default currency** is returned. |
+
+```bash
+curl -s -X POST https://example.com/api/guest/currency/get -d 'code=SEK'
+```
+
+**Errors**
+
+| Message               | Cause |
+|-----------------------|-------|
+| `Currency not found.` | Unknown currency code, or no default currency is set. |
+
+### `guest/currency/format`
+
+Formats a price as a localized string, optionally converting it from the
+default currency.
+
+| Parameter          | Type   | Required | Default            | Description |
+|--------------------|--------|----------|--------------------|-------------|
+| `price`            | float  | No       | `0`                | Amount in the default currency. |
+| `code`             | string | No       | default currency   | Target currency code. |
+| `convert`          | bool   | No       | `true`             | Multiply `price` by the target currency's `conversion_rate`. |
+| `without_currency` | bool   | No       | `false`            | Return only the number, without currency symbol. |
+
+Formatting follows the active locale of the request.
+
+```bash
+curl -s -X POST https://example.com/api/guest/currency/format \
+  -d 'price=11.99' -d 'code=SEK'
+```
+
+## Example: building a public price list
+
+```bash
+# 1. Fetch all TLDs that can be registered
+curl -s -X POST https://example.com/api/guest/servicedomain/tlds -d 'allow_register=1'
+
+# 2. Get the default currency (for symbol / formatting)
+curl -s -X POST https://example.com/api/guest/currency/get
+```
+
+A single `tlds` call returns prices for every TLD, so there is no need to call
+`pricing` per TLD. Cache the response on your side; prices change rarely.
