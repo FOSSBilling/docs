@@ -19,5 +19,14 @@
   "automergeSchedule": ["at any time"],
   "automergeStrategy": "squash",
   "postUpdateOptions": ["npmDedupe"],
-  "skipInstalls": false
+  "skipInstalls": false,
+  "regexManagers": [
+    {
+      "fileMatch": ["\\.github/workflows/.+\\.ya?ml$"],
+      "matchStrings": [
+        "gh extension install (?<depName>[\\w.-]+/[\\w.-]+) --pin (?<currentValue>\\S+)"
+      ],
+      "datasourceTemplate": "github-releases"
+    }
+  ]
 }
