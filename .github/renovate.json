@@ -20,12 +20,11 @@
   "automergeStrategy": "squash",
   "postUpdateOptions": ["npmDedupe"],
   "skipInstalls": false,
-  "regexManagers": [
+  "customManagers": [
     {
-      "fileMatch": ["\\.github/workflows/.+\\.ya?ml$"],
-      "matchStrings": [
-        "gh extension install (?<depName>[\\w.-]+/[\\w.-]+) --pin (?<currentValue>\\S+)"
-      ],
+      "customType": "regex",
+      "managerFilePatterns": ["/\\.github/workflows/.+\\.ya?ml$/"],
+      "matchStrings": ["gh extension install (?<depName>[\\w.-]+/[\\w.-]+) --pin (?<currentValue>\\S+)"],
       "datasourceTemplate": "github-releases"
     }
   ]
