@@ -3,7 +3,6 @@
   "extends": [
     "config:best-practices",
     "schedule:daily",
-    "security:minimumReleaseAgeNpm",
     ":automergeBranch",
     ":automergeDigest",
     ":automergeLinters",
@@ -17,7 +16,6 @@
     ":rebaseStalePrs"
   ],
   "automergeSchedule": ["at any time"],
-  "automergeStrategy": "squash",
   "postUpdateOptions": ["npmDedupe"],
   "skipInstalls": false,
   "customManagers": [
