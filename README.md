@@ -32,7 +32,8 @@ Pages live in `src/content/docs/` as `.mdoc` files with frontmatter:
 title: Page title
 description: Short page description.
 sidebar:
-  label: Short label # optional; order controls sidebar position
+  label: Short label # optional
+  order: 1 # sidebar position within the section
 ---
 ```
 
@@ -47,7 +48,7 @@ sidebar:
 
 ## Deployment
 
-CI (`.github/workflows/ci-cd.yml`) runs formatting checks, `astro check`, and a production build on PRs and pushes to `main`, then validates with `cf deploy --prebuilt --dry-run`. `main` deploys to production; PRs get preview deployments through the shared [FOSSBilling/.workflows](https://github.com/FOSSBilling/.workflows) workflow, with PR comments kept in sync by `cloudflare-events.yml`.
+CI (`.github/workflows/ci-cd.yml`) runs on every push and on PRs targeting `main`: formatting checks, `astro check`, a production build, and a `cf deploy --prebuilt --dry-run` validation. Pushes to `main` deploy to production; pushes to other branches deploy previews through the shared [FOSSBilling/.workflows](https://github.com/FOSSBilling/.workflows) workflow, with preview links posted as PR comments and kept in sync by `cloudflare-events.yml`.
 
 The Worker is configured in [`cloudflare.config.ts`](./cloudflare.config.ts) and managed with the Cloudflare CLI (`cf`): `cf auth login`, then `npm run cf-deploy` or `npm run cf-preview`.
 
