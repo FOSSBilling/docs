@@ -30,7 +30,7 @@ Fork pull requests run the same validation and build checks. If GitHub shows **A
 
 On a fork PR targeting `main`, a GitHub **Approve** review from a collaborator with write access starts a build of the commit recorded in the review. The PR receives a link to that build after validation and publication. Later pushes leave the previously reviewed version in place. Closing the PR removes its preview.
 
-For initial setup, create a dedicated `docs-fork-previews` Worker with preview URLs enabled and no bindings. Configure the `fork-preview` GitHub environment to allow deployments from `main`, with the `FORK_PREVIEW_ACCOUNT_ID` variable and the `FORK_PREVIEW_API_TOKEN` secret scoped to this Worker. The PR review supplies the approval. The publisher uses upstream tooling to upload static files only.
+Fork previews use the existing `docs` Worker, `preview` environment, and Cloudflare credentials. The publisher uploads static files under the reserved preview name `forkpreview-<PR number>`.
 
 ## Licensing
 

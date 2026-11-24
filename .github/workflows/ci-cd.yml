@@ -80,7 +80,7 @@ jobs:
   preview:
     name: Cloudflare Preview
     needs: [validation, build]
-    if: ${{ !cancelled() && github.repository == 'FOSSBilling/docs' && github.event_name == 'push' && !github.event.deleted && github.ref_type == 'branch' && github.ref != 'refs/heads/main' }}
+    if: ${{ !cancelled() && github.repository == 'FOSSBilling/docs' && github.event_name == 'push' && !github.event.deleted && github.ref_type == 'branch' && !startsWith(github.ref_name, 'forkpreview-') && github.ref != 'refs/heads/main' }}
     permissions:
       contents: read
       actions: read

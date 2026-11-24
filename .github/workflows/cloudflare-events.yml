@@ -31,6 +31,7 @@ jobs:
     name: Delete Cloudflare Preview
     if: >-
       github.repository == 'FOSSBilling/docs' &&
+      !startsWith(github.event.pull_request.head.ref || github.event.ref, 'forkpreview-') &&
       ((github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository) ||
        (github.event_name == 'delete' && github.event.ref_type == 'branch'))
     permissions:

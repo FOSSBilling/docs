@@ -33,7 +33,7 @@ jobs:
     if: needs.resolve.outputs.target != 'null' && needs.resolve.outputs.target != ''
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    environment: fork-preview
+    environment: preview
     concurrency:
       group: fork-preview-pr-${{ fromJSON(needs.resolve.outputs.target).number }}
       cancel-in-progress: false
@@ -42,6 +42,7 @@ jobs:
       pull-requests: write
       actions: read
     env:
+      PREVIEW_NAME: forkpreview-${{ fromJSON(needs.resolve.outputs.target).number }}
       PR: ${{ fromJSON(needs.resolve.outputs.target).number }}
       OPERATION: ${{ fromJSON(needs.resolve.outputs.target).operation }}
       SHA: ${{ fromJSON(needs.resolve.outputs.target).sha }}
@@ -78,22 +79,19 @@ jobs:
               (target.operation === 'delete' || target.sha === process.env.SHA);
       - name: Update fork preview
         if: steps.current.outputs.result == 'true'
-        working-directory: .github/fork-preview
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.FORK_PREVIEW_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ vars.FORK_PREVIEW_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           WRANGLER_OUTPUT_FILE_PATH: ${{ runner.temp }}/cf-result.ndjson
         run: |
           set -euo pipefail
-          : "${CLOUDFLARE_ACCOUNT_ID:?Configure FORK_PREVIEW_ACCOUNT_ID in fork-preview}"
-          : "${CLOUDFLARE_API_TOKEN:?Configure FORK_PREVIEW_API_TOKEN in fork-preview}"
           cf="$GITHUB_WORKSPACE/node_modules/.bin/cf"
           if [[ "$OPERATION" == delete ]]; then
-            if ! output=$("$cf" previews delete "pr-$PR" --worker docs-fork-previews --force 2>&1); then
+            if ! output=$("$cf" previews delete "$PREVIEW_NAME" --worker docs --force 2>&1); then
               [[ "$output" == *'[10025] '* ]] || { printf '%s\n' "$output" >&2; exit 1; }
             fi
           else
-            "$cf" previews deploy "$RUNNER_TEMP/site" --preview-name "pr-$PR"
+            "$cf" previews deploy "$RUNNER_TEMP/site" --preview-name "$PREVIEW_NAME"
           fi
       - name: Post approved revision and preview link
         if: steps.current.outputs.result == 'true' && env.OPERATION == 'publish'
@@ -101,8 +99,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          url=$(jq -ser --arg name "pr-$PR" '
-            map(select(.type == "preview" and .preview_name == $name and .worker_name == "docs-fork-previews"))
+          url=$(jq -ser --arg name "$PREVIEW_NAME" '
+            map(select(.type == "preview" and .preview_name == $name and .worker_name == "docs"))
             | last | .deployment_urls[0] | strings | sub("^https://"; "")
             | select(test("^[A-Za-z0-9.-]+/?$")) | "https://" + .' "$RUNNER_TEMP/cf-result.ndjson")
           marker="<!-- fork-preview:$SHA -->"
