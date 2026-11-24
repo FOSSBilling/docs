@@ -121,7 +121,7 @@ jobs:
     permissions:
       contents: read
       actions: read
-    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@b9b791437cab79cc73b29a51fb4fd446cbe968fe # approved-run-artifact
+    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@b6637a0dda8ccd8d54fb3c3fafbb3a0bbbc4f4fe # main
     with:
       operation: ${{ fromJSON(needs.prepare-fork-preview.outputs.target).operation }}
       preview-name: forkpreview-${{ fromJSON(needs.prepare-fork-preview.outputs.target).number }}
