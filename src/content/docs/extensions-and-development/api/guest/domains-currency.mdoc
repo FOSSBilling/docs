@@ -29,13 +29,12 @@ Lists all **active** TLDs with their pricing.
 
 | Parameter        | Type | Required | Description |
 |------------------|------|----------|-------------|
-| `allow_register` | bool | No       | Filters by registration flag. Omit to disable filtering. |
-| `allow_transfer` | bool | No       | Filters by transfer flag. Omit to disable filtering. |
+| `allow_register` | bool | No       | If present (any value), only TLDs that allow registration are returned. Omit to disable filtering. |
+| `allow_transfer` | bool | No       | If present (any value), only TLDs that allow transfers are returned. Omit to disable filtering. |
 
 {% aside type="caution" %}
-The filters are enabled by the *presence* of the parameter, and the value is cast to boolean:
-`1` matches TLDs where the flag is set, `0` matches TLDs where it is not.
-Sending `allow_register=0` or `allow_register=false` still applies the filter, but matches TLDs where registration is disabled.
+The filters are enabled by the *presence* of the parameter, not its value.
+Sending `allow_register=0` or `allow_register=false` still applies the filter.
 Omit the parameter entirely to disable it.
 {% /aside %}
 
@@ -139,6 +138,7 @@ A registered domain does **not** return `false`. It returns an error instead:
 | `TLD is missing` / `SLD is missing` | A required parameter was not sent. |
 | `TLD is invalid.` | The `tld` value is not a valid TLD. |
 | `Domain is not available.` | The domain is already registered. |
+| `Domain cannot be registered.` | The TLD exists and is active, but does not allow registration. Returned with `code: 403` and HTTP `403`, not `code: 9999`. |
 | `Domain example is invalid` | The `sld` failed validation (the message includes the submitted value). |
 | `Domain availability could not be determined. TLD is not configured.` | Unknown TLD. |
 | `Domain availability could not be determined. TLD is not active.` | TLD exists but is inactive. |
@@ -146,9 +146,10 @@ A registered domain does **not** return `false`. It returns an error instead:
 Registrar modules may return their own error messages when the registry cannot be
 reached, for example `Domain availability check failed. Please try again later.`
 
-{% aside type="caution" title="All errors use code 9999" %}
+{% aside type="caution" title="All errors use code 9999, except registration" %}
 Every error above, including `Domain is not available.`, is returned with
-`code: 9999` and HTTP 200. Your integration cannot tell a taken domain from a
+`code: 9999` and HTTP 200 — with one exception: `Domain cannot be registered.`
+uses `code: 403` and HTTP `403`. Your integration cannot tell a taken domain from a
 configuration or registry error by the code alone. Compare the message, or
 treat any error as "not available" and log it.
 {% /aside %}
@@ -183,7 +184,7 @@ Returns `true` if the domain can be transferred.
 | `TLD is invalid.` | The `tld` value is not a valid TLD. |
 | `TLD is not configured.` | Unknown TLD. |
 | `TLD is not active.` | TLD exists but is inactive. |
-| `Domain cannot be transferred.` | The registrar reported that the domain cannot be transferred. |
+| `Domain cannot be transferred.` | The TLD does not allow transfers, or the registrar reported that the domain cannot be transferred. |
 
 This endpoint shares the `domain_lookup_ip` rate limit with `check`.
 

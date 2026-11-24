@@ -55,7 +55,7 @@ says which of the other keys applies:
     "1M": { "price": 0, "setup": 0, "enabled": false },
     "3M": { "price": 0, "setup": 0, "enabled": false },
     "6M": { "price": 0, "setup": 0, "enabled": false },
-    "1Y": { "price": 999, "setup": 0, "enabled": true, "title": "1 Year" },
+    "1Y": { "price": 999, "setup": 0, "enabled": true },
     "2Y": { "price": 0, "setup": 0, "enabled": false },
     "3Y": { "price": 0, "setup": 0, "enabled": false }
   }
@@ -69,13 +69,13 @@ says which of the other keys applies:
 | `recurrent` | Billed per period. Only periods with `"enabled": true` can be ordered. |
 
 `price` is the price **per period** (for `1Y`, the price for one year), and
-`setup` is a one-time setup fee. Each recurrent period also includes a
-human-readable `title` (e.g. `"1 Year"`). All keys are always present, so check `type`
+`setup` is a one-time setup fee. All keys are always present, so check `type`
 and `enabled` instead of testing for missing keys.
 
 `price_starting_from` on a product is the lowest enabled price (or the once
 price, or `0` for free products), and is useful for "from X/month" labels.
-It does not include setup fees.
+It does not include setup fees. It is `null` for recurrent products with no
+enabled periods.
 
 ### Domain products
 
@@ -121,6 +121,9 @@ There is no category filter. To list products per category, use
 [`category_get_list`](#guestproductcategory_get_list), which includes the
 products of each category.
 
+Values outside the valid ranges (`page` below `1`, `per_page` above `500`)
+return an error; non-integer values fall back to the defaults.
+
 ```bash
 curl -s -X POST https://example.com/api/guest/product/get_list -d 'type=hosting'
 ```
@@ -151,7 +154,7 @@ curl -s -X POST https://example.com/api/guest/product/get_list -d 'type=hosting'
             "1M": { "price": 0, "setup": 0, "enabled": false },
             "3M": { "price": 0, "setup": 0, "enabled": false },
             "6M": { "price": 0, "setup": 0, "enabled": false },
-            "1Y": { "price": 999, "setup": 0, "enabled": true, "title": "1 Year" },
+            "1Y": { "price": 999, "setup": 0, "enabled": true },
             "2Y": { "price": 0, "setup": 0, "enabled": false },
             "3Y": { "price": 0, "setup": 0, "enabled": false }
           }
@@ -174,13 +177,17 @@ curl -s -X POST https://example.com/api/guest/product/get_list -d 'type=hosting'
 | Field                   | Description                                                                                              |
 | ----------------------- | -------------------------------------------------------------------------------------------------------- |
 | `pricing`               | See [Pricing format](#pricing-format).                                                                   |
-| `config`                | Public settings only: `allow_domain_register`, `allow_domain_transfer`, `allow_domain_own`, `allow_subdomain`, `subdomain_base_domain`. Keys that are not set are omitted. When none are set, `config` is an empty **array** (`[]`), not an object. |
+| `config`                | Public settings only (see list below). Keys that are not set are omitted. When none are set, `config` is an empty **array** (`[]`), not an object. |
 | `addons`                | Addons that can be ordered with the product. Each has `id`, `type`, `title`, `slug`, `description`, `unit`, `allow_quantity_select`, `icon_url`, `pricing` and `config`. |
 | `price_starting_from`   | Lowest available price. See [Pricing format](#pricing-format).                                           |
 | `unit`                  | `product` for most types, `year` for domain products.                                                    |
 | `icon_url`              | Icon URL. May be `null` or an empty string when no icon is set.                                          |
 | `form_id`               | ID of the custom order form, if any.                                                                     |
 | `created_at`, `updated_at` | Date and time as `YYYY-MM-DD HH:MM:SS`.                                                               |
+
+The only `config` keys exposed to guests are `allow_domain_register`,
+`allow_domain_transfer`, `allow_domain_own`, `allow_subdomain` and
+`subdomain_base_domain`.
 
 ### `guest/product/get`
 
@@ -233,7 +240,7 @@ it also returns hidden products.
 ### `guest/product/category_get_list`
 
 Returns a paginated list of categories that contain at least one enabled,
-visible product. Each category includes its products.
+visible product, ordered by priority. Each category includes its products.
 
 | Parameter  | Type    | Required | Description                                   |
 | ---------- | ------- | -------- | --------------------------------------------- |
@@ -243,6 +250,9 @@ visible product. Each category includes its products.
 ```bash
 curl -s -X POST https://example.com/api/guest/product/category_get_list
 ```
+
+Values outside the valid ranges (`page` below `1`, `per_page` above `500`)
+return an error; non-integer values fall back to the defaults.
 
 ```json
 {
