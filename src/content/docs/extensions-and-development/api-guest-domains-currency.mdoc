@@ -20,7 +20,8 @@ code.
 
 ## Domains (`servicedomain`)
 
-TLD values are always written **with the leading dot**, e.g. `.com`, `.se`.
+TLD values are returned **with the leading dot**, e.g. `.com`, `.se`.
+Request parameters accept values with or without it (`tld=com` works the same as `tld=.com`).
 
 ### `guest/servicedomain/tlds`
 
@@ -81,7 +82,7 @@ one entry from [`tlds`](#guestservicedomaintlds).
 
 | Parameter | Type   | Required | Description |
 |-----------|--------|----------|-------------|
-| `tld`     | string | Yes      | TLD including the leading dot, e.g. `.se`. |
+| `tld`     | string | Yes      | TLD, e.g. `.se`. The leading dot is optional. |
 
 ```bash
 curl -s -X POST https://example.com/api/guest/servicedomain/pricing -d 'tld=.com'
@@ -91,6 +92,8 @@ curl -s -X POST https://example.com/api/guest/servicedomain/pricing -d 'tld=.com
 
 | Message         | Cause |
 |-----------------|-------|
+| `TLD is missing` | The `tld` parameter was not sent. |
+| `TLD is invalid.` | The `tld` value is not a valid TLD. |
 | `TLD not found` | The TLD does not exist in FOSSBilling. |
 
 {% aside type="note" %}
@@ -106,7 +109,7 @@ the answer to be accurate.
 | Parameter | Type   | Required | Description |
 |-----------|--------|----------|-------------|
 | `sld`     | string | Yes      | Second-level part of the domain, e.g. `example` for `example.com`. |
-| `tld`     | string | Yes      | TLD including the leading dot. |
+| `tld`     | string | Yes      | TLD, e.g. `.com`. The leading dot is optional. |
 
 ```bash
 curl -s -X POST https://example.com/api/guest/servicedomain/check \
@@ -132,6 +135,8 @@ A registered domain does **not** return `false`. It returns an error instead:
 
 | Message | Cause |
 |---------|-------|
+| `TLD is missing` / `SLD is missing` | A required parameter was not sent. |
+| `TLD is invalid.` | The `tld` value is not a valid TLD. |
 | `Domain is not available.` | The domain is already registered. |
 | `Domain example is invalid` | The `sld` failed validation (the message includes the submitted value). |
 | `Domain availability could not be determined. TLD is not configured.` | Unknown TLD. |
@@ -160,7 +165,7 @@ Checks whether a domain can be transferred in.
 | Parameter | Type   | Required | Description |
 |-----------|--------|----------|-------------|
 | `sld`     | string | Yes      | Second-level part of the domain. |
-| `tld`     | string | Yes      | TLD including the leading dot. |
+| `tld`     | string | Yes      | TLD, e.g. `.com`. The leading dot is optional. |
 
 ```bash
 curl -s -X POST https://example.com/api/guest/servicedomain/can_be_transferred \
@@ -174,6 +179,7 @@ Returns `true` if the domain can be transferred.
 | Message | Cause |
 |---------|-------|
 | `TLD is missing` / `SLD is missing` | A required parameter was not sent. |
+| `TLD is invalid.` | The `tld` value is not a valid TLD. |
 | `TLD is not configured.` | Unknown TLD. |
 | `TLD is not active.` | TLD exists but is inactive. |
 | `Domain cannot be transferred.` | The registrar reported that the domain cannot be transferred. |
@@ -237,6 +243,12 @@ Formatting follows the active locale of the request.
 curl -s -X POST https://example.com/api/guest/currency/format \
   -d 'price=11.99' -d 'code=SEK'
 ```
+
+**Errors**
+
+| Message               | Cause |
+|-----------------------|-------|
+| `Currency not found.` | Unknown currency code, or no default currency is set. |
 
 ## Example: building a public price list
 

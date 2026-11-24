@@ -1,5 +1,5 @@
 ---
-title: 'Guest API: Products'
+title: "Guest API: Products"
 description: Public (unauthenticated) endpoints for listing products, product categories and their pricing.
 ---
 
@@ -36,8 +36,9 @@ lets you link directly to a product that is not shown in the public catalog.
 
 ## Product types
 
-The `type` field is one of: `custom`, `license`, `domain`, `downloadable`,
-`hosting`, `vps`, `apikey`.
+The `type` field is one of the installed product types. Common values include:
+`custom`, `license`, `domain`, `downloadable`, `hosting`, `vps`, `apikey`.
+The exact set depends on which service modules are installed.
 
 ## Pricing format
 
@@ -54,7 +55,7 @@ says which of the other keys applies:
     "1M": { "price": 0, "setup": 0, "enabled": false },
     "3M": { "price": 0, "setup": 0, "enabled": false },
     "6M": { "price": 0, "setup": 0, "enabled": false },
-    "1Y": { "price": 999, "setup": 0, "enabled": true },
+    "1Y": { "price": 999, "setup": 0, "enabled": true, "title": "1 Year" },
     "2Y": { "price": 0, "setup": 0, "enabled": false },
     "3Y": { "price": 0, "setup": 0, "enabled": false }
   }
@@ -68,7 +69,8 @@ says which of the other keys applies:
 | `recurrent` | Billed per period. Only periods with `"enabled": true` can be ordered. |
 
 `price` is the price **per period** (for `1Y`, the price for one year), and
-`setup` is a one-time setup fee. All keys are always present, so check `type`
+`setup` is a one-time setup fee. Each recurrent period also includes a
+human-readable `title` (e.g. `"1 Year"`). All keys are always present, so check `type`
 and `enabled` instead of testing for missing keys.
 
 `price_starting_from` on a product is the lowest enabled price (or the once
@@ -149,7 +151,7 @@ curl -s -X POST https://example.com/api/guest/product/get_list -d 'type=hosting'
             "1M": { "price": 0, "setup": 0, "enabled": false },
             "3M": { "price": 0, "setup": 0, "enabled": false },
             "6M": { "price": 0, "setup": 0, "enabled": false },
-            "1Y": { "price": 999, "setup": 0, "enabled": true },
+            "1Y": { "price": 999, "setup": 0, "enabled": true, "title": "1 Year" },
             "2Y": { "price": 0, "setup": 0, "enabled": false },
             "3Y": { "price": 0, "setup": 0, "enabled": false }
           }
@@ -203,7 +205,8 @@ curl -s -X POST https://example.com/api/guest/product/get -d 'slug=economy'
 
 ### `guest/product/get_pairs`
 
-Returns active products as an object mapping product ID to title, ordered by ID.
+Returns products with the `active` flag set as an object mapping product ID to title, ordered by ID.
+Unlike `get_list`, it does not filter by `status` or hidden flag.
 
 | Parameter | Type   | Required | Description                                          |
 | --------- | ------ | -------- | ---------------------------------------------------- |
@@ -342,7 +345,8 @@ two cases apart.
 | Message                   | Cause                                                       |
 | ------------------------- | ----------------------------------------------------------- |
 | `Product ID is missing`   | `product_id` was not sent.                                  |
-| `Product type is invalid` | The product does not exist or is not of type `hosting`.     |
+| `Product not found`       | No product exists with that ID.                             |
+| `Product type is invalid` | The product exists but is not of type `hosting`.           |
 
 ## Example: building a public price list
 
