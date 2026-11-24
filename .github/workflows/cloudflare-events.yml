@@ -1,4 +1,5 @@
 name: Cloudflare Events
+run-name: ${{ github.event.pull_request && format('PR {0} {1}', github.event.pull_request.number, github.event.review.state == 'approved' && 'approved' || github.event.action) || github.workflow }}
 
 on:
   workflow_run:
@@ -7,6 +8,8 @@ on:
   pull_request:
     branches: [main]
     types: [opened, reopened, synchronize, closed]
+  pull_request_review:
+    types: [submitted]
   delete:
 
 permissions:
