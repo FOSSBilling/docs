@@ -31,7 +31,7 @@ jobs:
         with:
           script: return (await require('./.github/fork-preview/authorize.cjs')({ github, context })) || null;
       - name: Download this build's static files
-        if: fromJSON(steps.review.outputs.result).operation == 'publish'
+        if: fromJSON(steps.review.outputs.result).operation == 'deploy'
         env:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.event.workflow_run.id }}
@@ -43,7 +43,7 @@ jobs:
           gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact/zip" > "$RUNNER_TEMP/site.zip"
           python3 .github/fork-preview/extract.py "$RUNNER_TEMP/site.zip" "$RUNNER_TEMP/site"
       - name: Pass checked static files to the publisher
-        if: fromJSON(steps.review.outputs.result).operation == 'publish'
+        if: fromJSON(steps.review.outputs.result).operation == 'deploy'
         uses: actions/upload-artifact@v7.0.2
         with:
           name: checked-fork-site-${{ github.run_attempt }}
@@ -60,9 +60,9 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@a1e2efb273e69d36163ad3997e255a1b6e4ea9ab
+    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@10804665b406ab8c91230288fd77f267debe8d2e
     with:
-      operation: ${{ fromJSON(needs.resolve.outputs.target).operation == 'publish' && 'deploy' || 'delete-preview' }}
+      operation: ${{ fromJSON(needs.resolve.outputs.target).operation }}
       reviewed-pr: ${{ fromJSON(needs.resolve.outputs.target).number }}
       review-authorization: .github/fork-preview/authorize.cjs
       worker-name: docs

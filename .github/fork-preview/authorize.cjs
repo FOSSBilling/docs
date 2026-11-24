@@ -12,7 +12,7 @@ module.exports = async ({ github, context }) => {
 
   if (match[2] === 'closed') {
     if (run.event === 'pull_request' && pr.state === 'closed') {
-      return { operation: 'delete', number: pull_number };
+      return { operation: 'delete-preview', number: pull_number };
     }
     return;
   }
@@ -35,5 +35,5 @@ module.exports = async ({ github, context }) => {
   const latest = reviews.filter(item => item.user.id === review.user.id &&
     ['APPROVED', 'CHANGES_REQUESTED', 'DISMISSED'].includes(item.state)).at(-1);
   if (latest?.id !== review.id) return;
-  return { operation: 'publish', number: pull_number, sha: review.commit_id };
+  return { operation: 'deploy', number: pull_number, sha: review.commit_id };
 };
