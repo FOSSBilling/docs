@@ -19,6 +19,9 @@ export default defineConfig(({ isPreview }) => ({
         enabled: true,
       },
     },
+    assets: {
+      notFoundHandling: '404-page',
+    },
     domains: [
       'docs.fossbilling.org',
       {
