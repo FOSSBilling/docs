@@ -12,6 +12,25 @@ export default defineConfig({
       title: 'FOSSBilling Docs',
       description: 'Official FOSSBilling documentation.',
       disable404Route: true,
+      head: [
+        {
+          tag: 'link',
+          attrs: {
+            rel: 'shortcut icon',
+            href: '/favicon-dark.svg',
+            type: 'image/svg+xml',
+            media: '(prefers-color-scheme: dark)',
+          },
+        },
+        {
+          tag: 'link',
+          attrs: {
+            rel: 'apple-touch-icon',
+            href: '/apple-touch-icon.png',
+            sizes: '180x180',
+          },
+        },
+      ],
       logo: {
         light: './src/assets/logo-light.svg',
         dark: './src/assets/logo-dark.svg',
