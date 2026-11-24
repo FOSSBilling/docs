@@ -49,6 +49,9 @@ jobs:
     if: *check-source
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      # Use the same Vite build context that the pinned cf CLI sets for previews.
+      CLOUDFLARE_PREVIEW_BUILD: ${{ github.repository == 'FOSSBilling/docs' && github.event_name == 'push' && github.ref_type == 'branch' && !startsWith(github.ref_name, 'forkpreview-') && github.ref != 'refs/heads/main' && 'true' || 'false' }}
 
     steps:
       - name: Checkout Repository
@@ -68,7 +71,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Validate Preview Build Output
+        if: env.CLOUDFLARE_PREVIEW_BUILD == 'true'
+        run: jq -e '.buildContext.isPreview == true and .buildContext.mode == "production"' .cloudflare/output/v1/config.json
+
       - name: Validate Worker Deployment
+        if: env.CLOUDFLARE_PREVIEW_BUILD == 'false'
         run: npm run cf-deploy -- --prebuilt --dry-run --mode production
 
       - name: Upload Worker Build
@@ -98,6 +106,7 @@ jobs:
       operation: deploy
       mode: preview
       cli: cf
+      prebuilt: true
       build-result: ${{ needs.build.result }}
       checks-result: ${{ needs.validation.result }}
       pr-comment: true
