@@ -13,7 +13,7 @@ npm run dev
 
 Open [localhost:4321](http://localhost:4321). Run `npm run format:check`, `npm run check`, and `npm run build` before opening a PR against `main`.
 
-Fork pull requests run the same validation and build checks. If GitHub shows **Approval required**, a maintainer with write access can review the changes and select **Approve and run workflows** on the PR. New pushes may need approval again. Forks can run the build locally or in Actions without Cloudflare credentials. A maintainer can publish a fork preview by choosing **Approve** in the GitHub PR review. Each new commit needs a fresh review.
+If GitHub requires approval to run CI on a fork PR, a maintainer can select **Approve and run workflows**.
 
 ## Editing Content
 
@@ -26,11 +26,7 @@ Fork pull requests run the same validation and build checks. If GitHub shows **A
 
 [CI](./.github/workflows/ci-cd.yml) deploys successful `main` builds to production and successful builds on other branches in this repository to previews under `docs.fossbilling.foo`. [Cloudflare Events](./.github/workflows/cloudflare-events.yml) posts preview links on PRs and removes previews when same-repository PRs targeting `main` close. See [`cloudflare.config.ts`](./cloudflare.config.ts) for Worker settings.
 
-### Reviewed fork previews
-
-On a fork PR targeting `main`, CI builds the PR head and keeps its static files for 14 days. Once CI passes and a collaborator with write access selects **Approve** on that same commit, the publisher deploys those files and posts the link on the PR. Approval can come before or after CI finishes. If the artifact has expired, rerun CI to regenerate it. Later pushes leave the previously reviewed version in place. Closing the PR removes its preview.
-
-[Cloudflare Events](./.github/workflows/cloudflare-events.yml) receives CI completion events for builds, reviews, and closures. Only builds run compilation and validation. Fork previews use the existing `docs` Worker, `preview` environment, and Cloudflare credentials. The shared Cloudflare workflow publishes the checked static files and handles cleanup under the reserved preview name `forkpreview-<PR number>`.
+For a fork PR targeting `main`, select **Approve** in the PR review to publish a preview. CI must pass and the reviewer must have write access. Each new commit needs its own approval. Closing the PR removes the preview.
 
 ## Licensing
 
