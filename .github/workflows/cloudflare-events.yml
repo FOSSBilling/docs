@@ -1,16 +1,18 @@
 name: Cloudflare Events
-run-name: ${{ github.event.pull_request && format('PR {0} {1}', github.event.pull_request.number, github.event.review.state == 'approved' && 'approved' || github.event.action) || github.workflow }}
 
 on:
   workflow_run:
-    workflows: ['CI/CD']
+    workflows: ['CI/CD', 'Fork PR Event']
     types: [completed]
   pull_request:
     branches: [main]
     types: [opened, reopened, synchronize, closed]
-  pull_request_review:
-    types: [submitted]
   delete:
+
+# Serialize fork publication and cleanup; ordinary branch events keep their own runs.
+concurrency:
+  group: ${{ github.event_name == 'workflow_run' && (github.event.workflow_run.name == 'Fork PR Event' || github.event.workflow_run.event == 'pull_request') && 'docs-fork-previews' || github.run_id }}
+  queue: max
 
 permissions:
   contents: read
@@ -50,3 +52,136 @@ jobs:
     secrets:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+
+  fork-build:
+    if: >-
+      github.event_name == 'workflow_run' && github.repository == 'FOSSBilling/docs' &&
+      (github.event.workflow_run.event == 'pull_request' || github.event.workflow_run.event == 'pull_request_review')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: read
+    outputs:
+      target: ${{ steps.current.outputs.result == steps.review.outputs.result && steps.current.outputs.result || 'null' }}
+      attempt: ${{ github.run_attempt }}
+      artifact-name: checked-fork-site-${{ github.run_attempt }}
+    steps:
+      - name: Find the approved CI build
+        id: review
+        uses: actions/github-script@v9.0.0
+        with: &fork-target
+          script: |
+            const run = context.payload.workflow_run;
+            const match = /^PR ([1-9]\d*)$/.exec(run.display_title);
+            if (!match || run.conclusion !== 'success') return null;
+            const number = Number(match[1]);
+            const repo = context.repo;
+            const { data: pr } = await github.rest.pulls.get({ ...repo, pull_number: number });
+            if (pr.base.ref !== 'main' || pr.head.repo?.id === pr.base.repo.id) return null;
+            const signal = run.path === '.github/workflows/fork-pr-event.yml';
+            if (signal && run.event === 'pull_request')
+              return pr.state === 'closed' ? { operation: 'delete-preview', number } : null;
+            if (pr.state !== 'open' || !pr.head.repo) return null;
+
+            // Either CI or approval may finish first. Always identify the same upstream CI build.
+            const sha = pr.head.sha;
+            const matches = r => r.event === 'pull_request' && r.head_sha === sha &&
+              r.head_repository?.id === pr.head.repo.id && r.head_branch === pr.head.ref &&
+              r.display_title === run.display_title;
+            let build = run;
+            if (signal && run.event === 'pull_request_review') {
+              const runs = await github.paginate(github.rest.actions.listWorkflowRuns, {
+                ...repo, workflow_id: 'ci-cd.yml', event: 'pull_request', head_sha: sha, per_page: 100,
+              });
+              build = runs.find(matches);
+            }
+            if (build?.path !== '.github/workflows/ci-cd.yml' || !matches(build) || build.conclusion !== 'success') return null;
+            const reviews = await github.paginate(github.rest.pulls.listReviews, { ...repo, pull_number: number, per_page: 100 });
+            const latest = new Map();
+            for (const r of reviews) {
+              if (['APPROVED', 'DISMISSED', 'CHANGES_REQUESTED'].includes(r.state)) latest.set(r.user.id, r);
+            }
+            for (const r of latest.values()) {
+              if (r.state !== 'APPROVED' || r.commit_id !== sha || r.user.type !== 'User') continue;
+              const { data } = await github.rest.repos.getCollaboratorPermissionLevel({ ...repo, username: r.user.login });
+              if (!['admin', 'write'].includes(data.permission)) continue;
+              const comments = await github.paginate(github.rest.issues.listComments, { ...repo, issue_number: number, per_page: 100 });
+              if (comments.some(c => c.user.login === 'github-actions[bot]' && c.body.startsWith(`<!-- fork-preview-run:${build.id} -->`))) return null;
+              return { operation: 'deploy', number, sha, run: build.id };
+            }
+            return null;
+      - name: Download the approved CI build
+        if: fromJSON(steps.review.outputs.result).operation == 'deploy'
+        uses: actions/download-artifact@v8.0.2
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ fromJSON(steps.review.outputs.result).run }}
+          name: fork-site-${{ fromJSON(steps.review.outputs.result).sha }}
+          path: ${{ runner.temp }}/site
+      - name: Prepare static assets
+        if: fromJSON(steps.review.outputs.result).operation == 'deploy'
+        working-directory: ${{ runner.temp }}/site
+        run: |
+          test -f index.html
+          if find . ! -type f ! -type d -print -quit | grep -q .; then exit 1; fi
+          printf '/*\n  X-Robots-Tag: noindex\n' > _headers
+      - name: Pass checked static files to the publisher
+        if: fromJSON(steps.review.outputs.result).operation == 'deploy'
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: checked-fork-site-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/site
+            !${{ runner.temp }}/site/_worker.js
+            !${{ runner.temp }}/site/_routes.json
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Recheck the head and approval before publishing
+        if: steps.review.outputs.result != 'null'
+        uses: actions/github-script@v9.0.0
+        id: current
+        with: *fork-target
+
+  preview:
+    needs: fork-build
+    # Rerun all jobs to obtain a fresh authorization on retries.
+    if: >-
+      needs.fork-build.outputs.attempt == github.run_attempt &&
+      needs.fork-build.outputs.target != 'null' && needs.fork-build.outputs.target != ''
+    permissions:
+      contents: read
+    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@b616a8cbccff1308f5029ea9ca31dd5a9c7a043e # main
+    with:
+      operation: ${{ fromJSON(needs.fork-build.outputs.target).operation }}
+      preview-name: forkpreview-${{ fromJSON(needs.fork-build.outputs.target).number }}
+      worker-name: docs
+      environment: preview
+      mode: preview
+      cli: cf
+      node-version: '26'
+      artifact-name: ${{ needs.fork-build.outputs.artifact-name }}
+    secrets:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+
+  fork-comment:
+    needs: [fork-build, preview]
+    if: needs.preview.outputs.preview-build-url != ''
+    runs-on: ubuntu-slim
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/github-script@v9.0.0
+        env:
+          TARGET: ${{ needs.fork-build.outputs.target }}
+          NAME: ${{ needs.preview.outputs.preview-name }}
+          URL: ${{ needs.preview.outputs.preview-build-url }}
+        with:
+          script: |
+            const { number, sha, run } = JSON.parse(process.env.TARGET);
+            if (process.env.NAME !== `forkpreview-${number}`) throw new Error('Unexpected preview name');
+            await github.rest.issues.createComment({ ...context.repo, issue_number: number,
+              body: `<!-- fork-preview-run:${run} -->\nPreview of reviewed commit ${sha}: <${process.env.URL}>` });

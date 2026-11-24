@@ -7,18 +7,17 @@ workflows:
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.1.0'
         - 'actions/upload-artifact@v7.0.2'
-    '.github/workflows/cloudflare-events.yml': []
+    '.github/workflows/cloudflare-events.yml':
+        - 'actions/download-artifact@v8.0.2'
+        - 'actions/github-script@v9.0.0'
+        - 'actions/upload-artifact@v7.0.2'
     '.github/workflows/codeql.yml':
         - 'actions/checkout@v7.0.1'
         - 'github/codeql-action@v4.39.5'
     '.github/workflows/dependency-review.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/dependency-review-action@v5.0.1'
-    '.github/workflows/fork-preview-publish.yml':
-        - 'actions/checkout@v7.0.1'
-        - 'actions/download-artifact@v8.0.2'
-        - 'actions/github-script@v9.0.0'
-        - 'actions/upload-artifact@v7.0.2'
+    '.github/workflows/fork-pr-event.yml': []
     '.github/workflows/verify-lockfile.yml':
         - 'actions/checkout@v7.0.1'
 dependencies:

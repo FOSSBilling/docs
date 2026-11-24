@@ -30,7 +30,7 @@ Fork pull requests run the same validation and build checks. If GitHub shows **A
 
 On a fork PR targeting `main`, CI builds the PR head and keeps its static files for 14 days. Once CI passes and a collaborator with write access selects **Approve** on that same commit, the publisher deploys those files and posts the link on the PR. Approval can come before or after CI finishes. If the artifact has expired, rerun CI to regenerate it. Later pushes leave the previously reviewed version in place. Closing the PR removes its preview.
 
-Fork previews use the existing `docs` Worker, `preview` environment, and Cloudflare credentials. The shared Cloudflare workflow publishes the checked static files and handles cleanup under the reserved preview name `forkpreview-<PR number>`.
+The [fork PR event workflow](./.github/workflows/fork-pr-event.yml) signals approvals and closures to [Cloudflare Events](./.github/workflows/cloudflare-events.yml), which checks the current review against the CI artifact’s commit. Fork previews use the existing `docs` Worker, `preview` environment, and Cloudflare credentials. The shared Cloudflare workflow publishes the checked static files and handles cleanup under the reserved preview name `forkpreview-<PR number>`.
 
 ## Licensing
 

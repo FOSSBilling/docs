@@ -1,0 +1,21 @@
+name: Fork PR Event
+run-name: PR ${{ github.event.pull_request.number }}
+
+on:
+  pull_request_review:
+    types: [submitted]
+  pull_request:
+    branches: [main]
+    types: [closed]
+
+permissions: {}
+
+jobs:
+  notify:
+    if: >-
+      github.event.pull_request.base.ref == 'main' &&
+      github.event.pull_request.head.repo.full_name != github.repository &&
+      (github.event.action == 'closed' || github.event.review.state == 'approved')
+    runs-on: ubuntu-slim
+    steps:
+      - run: echo 'Cloudflare Events will check the current PR state.'
