@@ -1,16 +1,15 @@
 {
   "name": "docs",
+  "description": "Official documentation for FOSSBilling",
   "type": "module",
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "cf-deploy": "cf deploy",
     "cf-preview": "cf previews deploy",
     "dev": "astro dev",
-    "start": "astro dev",
     "check": "astro check",
-    "build": "astro build --force",
+    "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro",
     "format": "prettier --write \"{src,public}/**/*.{astro,css,js,json,mjs,ts}\" \"*.{json,mjs,ts}\"",
     "format:check": "prettier --check \"{src,public}/**/*.{astro,css,js,json,mjs,ts}\" \"*.{json,mjs,ts}\""
   },

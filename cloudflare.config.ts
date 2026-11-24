@@ -1,13 +1,14 @@
 import { defineConfig } from 'cf/config';
 
-export default defineConfig({
+export default defineConfig(({ isPreview }) => ({
   worker: {
     name: 'docs',
-    compatibilityDate: '2026-10-01',
+    compatibilityDate: '2026-11-24',
     compatibilityFlags: ['global_fetch_strictly_public'],
     workersDev: false,
-    previewUrls: true,
+    previewUrls: false,
     observability: {
+      ...(isPreview && { enabled: true }),
       logs: {
         enabled: true,
       },
@@ -18,6 +19,13 @@ export default defineConfig({
         enabled: true,
       },
     },
-    domains: ['docs.fossbilling.org'],
+    domains: [
+      'docs.fossbilling.org',
+      {
+        hostname: 'docs.fossbilling.foo',
+        production: false,
+        previews: true,
+      },
+    ],
   },
-});
+}));
