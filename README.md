@@ -26,7 +26,7 @@ If GitHub requires approval to run CI on a fork PR, a maintainer can select **Ap
 
 [CI](./.github/workflows/ci-cd.yml) deploys successful `main` builds to production and successful builds on other branches in this repository to previews under `docs.fossbilling.foo`. [Cloudflare Events](./.github/workflows/cloudflare-events.yml) posts preview links on PRs and removes previews when same-repository PRs targeting `main` close. See [`cloudflare.config.ts`](./cloudflare.config.ts) for Worker settings.
 
-For a fork PR targeting `main`, select **Approve** in the PR review to publish a preview. CI must pass and the reviewer must have write access. Each new commit needs its own approval. If the build artifact has expired after 14 days, rerun CI to regenerate it. Closing the PR removes the preview.
+For fork PRs targeting `main`, successful CI publishes a preview of the current head commit and posts its link on the PR. Closing the PR removes the preview.
 
 ## Licensing
 
