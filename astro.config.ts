@@ -10,8 +10,8 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'FOSSBilling Docs',
-      description:
-        'Official FOSSBilling documentation for installation, maintenance, customization, and development.',
+      description: 'Official FOSSBilling documentation.',
+      disable404Route: true,
       logo: {
         light: './src/assets/logo-light.svg',
         dark: './src/assets/logo-dark.svg',
