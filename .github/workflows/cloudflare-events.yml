@@ -4,7 +4,7 @@ on:
   workflow_run:
     workflows: ['CI/CD']
     types: [completed]
-  pull_request_target:
+  pull_request:
     branches: [main]
     types: [opened, reopened, synchronize, closed]
   delete:
@@ -16,8 +16,12 @@ permissions:
 
 jobs:
   comment:
-    if: github.event_name != 'delete' && github.event.action != 'closed'
-    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@df80416b9dc46298bb3486267060b6b7ecc743f7 # main
+    if: >-
+      github.repository == 'FOSSBilling/docs' &&
+      ((github.event_name == 'workflow_run' && github.event.workflow_run.event == 'push') ||
+       (github.event_name == 'pull_request' && github.event.action != 'closed' &&
+        github.event.pull_request.head.repo.full_name == github.repository))
+    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@415540b79f2d744d6808670b933a599d4a740ba9 # main
     with:
       operation: sync-pr-comment
       build-workflow: ci-cd.yml
@@ -26,14 +30,15 @@ jobs:
   cleanup:
     name: Delete Cloudflare Preview
     if: >-
-      (github.event_name == 'pull_request_target' && github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository) ||
-      (github.event_name == 'delete' && github.event.ref_type == 'branch')
+      github.repository == 'FOSSBilling/docs' &&
+      ((github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository) ||
+       (github.event_name == 'delete' && github.event.ref_type == 'branch'))
     permissions:
       contents: read
     # Share the branch's push CI group so cleanup waits for its preview deployment.
     concurrency:
       group: CI/CD-push-refs/heads/${{ github.event.pull_request.head.ref || github.event.ref }}
-    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@df80416b9dc46298bb3486267060b6b7ecc743f7 # main
+    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@415540b79f2d744d6808670b933a599d4a740ba9 # main
     with:
       operation: delete-preview
       worker-name: docs

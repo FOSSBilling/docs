@@ -27,4 +27,4 @@ jobs:
         with:
           base-ref: ${{ github.event.pull_request.base.sha || 'main' }}
           head-ref: ${{ github.event.pull_request.head.sha || github.ref }}
-          comment-summary-in-pr: on-failure
+          comment-summary-in-pr: ${{ github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.user.login != 'dependabot[bot]' && 'on-failure' || 'never' }}
