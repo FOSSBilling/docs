@@ -4,7 +4,7 @@ Source for [FOSSBilling documentation](https://docs.fossbilling.org), built with
 
 ## Local Development
 
-Use Node.js 26 to match CI.
+Use Node.js 26.12 or later in the 26.x series to match CI.
 
 ```bash
 npm ci
