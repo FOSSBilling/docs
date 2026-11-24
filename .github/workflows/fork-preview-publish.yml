@@ -5,6 +5,12 @@ on:
     workflows: ['Fork Preview Build']
     types: [completed]
 
+# Queue through authorization, publication and cleanup so an older run cannot
+# recreate a preview after its close event has been processed.
+concurrency:
+  group: docs-fork-preview-publication
+  queue: max
+
 permissions: {}
 
 jobs:
@@ -20,7 +26,8 @@ jobs:
       contents: read
       pull-requests: read
     outputs:
-      target: ${{ steps.review.outputs.result }}
+      target: ${{ steps.current.outputs.result }}
+      attempt: ${{ github.run_attempt }}
       artifact-name: checked-fork-site-${{ github.run_attempt }}
     steps:
       - uses: actions/checkout@v7.0.1
@@ -51,27 +58,58 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
+      - name: Confirm the PR and review before handing off to Cloudflare
+        if: steps.review.outputs.result != 'null'
+        uses: actions/github-script@v9.0.0
+        id: current
+        with:
+          script: return (await require('./.github/fork-preview/authorize.cjs')({ github, context })) || null;
+
   preview:
     needs: resolve
-    if: needs.resolve.outputs.target != 'null' && needs.resolve.outputs.target != ''
-    concurrency:
-      group: fork-preview-pr-${{ fromJSON(needs.resolve.outputs.target).number }}
-      cancel-in-progress: false
+    # Rerun all jobs to obtain a fresh authorization on retries.
+    if: >-
+      needs.resolve.outputs.attempt == github.run_attempt &&
+      needs.resolve.outputs.target != 'null' && needs.resolve.outputs.target != ''
     permissions:
       contents: read
-      pull-requests: write
-    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@10804665b406ab8c91230288fd77f267debe8d2e
+    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@7f646e67d42d5cae1d90f9ef0a18fb8f1b7ff3c8
     with:
       operation: ${{ fromJSON(needs.resolve.outputs.target).operation }}
-      reviewed-pr: ${{ fromJSON(needs.resolve.outputs.target).number }}
-      review-authorization: .github/fork-preview/authorize.cjs
+      preview-name: forkpreview-${{ fromJSON(needs.resolve.outputs.target).number }}
       worker-name: docs
       environment: preview
       mode: preview
       cli: cf
       node-version: '26'
       artifact-name: ${{ needs.resolve.outputs.artifact-name }}
-      pr-comment: true
     secrets:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+
+  comment:
+    needs: [resolve, preview]
+    if: needs.preview.outputs.preview-build-url != ''
+    runs-on: ubuntu-slim
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/github-script@v9.0.0
+        env:
+          TARGET: ${{ needs.resolve.outputs.target }}
+          NAME: ${{ needs.preview.outputs.preview-name }}
+          URL: ${{ needs.preview.outputs.preview-build-url }}
+        with:
+          script: |
+            const { number, sha } = JSON.parse(process.env.TARGET);
+            if (process.env.NAME !== `forkpreview-${number}`) throw new Error('Unexpected preview name');
+            const marker = `<!-- fork-preview:${sha} -->`;
+            const body = marker + '\nPreview of reviewed commit ' + sha + ': <' + process.env.URL + '>';
+            const issue = { ...context.repo, issue_number: number };
+            const comments = await github.paginate(github.rest.issues.listComments, { ...issue, per_page: 100 });
+            const existing = comments.find(c => c.user.login === 'github-actions[bot]' && c.body.startsWith(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ ...context.repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ ...issue, body });
+            }
