@@ -53,7 +53,7 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
 
-  fork-build:
+  prepare-fork-preview:
     if: >-
       github.event_name == 'workflow_run' && github.repository == 'FOSSBilling/docs' &&
       (github.event.workflow_run.event == 'pull_request' || github.event.workflow_run.event == 'pull_request_review')
@@ -136,6 +136,7 @@ jobs:
             ${{ runner.temp }}/site
             !${{ runner.temp }}/site/_worker.js
             !${{ runner.temp }}/site/_routes.json
+          include-hidden-files: true
           retention-days: 1
           if-no-files-found: error
 
@@ -146,29 +147,29 @@ jobs:
         with: *fork-target
 
   preview:
-    needs: fork-build
+    needs: prepare-fork-preview
     # Rerun all jobs to obtain a fresh authorization on retries.
     if: >-
-      needs.fork-build.outputs.attempt == github.run_attempt &&
-      needs.fork-build.outputs.target != 'null' && needs.fork-build.outputs.target != ''
+      needs.prepare-fork-preview.outputs.attempt == github.run_attempt &&
+      needs.prepare-fork-preview.outputs.target != 'null' && needs.prepare-fork-preview.outputs.target != ''
     permissions:
       contents: read
     uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@b616a8cbccff1308f5029ea9ca31dd5a9c7a043e # main
     with:
-      operation: ${{ fromJSON(needs.fork-build.outputs.target).operation }}
-      preview-name: forkpreview-${{ fromJSON(needs.fork-build.outputs.target).number }}
+      operation: ${{ fromJSON(needs.prepare-fork-preview.outputs.target).operation }}
+      preview-name: forkpreview-${{ fromJSON(needs.prepare-fork-preview.outputs.target).number }}
       worker-name: docs
       environment: preview
       mode: preview
       cli: cf
       node-version: '26'
-      artifact-name: ${{ needs.fork-build.outputs.artifact-name }}
+      artifact-name: ${{ needs.prepare-fork-preview.outputs.artifact-name }}
     secrets:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
 
   fork-comment:
-    needs: [fork-build, preview]
+    needs: [prepare-fork-preview, preview]
     if: needs.preview.outputs.preview-build-url != ''
     runs-on: ubuntu-slim
     permissions:
@@ -176,7 +177,7 @@ jobs:
     steps:
       - uses: actions/github-script@v9.0.0
         env:
-          TARGET: ${{ needs.fork-build.outputs.target }}
+          TARGET: ${{ needs.prepare-fork-preview.outputs.target }}
           NAME: ${{ needs.preview.outputs.preview-name }}
           URL: ${{ needs.preview.outputs.preview-build-url }}
         with:

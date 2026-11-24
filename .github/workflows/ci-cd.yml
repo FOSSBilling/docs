@@ -79,6 +79,7 @@ jobs:
         with:
           name: fork-site-${{ github.event.pull_request.head.sha }}
           path: .cloudflare/output/v1/workers/default/assets/
+          include-hidden-files: true
           overwrite: true
           if-no-files-found: error
           retention-days: 14
