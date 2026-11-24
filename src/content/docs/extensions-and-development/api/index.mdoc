@@ -4,7 +4,7 @@ description: Complete reference for the FOSSBilling REST API.
 ---
 
 {% aside type="note" %}
-Building a theme or module? Use the [JavaScript wrapper](/extensions-and-development/javascript/) and Twig API helpers instead of raw browser calls when possible. They handle CSRF tokens and common response behavior for you.
+Building a theme or module? Use the [JavaScript wrapper](/extensions-and-development/api/javascript/) and Twig API helpers instead of raw browser calls when possible. They handle CSRF tokens and common response behavior for you.
 {% /aside %}
 
 FOSSBilling provides a REST API for integrating external systems and building custom functionality on top of the platform.
@@ -52,7 +52,7 @@ For browser calls, FOSSBilling accepts the token in any of these places:
 - `CSRFToken` in form data (query parameters are also accepted except for guest authentication)
 - `X-CSRF-Token` request header
 
-The token must match the server-side session token. For session-authenticated `client` and `admin` calls, a nonempty CSRF cookie must match it too. The bundled [JavaScript API wrapper](/extensions-and-development/javascript/) reads the `fossbilling_csrf` cookie and adds the token automatically to same-origin requests. Sending a cookie without a token in the request is insufficient.
+The token must match the server-side session token. For session-authenticated `client` and `admin` calls, a nonempty CSRF cookie must match it too. The bundled [JavaScript API wrapper](/extensions-and-development/api/javascript/) reads the `fossbilling_csrf` cookie and adds the token automatically to same-origin requests. Sending a cookie without a token in the request is insufficient.
 
 ### Guest Authentication and Cart Calls
 

@@ -14,7 +14,7 @@ general response and error format.
 
 {% aside type="note" %}
 Prices are returned as numbers in the system's **default currency**. Use
-[`guest/currency/format`](/extensions-and-development/api-guest-domains-currency/#guestcurrencyformat)
+[`guest/currency/format`](/extensions-and-development/api/guest/domains-currency/#guestcurrencyformat)
 to convert and format them for display.
 {% /aside %}
 
@@ -81,7 +81,7 @@ It does not include setup fees.
 
 Products of type `domain` use a different `pricing` format: an object keyed by
 TLD, with the same price fields as
-[`servicedomain/tlds`](/extensions-and-development/api-guest-domains-currency/#guestservicedomaintlds)
+[`servicedomain/tlds`](/extensions-and-development/api/guest/domains-currency/#guestservicedomaintlds)
 (without `id` and `require_transfer_code`). Their `unit` is always `year`.
 
 ```json
@@ -314,7 +314,7 @@ The shape of the result depends on the product configuration:
   `[{ "tld": ".se" }, { "tld": ".nu" }]`.
 - If no free TLDs are configured, **all** active TLDs that allow registration
   are returned, with the full fields from
-  [`servicedomain/tlds`](/extensions-and-development/api-guest-domains-currency/#guestservicedomaintlds):
+  [`servicedomain/tlds`](/extensions-and-development/api/guest/domains-currency/#guestservicedomaintlds):
 
 ```json
 {
