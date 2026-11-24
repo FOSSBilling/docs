@@ -13,7 +13,7 @@ npm run dev
 
 Open [localhost:4321](http://localhost:4321). Run `npm run format:check`, `npm run check`, and `npm run build` before opening a PR against `main`.
 
-Fork pull requests run the same validation and build checks. If GitHub shows **Approval required**, a maintainer with write access can review the changes and select **Approve and run workflows** on the PR. New pushes may need approval again. Forks can run the build locally or in Actions without Cloudflare credentials. Hosted previews are available for branches in `FOSSBilling/docs`.
+If GitHub requires approval to run CI on a fork PR, a maintainer can select **Approve and run workflows**.
 
 ## Editing Content
 
@@ -25,6 +25,8 @@ Fork pull requests run the same validation and build checks. If GitHub shows **A
 ## Deployment
 
 [CI](./.github/workflows/ci-cd.yml) deploys successful `main` builds to production and successful builds on other branches in this repository to previews under `docs.fossbilling.foo`. [Cloudflare Events](./.github/workflows/cloudflare-events.yml) posts preview links on PRs and removes previews when same-repository PRs targeting `main` close. See [`cloudflare.config.ts`](./cloudflare.config.ts) for Worker settings.
+
+For a fork PR targeting `main`, select **Approve** in the PR review to publish a preview. CI must pass and the reviewer must have write access. Each new commit needs its own approval. If the build artifact has expired after 14 days, rerun CI to regenerate it. Closing the PR removes the preview.
 
 ## Licensing
 

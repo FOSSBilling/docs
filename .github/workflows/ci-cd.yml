@@ -1,22 +1,26 @@
 name: CI/CD
+run-name: ${{ github.event.pull_request && format('PR {0} {1}', github.event.pull_request.number, github.event.action) || github.event.head_commit.message || github.ref_name }}
 
 on:
   push:
   pull_request:
     branches: [main]
+    types: [opened, synchronize, reopened, closed]
+  pull_request_review:
+    types: [submitted]
 
 permissions:
   contents: read
 
 concurrency:
-  # A deleted push can run at the default branch SHA. Keep it out of deployment queues.
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.deleted && github.run_id || github.event.pull_request.number || github.ref }}
+  # Notifications and deleted pushes must not cancel a branch build or deployment.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ (github.event.deleted || github.event.action == 'closed' || github.event_name == 'pull_request_review') && github.run_id || github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   validation:
-    name: Validation
-    if: ${{ !github.event.deleted }}
+    name: ${{ (github.event.action == 'closed' || github.event_name == 'pull_request_review') && 'Validation (PR event)' || 'Validation' }}
+    if: &check-source ${{ !github.event.deleted && github.event.action != 'closed' && github.event_name != 'pull_request_review' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -43,14 +47,17 @@ jobs:
         run: npm run check
 
   build:
-    name: Build
-    if: ${{ !github.event.deleted }}
+    name: ${{ (github.event.action == 'closed' || github.event_name == 'pull_request_review') && 'Build (PR event)' || 'Build' }}
+    if: *check-source
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7.0.1
+        with:
+          # The preview must contain the revision GitHub records on the approval.
+          ref: ${{ (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) && github.event.pull_request.head.sha || github.sha }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v7.1.0
@@ -67,7 +74,10 @@ jobs:
         run: npm run cf-deploy -- --prebuilt --dry-run --mode production
 
       - name: Upload Worker Build
-        if: github.repository == 'FOSSBilling/docs' && github.event_name == 'push'
+        if: >-
+          github.repository == 'FOSSBilling/docs' &&
+          (github.event_name == 'push' ||
+           (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository))
         uses: actions/upload-artifact@v7.0.2
         with:
           name: worker-build
@@ -75,12 +85,12 @@ jobs:
           path: .cloudflare/output/
           include-hidden-files: true
           if-no-files-found: error
-          retention-days: 1
+          retention-days: ${{ github.event_name == 'pull_request' && 14 || 1 }}
 
   preview:
     name: Cloudflare Preview
     needs: [validation, build]
-    if: ${{ !cancelled() && github.repository == 'FOSSBilling/docs' && github.event_name == 'push' && !github.event.deleted && github.ref_type == 'branch' && github.ref != 'refs/heads/main' }}
+    if: ${{ !cancelled() && github.repository == 'FOSSBilling/docs' && github.event_name == 'push' && !github.event.deleted && github.ref_type == 'branch' && !startsWith(github.ref_name, 'forkpreview-') && github.ref != 'refs/heads/main' }}
     permissions:
       contents: read
       actions: read
