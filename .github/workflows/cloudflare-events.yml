@@ -75,7 +75,8 @@ jobs:
           script: |
             const run = context.payload.workflow_run;
             const match = /^PR ([1-9]\d*) (opened|reopened|synchronize|submitted|closed)$/.exec(run.display_title);
-            if (!match || run.path !== '.github/workflows/ci-cd.yml' || run.conclusion !== 'success') return null;
+            // Review and close runs complete with all CI jobs skipped. The build itself must succeed below.
+            if (!match || run.path !== '.github/workflows/ci-cd.yml' || !['skipped', 'success'].includes(run.conclusion)) return null;
             const number = Number(match[1]);
             const repo = context.repo;
             const { data: pr } = await github.rest.pulls.get({ ...repo, pull_number: number });

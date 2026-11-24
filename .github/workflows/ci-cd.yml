@@ -18,16 +18,6 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
-  fork-pr-event:
-    if: >-
-      github.event.pull_request.base.ref == 'main' &&
-      github.event.pull_request.head.repo.full_name != github.repository &&
-      (github.event.action == 'closed' || github.event.review.state == 'approved')
-    runs-on: ubuntu-slim
-    permissions: {}
-    steps:
-      - run: echo 'Cloudflare Events will check the current PR state.'
-
   validation:
     name: ${{ (github.event.action == 'closed' || github.event_name == 'pull_request_review') && 'Validation (PR event)' || 'Validation' }}
     if: &check-source ${{ !github.event.deleted && github.event.action != 'closed' && github.event_name != 'pull_request_review' }}
