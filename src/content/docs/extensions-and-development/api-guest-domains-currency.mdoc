@@ -28,12 +28,12 @@ Lists all **active** TLDs with their pricing.
 
 | Parameter        | Type | Required | Description |
 |------------------|------|----------|-------------|
-| `allow_register` | any  | No       | If present, only TLDs that allow registration are returned. |
-| `allow_transfer` | any  | No       | If present, only TLDs that allow transfers are returned. |
+| `allow_register` | bool | No       | If present, filters by registration flag: `1` returns only registrable TLDs, `0` returns only non-registrable TLDs. Omit to disable filtering. |
+| `allow_transfer` | bool | No       | If present, filters by transfer flag: `1` returns only transferable TLDs, `0` returns only non-transferable TLDs. Omit to disable filtering. |
 
 {% aside type="caution" %}
-The filters are enabled by the *presence* of the parameter, not its value.
-Sending `allow_register=0` or `allow_register=false` still applies the filter.
+The filters are enabled by the *presence* of the parameter, and the value is cast to boolean.
+Sending `allow_register=0` or `allow_register=false` still applies the filter, but matches TLDs where registration is disabled.
 Omit the parameter entirely to disable it.
 {% /aside %}
 
