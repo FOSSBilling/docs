@@ -1,0 +1,118 @@
+name: Publish Reviewed Fork Preview
+
+on:
+  workflow_run:
+    workflows: ['Fork Preview Build']
+    types: [completed]
+
+permissions: {}
+
+jobs:
+  resolve:
+    if: >-
+      github.repository == 'FOSSBilling/docs' &&
+      (github.event.workflow_run.event == 'pull_request' ||
+       (github.event.workflow_run.event == 'pull_request_review' && github.event.workflow_run.conclusion == 'success'))
+    runs-on: ubuntu-slim
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      target: ${{ steps.review.outputs.result }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/github-script@v9.0.0
+        id: review
+        with:
+          script: return (await require('./.github/fork-preview/authorize.cjs')({ github, context })) || null;
+
+  preview:
+    needs: resolve
+    if: needs.resolve.outputs.target != 'null' && needs.resolve.outputs.target != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: fork-preview
+    concurrency:
+      group: fork-preview-pr-${{ fromJSON(needs.resolve.outputs.target).number }}
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      pull-requests: write
+      actions: read
+    env:
+      PR: ${{ fromJSON(needs.resolve.outputs.target).number }}
+      OPERATION: ${{ fromJSON(needs.resolve.outputs.target).operation }}
+      SHA: ${{ fromJSON(needs.resolve.outputs.target).sha }}
+    steps:
+      # workflow_run executes the publisher from the upstream default branch.
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '26'
+          package-manager-cache: false
+      - name: Install publisher from upstream lockfile
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Download this build's static files
+        if: env.OPERATION == 'publish'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+        run: |
+          set -euo pipefail
+          artifact=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/artifacts?name=fork-site-$ATTEMPT" |
+            jq -er '.artifacts | select(length == 1) | .[0] | select(.expired == false and .size_in_bytes <= 67108864) | .id')
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact/zip" > "$RUNNER_TEMP/site.zip"
+          python3 .github/fork-preview/extract.py "$RUNNER_TEMP/site.zip" "$RUNNER_TEMP/site"
+      - name: Recheck current PR and review after queueing
+        id: current
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const target = await require('./.github/fork-preview/authorize.cjs')({ github, context });
+            return target?.operation === process.env.OPERATION && String(target.number) === process.env.PR &&
+              (target.operation === 'delete' || target.sha === process.env.SHA);
+      - name: Update fork preview
+        if: steps.current.outputs.result == 'true'
+        working-directory: .github/fork-preview
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.FORK_PREVIEW_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.FORK_PREVIEW_ACCOUNT_ID }}
+          WRANGLER_OUTPUT_FILE_PATH: ${{ runner.temp }}/cf-result.ndjson
+        run: |
+          set -euo pipefail
+          : "${CLOUDFLARE_ACCOUNT_ID:?Configure FORK_PREVIEW_ACCOUNT_ID in fork-preview}"
+          : "${CLOUDFLARE_API_TOKEN:?Configure FORK_PREVIEW_API_TOKEN in fork-preview}"
+          cf="$GITHUB_WORKSPACE/node_modules/.bin/cf"
+          if [[ "$OPERATION" == delete ]]; then
+            if ! output=$("$cf" previews delete "pr-$PR" --worker docs-fork-previews --force 2>&1); then
+              [[ "$output" == *'[10025] '* ]] || { printf '%s\n' "$output" >&2; exit 1; }
+            fi
+          else
+            "$cf" previews deploy "$RUNNER_TEMP/site" --preview-name "pr-$PR"
+          fi
+      - name: Post approved revision and preview link
+        if: steps.current.outputs.result == 'true' && env.OPERATION == 'publish'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          url=$(jq -ser --arg name "pr-$PR" '
+            map(select(.type == "preview" and .preview_name == $name and .worker_name == "docs-fork-previews"))
+            | last | .deployment_urls[0] | strings | sub("^https://"; "")
+            | select(test("^[A-Za-z0-9.-]+/?$")) | "https://" + .' "$RUNNER_TEMP/cf-result.ndjson")
+          marker="<!-- fork-preview:$SHA -->"
+          body="$marker
+          Preview of reviewed commit \`$SHA\`: <$url>"
+          comments="repos/$GITHUB_REPOSITORY/issues/$PR/comments"
+          id=$(gh api --paginate "$comments" | jq -sr --arg marker "$marker" '
+            add | map(select(.user.login == "github-actions[bot]" and (.body | startswith($marker)))) | first.id // empty')
+          if [[ -n "$id" ]]; then
+            gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$id" -f body="$body" --silent
+          else
+            gh api "$comments" -f body="$body" --silent
+          fi
