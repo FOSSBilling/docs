@@ -64,14 +64,13 @@ jobs:
       contents: read
       pull-requests: read
     outputs:
-      target: ${{ steps.current.outputs.result == steps.review.outputs.result && steps.current.outputs.result || 'null' }}
+      target: ${{ steps.review.outputs.result }}
       attempt: ${{ github.run_attempt }}
-      artifact-name: checked-fork-site-${{ github.run_attempt }}
     steps:
       - name: Find the approved CI build
         id: review
         uses: actions/github-script@v9.0.0
-        with: &fork-target
+        with:
           script: |
             const run = context.payload.workflow_run;
             const match = /^PR ([1-9]\d*) (opened|reopened|synchronize|submitted|closed)$/.exec(run.display_title);
@@ -112,42 +111,6 @@ jobs:
               return { operation: 'deploy', number, sha, run: build.id };
             }
             return null;
-      - name: Download the approved CI build
-        if: fromJSON(steps.review.outputs.result).operation == 'deploy'
-        uses: actions/download-artifact@v8.0.2
-        with:
-          github-token: ${{ github.token }}
-          run-id: ${{ fromJSON(steps.review.outputs.result).run }}
-          name: worker-build
-          path: ${{ runner.temp }}/worker-build
-      - name: Prepare static assets
-        if: fromJSON(steps.review.outputs.result).operation == 'deploy'
-        working-directory: ${{ runner.temp }}/worker-build
-        run: |
-          special=$(find . ! -type f ! -type d -print -quit)
-          test -z "$special"
-          test -f v1/workers/default/assets/index.html
-          mv v1/workers/default/assets "$RUNNER_TEMP/site"
-          cd "$RUNNER_TEMP/site"
-          printf '/*\n  X-Robots-Tag: noindex\n' > _headers
-      - name: Pass checked static files to the publisher
-        if: fromJSON(steps.review.outputs.result).operation == 'deploy'
-        uses: actions/upload-artifact@v7.0.2
-        with:
-          name: checked-fork-site-${{ github.run_attempt }}
-          path: |
-            ${{ runner.temp }}/site
-            !${{ runner.temp }}/site/_worker.js
-            !${{ runner.temp }}/site/_routes.json
-          include-hidden-files: true
-          retention-days: 1
-          if-no-files-found: error
-
-      - name: Recheck the head and approval before publishing
-        if: steps.review.outputs.result != 'null'
-        uses: actions/github-script@v9.0.0
-        id: current
-        with: *fork-target
 
   preview:
     needs: prepare-fork-preview
@@ -157,7 +120,8 @@ jobs:
       needs.prepare-fork-preview.outputs.target != 'null' && needs.prepare-fork-preview.outputs.target != ''
     permissions:
       contents: read
-    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@b616a8cbccff1308f5029ea9ca31dd5a9c7a043e # main
+      actions: read
+    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@b9b791437cab79cc73b29a51fb4fd446cbe968fe # approved-run-artifact
     with:
       operation: ${{ fromJSON(needs.prepare-fork-preview.outputs.target).operation }}
       preview-name: forkpreview-${{ fromJSON(needs.prepare-fork-preview.outputs.target).number }}
@@ -166,7 +130,8 @@ jobs:
       mode: preview
       cli: cf
       node-version: '26'
-      artifact-name: ${{ needs.prepare-fork-preview.outputs.artifact-name }}
+      artifact-name: worker-build
+      artifact-run-id: ${{ format('{0}', fromJSON(needs.prepare-fork-preview.outputs.target).run || '') }}
     secrets:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
