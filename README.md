@@ -1,10 +1,10 @@
 # FOSSBilling Docs
 
-Source for the [FOSSBilling documentation](https://docs.fossbilling.org), built with Astro, Starlight, and Markdoc.
+Source for [FOSSBilling documentation](https://docs.fossbilling.org), built with Astro, Starlight, and Markdoc.
 
 ## Local Development
 
-Use Node.js 26.12 or later in the 26.x series to match CI.
+Use Node.js 26 to match CI.
 
 ```bash
 npm ci
