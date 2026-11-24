@@ -2,7 +2,7 @@ name: Cloudflare Events
 
 on:
   workflow_run:
-    workflows: ['CI/CD', 'Fork PR Event']
+    workflows: ['CI/CD']
     types: [completed]
   pull_request:
     branches: [main]
@@ -11,7 +11,7 @@ on:
 
 # Serialize fork publication and cleanup; ordinary branch events keep their own runs.
 concurrency:
-  group: ${{ github.event_name == 'workflow_run' && (github.event.workflow_run.name == 'Fork PR Event' || github.event.workflow_run.event == 'pull_request') && 'docs-fork-previews' || github.run_id }}
+  group: ${{ github.event_name == 'workflow_run' && (github.event.workflow_run.event == 'pull_request_review' || github.event.workflow_run.event == 'pull_request') && 'docs-fork-previews' || github.run_id }}
   queue: max
 
 permissions:
@@ -74,14 +74,13 @@ jobs:
         with: &fork-target
           script: |
             const run = context.payload.workflow_run;
-            const match = /^PR ([1-9]\d*)$/.exec(run.display_title);
-            if (!match || run.conclusion !== 'success') return null;
+            const match = /^PR ([1-9]\d*) (opened|reopened|synchronize|submitted|closed)$/.exec(run.display_title);
+            if (!match || run.path !== '.github/workflows/ci-cd.yml' || run.conclusion !== 'success') return null;
             const number = Number(match[1]);
             const repo = context.repo;
             const { data: pr } = await github.rest.pulls.get({ ...repo, pull_number: number });
             if (pr.base.ref !== 'main' || pr.head.repo?.id === pr.base.repo.id) return null;
-            const signal = run.path === '.github/workflows/fork-pr-event.yml';
-            if (signal && run.event === 'pull_request')
+            if (match[2] === 'closed' && run.event === 'pull_request')
               return pr.state === 'closed' ? { operation: 'delete-preview', number } : null;
             if (pr.state !== 'open' || !pr.head.repo) return null;
 
@@ -89,9 +88,9 @@ jobs:
             const sha = pr.head.sha;
             const matches = r => r.event === 'pull_request' && r.head_sha === sha &&
               r.head_repository?.id === pr.head.repo.id && r.head_branch === pr.head.ref &&
-              r.display_title === run.display_title;
+              ['opened', 'reopened', 'synchronize'].some(action => r.display_title === `PR ${number} ${action}`);
             let build = run;
-            if (signal && run.event === 'pull_request_review') {
+            if (match[2] === 'submitted' && run.event === 'pull_request_review') {
               const runs = await github.paginate(github.rest.actions.listWorkflowRuns, {
                 ...repo, workflow_id: 'ci-cd.yml', event: 'pull_request', head_sha: sha, per_page: 100,
               });

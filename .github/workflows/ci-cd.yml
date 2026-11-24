@@ -1,23 +1,36 @@
 name: CI/CD
-run-name: ${{ github.event.pull_request && format('PR {0}', github.event.pull_request.number) || github.event.head_commit.message || github.ref_name }}
+run-name: ${{ github.event.pull_request && format('PR {0} {1}', github.event.pull_request.number, github.event.action) || github.event.head_commit.message || github.ref_name }}
 
 on:
   push:
   pull_request:
     branches: [main]
+    types: [opened, synchronize, reopened, closed]
+  pull_request_review:
+    types: [submitted]
 
 permissions:
   contents: read
 
 concurrency:
-  # A deleted push can run at the default branch SHA. Keep it out of deployment queues.
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.deleted && github.run_id || github.event.pull_request.number || github.ref }}
+  # Notifications and deleted pushes must not cancel a branch build or deployment.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ (github.event.deleted || github.event.action == 'closed' || github.event_name == 'pull_request_review') && github.run_id || github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
+  fork-pr-event:
+    if: >-
+      github.event.pull_request.base.ref == 'main' &&
+      github.event.pull_request.head.repo.full_name != github.repository &&
+      (github.event.action == 'closed' || github.event.review.state == 'approved')
+    runs-on: ubuntu-slim
+    permissions: {}
+    steps:
+      - run: echo 'Cloudflare Events will check the current PR state.'
+
   validation:
-    name: Validation
-    if: ${{ !github.event.deleted }}
+    name: ${{ (github.event.action == 'closed' || github.event_name == 'pull_request_review') && 'Validation (PR event)' || 'Validation' }}
+    if: &check-source ${{ !github.event.deleted && github.event.action != 'closed' && github.event_name != 'pull_request_review' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -44,8 +57,8 @@ jobs:
         run: npm run check
 
   build:
-    name: Build
-    if: ${{ !github.event.deleted }}
+    name: ${{ (github.event.action == 'closed' || github.event_name == 'pull_request_review') && 'Build (PR event)' || 'Build' }}
+    if: *check-source
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
