@@ -73,19 +73,11 @@ jobs:
       - name: Validate Worker Deployment
         run: npm run cf-deploy -- --prebuilt --dry-run --mode production
 
-      - name: Save fork preview assets
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
-        uses: actions/upload-artifact@v7.0.2
-        with:
-          name: fork-site-${{ github.event.pull_request.head.sha }}
-          path: .cloudflare/output/v1/workers/default/assets/
-          include-hidden-files: true
-          overwrite: true
-          if-no-files-found: error
-          retention-days: 14
-
       - name: Upload Worker Build
-        if: github.repository == 'FOSSBilling/docs' && github.event_name == 'push'
+        if: >-
+          github.repository == 'FOSSBilling/docs' &&
+          (github.event_name == 'push' ||
+           (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository))
         uses: actions/upload-artifact@v7.0.2
         with:
           name: worker-build
@@ -93,7 +85,7 @@ jobs:
           path: .cloudflare/output/
           include-hidden-files: true
           if-no-files-found: error
-          retention-days: 1
+          retention-days: ${{ github.event_name == 'pull_request' && 14 || 1 }}
 
   preview:
     name: Cloudflare Preview

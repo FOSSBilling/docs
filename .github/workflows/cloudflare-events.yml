@@ -118,14 +118,17 @@ jobs:
         with:
           github-token: ${{ github.token }}
           run-id: ${{ fromJSON(steps.review.outputs.result).run }}
-          name: fork-site-${{ fromJSON(steps.review.outputs.result).sha }}
-          path: ${{ runner.temp }}/site
+          name: worker-build
+          path: ${{ runner.temp }}/worker-build
       - name: Prepare static assets
         if: fromJSON(steps.review.outputs.result).operation == 'deploy'
-        working-directory: ${{ runner.temp }}/site
+        working-directory: ${{ runner.temp }}/worker-build
         run: |
-          test -f index.html
-          if find . ! -type f ! -type d -print -quit | grep -q .; then exit 1; fi
+          special=$(find . ! -type f ! -type d -print -quit)
+          test -z "$special"
+          test -f v1/workers/default/assets/index.html
+          mv v1/workers/default/assets "$RUNNER_TEMP/site"
+          cd "$RUNNER_TEMP/site"
           printf '/*\n  X-Robots-Tag: noindex\n' > _headers
       - name: Pass checked static files to the publisher
         if: fromJSON(steps.review.outputs.result).operation == 'deploy'
