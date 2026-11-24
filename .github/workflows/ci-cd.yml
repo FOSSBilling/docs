@@ -51,6 +51,7 @@ jobs:
     timeout-minutes: 15
     env:
       # Use the same Vite build context that the pinned cf CLI sets for previews.
+      # Fork previews extract the static files and apply trusted Cloudflare config at deployment.
       CLOUDFLARE_PREVIEW_BUILD: ${{ github.repository == 'FOSSBilling/docs' && github.event_name == 'push' && github.ref_type == 'branch' && !startsWith(github.ref_name, 'forkpreview-') && github.ref != 'refs/heads/main' && 'true' || 'false' }}
 
     steps:

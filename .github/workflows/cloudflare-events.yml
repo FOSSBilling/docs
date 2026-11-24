@@ -96,7 +96,7 @@ jobs:
     permissions:
       contents: read
       actions: read
-    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@b6637a0dda8ccd8d54fb3c3fafbb3a0bbbc4f4fe # main
+    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@c47a110116b81651a259a4c7f1ea389d188f4920 # workflows PR 60
     with:
       operation: ${{ fromJSON(needs.prepare-fork-preview.outputs.target).operation }}
       preview-name: forkpreview-${{ fromJSON(needs.prepare-fork-preview.outputs.target).number }}
@@ -107,6 +107,8 @@ jobs:
       node-version: '26'
       artifact-name: worker-build
       artifact-run-id: ${{ format('{0}', fromJSON(needs.prepare-fork-preview.outputs.target).run || '') }}
+      preview-pr-number: ${{ fromJSON(needs.prepare-fork-preview.outputs.target).operation == 'deploy' && format('{0}', fromJSON(needs.prepare-fork-preview.outputs.target).number) || '' }}
+      pr-base-branch: main
     secrets:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
@@ -127,5 +129,20 @@ jobs:
           script: |
             const { number, sha, run } = JSON.parse(process.env.TARGET);
             if (process.env.NAME !== `forkpreview-${number}`) throw new Error('Unexpected preview name');
-            await github.rest.issues.createComment({ ...context.repo, issue_number: number,
-              body: `<!-- fork-preview-run:${run} -->\nPreview of commit ${sha}: <${process.env.URL}>` });
+            const issue = { ...context.repo, issue_number: number };
+            const marker = `<!-- fork-preview-run:${run} -->\n`;
+            const body = `${marker}Preview of commit ${sha}: <${process.env.URL}>`;
+            const comments = await github.paginate(github.rest.issues.listComments, issue);
+            const existing = comments.find(comment =>
+              comment.user?.login === 'github-actions[bot]' && comment.body?.startsWith(marker)
+            );
+            if (existing?.body === body) return;
+
+            const { data: pr } = await github.rest.pulls.get({ ...context.repo, pull_number: number });
+            if (pr.state !== 'open' || pr.base.ref !== 'main' || pr.head.sha !== sha) return;
+
+            if (existing) {
+              await github.rest.issues.updateComment({ ...context.repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ ...issue, body });
+            }
