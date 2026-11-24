@@ -96,7 +96,7 @@ jobs:
     permissions:
       contents: read
       actions: read
-    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@c47a110116b81651a259a4c7f1ea389d188f4920 # workflows PR 60
+    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@b6637a0dda8ccd8d54fb3c3fafbb3a0bbbc4f4fe # main
     with:
       operation: ${{ fromJSON(needs.prepare-fork-preview.outputs.target).operation }}
       preview-name: forkpreview-${{ fromJSON(needs.prepare-fork-preview.outputs.target).number }}
@@ -107,8 +107,6 @@ jobs:
       node-version: '26'
       artifact-name: worker-build
       artifact-run-id: ${{ format('{0}', fromJSON(needs.prepare-fork-preview.outputs.target).run || '') }}
-      preview-pr-number: ${{ fromJSON(needs.prepare-fork-preview.outputs.target).operation == 'deploy' && format('{0}', fromJSON(needs.prepare-fork-preview.outputs.target).number) || '' }}
-      pr-base-branch: main
     secrets:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
