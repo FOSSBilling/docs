@@ -73,7 +73,7 @@ jobs:
       needs.resolve.outputs.target != 'null' && needs.resolve.outputs.target != ''
     permissions:
       contents: read
-    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@7f646e67d42d5cae1d90f9ef0a18fb8f1b7ff3c8
+    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@b616a8cbccff1308f5029ea9ca31dd5a9c7a043e # main
     with:
       operation: ${{ fromJSON(needs.resolve.outputs.target).operation }}
       preview-name: forkpreview-${{ fromJSON(needs.resolve.outputs.target).number }}
