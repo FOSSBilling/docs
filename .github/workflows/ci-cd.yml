@@ -67,7 +67,7 @@ jobs:
         run: npm run cf-deploy -- --prebuilt --dry-run --mode production
 
       - name: Upload Worker Build
-        if: github.event_name == 'push'
+        if: github.repository == 'FOSSBilling/docs' && github.event_name == 'push'
         uses: actions/upload-artifact@v7.0.2
         with:
           name: worker-build
@@ -80,7 +80,7 @@ jobs:
   preview:
     name: Cloudflare Preview
     needs: [validation, build]
-    if: ${{ !cancelled() && github.event_name == 'push' && !github.event.deleted && github.ref_type == 'branch' && github.ref != 'refs/heads/main' }}
+    if: ${{ !cancelled() && github.repository == 'FOSSBilling/docs' && github.event_name == 'push' && !github.event.deleted && github.ref_type == 'branch' && github.ref != 'refs/heads/main' }}
     permissions:
       contents: read
       actions: read
@@ -104,7 +104,7 @@ jobs:
   deploy:
     name: Deploy Production
     needs: [validation, build]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.repository == 'FOSSBilling/docs' && github.event_name == 'push' && github.ref == 'refs/heads/main'
     uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@df80416b9dc46298bb3486267060b6b7ecc743f7 # main
     with:
       operation: deploy

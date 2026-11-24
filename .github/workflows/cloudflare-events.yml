@@ -16,7 +16,11 @@ permissions:
 
 jobs:
   comment:
-    if: github.event_name != 'delete' && github.event.action != 'closed'
+    if: >-
+      github.repository == 'FOSSBilling/docs' &&
+      ((github.event_name == 'workflow_run' && github.event.workflow_run.event == 'push') ||
+       (github.event_name == 'pull_request_target' && github.event.action != 'closed' &&
+        github.event.pull_request.head.repo.full_name == github.repository))
     uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@df80416b9dc46298bb3486267060b6b7ecc743f7 # main
     with:
       operation: sync-pr-comment
@@ -26,8 +30,9 @@ jobs:
   cleanup:
     name: Delete Cloudflare Preview
     if: >-
-      (github.event_name == 'pull_request_target' && github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository) ||
-      (github.event_name == 'delete' && github.event.ref_type == 'branch')
+      github.repository == 'FOSSBilling/docs' &&
+      ((github.event_name == 'pull_request_target' && github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository) ||
+      (github.event_name == 'delete' && github.event.ref_type == 'branch'))
     permissions:
       contents: read
     # Share the branch's push CI group so cleanup waits for its preview deployment.

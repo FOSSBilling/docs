@@ -13,6 +13,8 @@ npm run dev
 
 Open [localhost:4321](http://localhost:4321). Run `npm run format:check`, `npm run check`, and `npm run build` before opening a PR against `main`.
 
+Fork pull requests run the same validation and build checks. If GitHub shows **Approval required**, a maintainer with write access can review the changes and select **Approve and run workflows** on the PR. New pushes may need approval again. Forks can run the build locally or in Actions without Cloudflare credentials. Hosted previews are available for branches in `FOSSBilling/docs`.
+
 ## Editing Content
 
 - Write `.mdoc` pages in `src/content/docs/` with `title` and `description` frontmatter. Name section overviews `index.mdoc`.
