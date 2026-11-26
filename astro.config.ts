@@ -39,7 +39,7 @@ export default defineConfig({
       },
       customCss: ['./src/styles/fossbilling.css'],
       components: {
-        Header: './src/components/starlight/Header.astro',
+        SiteTitle: './src/components/starlight/SiteTitle.astro',
       },
       tableOfContents: {
         minHeadingLevel: 2,
