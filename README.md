@@ -25,9 +25,9 @@ If GitHub requires approval to run CI on a fork PR, a maintainer can select **Ap
 
 ## Deployment
 
-[CI](./.github/workflows/ci-cd.yml) builds the site with Astro and the Cloudflare Vite plugin. The shared Cloudflare workflow deploys the prebuilt output to production for successful `main` builds and to previews under `docs.fossbilling.foo` for successful builds on other branches in this repository. [Cloudflare Events](./.github/workflows/cloudflare-events.yml) posts preview links on PRs and removes previews when same-repository PRs targeting `main` close. See [`cloudflare.config.ts`](./cloudflare.config.ts) for Worker settings.
+[CI](./.github/workflows/ci-cd.yml) builds the site with Astro and the Cloudflare Vite plugin. The shared Cloudflare workflow deploys the prebuilt output to production from `main` and to previews under `docs.fossbilling.foo` from other branches in this repository. Deployments require successful checks and a build from the current branch head. [Cloudflare Events](./.github/workflows/cloudflare-events.yml) posts preview links on PRs and handles cleanup on PR close and branch deletion. See [`cloudflare.config.ts`](./cloudflare.config.ts) for Worker settings.
 
-For fork PRs targeting `main`, successful CI publishes the current head commit at `pr-<number>.docs.fossbilling.foo` and posts its link on the PR. These preview names are reserved for forks. If the build artifact has expired after 14 days, rerun all jobs in the PR's CI/CD run to regenerate it. Closing the PR removes the preview.
+For fork PRs targeting `main`, successful CI publishes static assets from the current head commit at `pr-<number>.docs.fossbilling.foo` and posts the link on the PR. These preview names are reserved for forks. If the build artifact has expired after 14 days, rerun all jobs in the PR's CI/CD run to regenerate it.
 
 ## Licensing
 
