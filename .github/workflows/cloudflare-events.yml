@@ -98,7 +98,7 @@ jobs:
       contents: read
       actions: read
       pull-requests: write
-    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@4e34d1b6bc81a06efa7a85344590736fd8b33a44 # shared-preview-comment
+    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@60b2c5a489faa7d3d7428cfd19b5e0467271561e # main
     with:
       operation: ${{ fromJSON(needs.prepare-fork-preview.outputs.target).operation }}
       preview-name: forkpreview-${{ fromJSON(needs.prepare-fork-preview.outputs.target).number }}
