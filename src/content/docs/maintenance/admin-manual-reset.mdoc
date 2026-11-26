@@ -6,25 +6,23 @@ sidebar:
   order: 3
 ---
 
-Use this guide when you have lost admin access and cannot use the password reset feature. These steps use phpMyAdmin, but any database tool will work — the steps will simply differ slightly.
+Use this guide when you have lost admin access and cannot use the password reset feature. These steps use phpMyAdmin.
 
 {% aside type="danger" title="Back Up Your Database First" %}
-Before making any direct database changes, create a full backup of your database. If you edit the wrong value in the `admin` row or make a mistake while saving changes, you could cause irreversible data loss or lock yourself out completely.
+Back up your database before editing it so you can restore it if you make a mistake.
 {% /aside %}
 
 {% steps %}
-1. Log into phpMyAdmin
+1. Open Your Database
 
-    Log in to phpMyAdmin. Not sure how? Contact your hosting provider.
+    Log in to phpMyAdmin and select your FOSSBilling database. You can find the database name in `config.php`.
 
-2. Select Your Database
+    If you need help accessing phpMyAdmin, contact your hosting provider.
 
-    Choose the database you installed FOSSBilling on. If you're not sure which one, check your `config.php` file.
-
-3. Find the Admin Table
+2. Edit Your Admin Account
 
     1. Click the **Structure** tab to see all tables
-    2. Find and click on the **admin** table
+    2. Open the **admin** table
 
     ![Selecting the admin table](../../../assets/guides/admin-manual-reset/pma_table.png)
 
@@ -33,33 +31,32 @@ Before making any direct database changes, create a full backup of your database
 
     ![Clicking the Edit button on your account row](../../../assets/guides/admin-manual-reset/pma_row.png)
 
-4. Generate New Password Hash
+3. Set a Temporary Password
 
-    {% aside type="danger" title="Security Warning" %}
-    Generate the hash on a machine you trust. Do not enter admin passwords into online hashing tools; they may store passwords and hashes.
-    {% /aside %}
-
-    The `pass` field needs a bcrypt hash. Generate one locally:
+    The `pass` field needs a bcrypt hash. Generate one locally with Bash and PHP on a machine you trust. Do not use online hashing tools.
 
     ```bash
-    php -r 'echo password_hash("temporary-password-here", PASSWORD_BCRYPT), PHP_EOL;'
+    IFS= read -r -s -p 'Temporary password: ' fossbilling_temp_password
+    printf '\n'
+    printf '%s' "$fossbilling_temp_password" |
+      php -r 'echo password_hash(stream_get_contents(STDIN), PASSWORD_BCRYPT), PHP_EOL;'
+    unset fossbilling_temp_password
     ```
 
-    1. Replace `temporary-password-here` with a temporary password
-    2. Copy the generated hash
-    3. Paste the hash into the **pass** field
-    4. Click **Go** to save
+    Enter a temporary password at the prompt. It will not appear on screen or in your shell history.
+
+    1. Copy the generated hash
+    2. Paste it into the **pass** field
+    3. Click **Go** to save
 
     ![Pasting the hash and saving](../../../assets/guides/admin-manual-reset/pma_edit.png)
 
-5. Log In and Change Your Password
+4. Log In and Change Your Password
 
-    You can now log in with your temporary password. **Important:** Change it immediately to a secure password:
+    Log in with your temporary password, then change it:
 
     1. Click your name in the top right corner
     2. Go to **Profile**
     3. Switch to the **Change Password** tab
     4. Set a strong, unique password
-
-    Password reset complete. Store your password securely — ideally in a password manager.
 {% /steps %}
