@@ -24,8 +24,8 @@ Three main entrypoints:
 - **Method:** Core API routes generally accept GET and POST. Guest client login/signup and staff login require POST. Use POST for mutations and requests with a JSON body or form data.
 - **Format:** JSON responses. POST requests may send JSON or form data.
 - **Naming:** Lowercase with underscores (`change_password`)
-- **Nulls:** Blank fields are included as `null`, not omitted
-- **Dates:** [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format
+
+Date formats and the handling of omitted, empty, or `null` values depend on the endpoint. Check the handler in the [module's `Api/` directory](/extensions-and-development/file-structure/#srcmodules).
 
 ## Authentication
 
@@ -83,15 +83,19 @@ curl --user admin 'https://billing.example.com/api/admin/product/get_list'
 
 ## Response Format
 
-**Success:**
+A successful `/api/guest/currency/get_pairs` response can look like this.
+
 ```json
 {
-  "result": { ... },
+  "result": {
+    "USD": "US Dollar"
+  },
   "error": null
 }
 ```
 
-**Error:**
+An error response includes an application code and message.
+
 ```json
 {
   "result": null,
