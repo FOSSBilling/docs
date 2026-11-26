@@ -371,14 +371,12 @@ Gravatar has been removed. User avatars are now generated locally using DiceBear
 
 The new [Antispam module](/admin-guide/anti-spam/) enables honeypot spam prevention by default for supported forms such as signup. If you have custom signup or public submission forms, use the `antispam_honeypot` function to include honeypot fields:
 
-```twig
-{% set honeypot = antispam_honeypot() %\}
-{% if honeypot.enabled %\}
+```twig {% process=false %}
+{% set honeypot = antispam_honeypot() %}
+{% if honeypot.enabled %}
   <input type="text" name="{{ honeypot.field }}" value="" tabindex="-1" autocomplete="off">
-{% endif %\}
+{% endif %}
 ```
-
-Remove the backslash (`\`) from the closing `%}` in your template when copying the snippet above.
 
 ## Rate Limiter
 

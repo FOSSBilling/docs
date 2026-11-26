@@ -7,32 +7,15 @@ Enter your business details once so they appear consistently across invoices, em
 
 ## Where to Configure It
 
-**Configuration → Settings → SYSTEM**
-
-![Company settings location](../../../assets/company-info.gif)
+In the admin sidebar, go to **System → Settings**, select the **System** module, and open **Company Details**.
 
 ## Company Logo
 
-Upload the logo assets FOSSBilling should use across the interface:
-
-- **Light mode logo** — Primary logo for light backgrounds
-- **Dark mode logo** — Alternate logo for dark backgrounds, if your theme needs one
-
-### Best Practices
-
-- Upload custom logos through the settings page so updates do not overwrite them
-- Use SVG for crisp display at any size
-- Keep file sizes reasonable (< 500KB)
-
-{% aside type="caution" %}
-Don't edit the bundled files in `public/branding/` directly. They are default assets and may be overwritten on updates. Upload your logo through the settings page instead.
-{% /aside %}
+Enter the address of your hosted image in **Logo URL**. For an alternate image for dark backgrounds, use **Logo URL (dark mode)**. See [logos in invoice PDFs](/admin-guide/invoice-pdf/#logos-and-remote-assets) for supported formats and size limits.
 
 ### Logo Not Showing?
 
-1. [Clear the application cache](/maintenance/troubleshooting/#clearing-the-cache).
-2. Clear your browser cache
-3. Check the file path is correct
+Open the logo URL in your browser to check that the image loads. If the old logo still appears, [clear the application cache](/maintenance/troubleshooting/#clearing-the-cache) and your browser cache.
 
 ## Other Company Details
 
@@ -64,10 +47,6 @@ For more control over generated output, see [Email Templates](/admin-guide/email
 
 ## Currency Settings
 
-Also in **Configuration → Settings → Currency**:
-
-- Default currency
-- Currency format
-- Exchange rate sources
+Select **Currency** under **System → Settings** to set the default currency, price format, and exchange rate sources.
 
 See [Currency Support](/support/features/#currency-support) for more.

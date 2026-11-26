@@ -9,14 +9,13 @@ FOSSBilling uses [Twig](https://twig.symfony.com/) for email templates, so you c
 
 ### Access Email Settings
 
-1. Go to **Configuration → Settings**
-2. Click **Email**
+In the admin sidebar, go to **System → Settings**, select **Email**, and open the **Email Templates** tab.
 
 You'll see every installed email template, along with its subject, owning module, and enabled status.
 
-### Generate Missing Templates
+### Reset Built-in Templates
 
-If templates are missing, click **Generate templates** at the bottom of the page to recreate them.
+Use **Bulk Actions → Regenerate Built-in Templates** to restore the default subject and body of existing built-in templates. This overwrites any edits to those fields. Save a copy of your edits before running the reset.
 
 ## Editing Templates
 
@@ -47,17 +46,15 @@ See [Twig Filters & Functions](/extensions-and-development/twig-filters/) for al
 
 Default templates use Markdown for simple formatting. Wrap your content with the `apply markdown_to_html` filter:
 
-```twig
-{% apply markdown_to_html %\}
+```twig {% process=false %}
+{% apply markdown_to_html %}
 Hi {{ staff.name }},
 
 If you are reading this email, FOSSBilling is **configured properly** and is **able to send emails**.
 
 {{ guest.system_company.signature }}
-{% endapply %\}
+{% endapply %}
 ```
-
-Remove the backslashes when using this in your actual template.
 
 ### HTML Format
 
@@ -117,7 +114,7 @@ Templates exist in two places:
 1. **Module source** — `modules/{Module}/templates/email/`
 2. **Database** — `email_template` table (copied there when module is installed)
 
-After installation, edit templates through the admin panel or directly in the database. Changes made only to the module files will not apply until you regenerate the templates.
+Edit installed templates in the admin panel. To restore defaults from the module files, see [Reset Built-in Templates](#reset-built-in-templates).
 
 ## Limitations
 
