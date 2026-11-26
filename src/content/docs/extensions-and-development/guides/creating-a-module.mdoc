@@ -92,13 +92,11 @@ if (!$staff_service->hasPermission(null, 'example', 'delete_something')) {
 ```
 
 **Twig templates:**
-```twig
-{% if has_permission('example', 'delete_something') %\}
+```twig {% process=false %}
+{% if has_permission('example', 'delete_something') %}
     <button type="button">{{ 'Delete something'|trans }}</button>
-{% endif %\}
+{% endif %}
 ```
-
-Remove the backslashes when using this in your actual template.
 
 Use the `has_permission(module, permission = null)` Twig function in admin templates to check whether the logged-in staff member has access to a module or module permission. Omit the second argument to check module access only, for example `has_permission('example')`. The function returns `false` when no admin is logged in or the permission check fails.
 
