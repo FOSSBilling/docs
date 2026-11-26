@@ -34,11 +34,8 @@ jobs:
 
   cleanup:
     name: Delete Cloudflare Preview
-    if: >-
-      github.repository == 'FOSSBilling/docs' &&
-      !startsWith(github.event.pull_request.head.ref || github.event.ref, 'forkpreview-') &&
-      ((github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository) ||
-       (github.event_name == 'delete' && github.event.ref_type == 'branch'))
+    needs: prepare-preview
+    if: needs.prepare-preview.outputs.branch-cleanup == 'true'
     permissions:
       contents: read
       actions: read
@@ -54,10 +51,12 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
 
-  prepare-fork-preview:
+  prepare-preview:
     if: >-
-      github.event_name == 'workflow_run' && github.repository == 'FOSSBilling/docs' &&
-      github.event.workflow_run.event == 'pull_request'
+      github.repository == 'FOSSBilling/docs' &&
+      ((github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request') ||
+       (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository) ||
+       (github.event_name == 'delete' && github.event.ref_type == 'branch'))
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -65,10 +64,23 @@ jobs:
       contents: read
       pull-requests: read
     outputs:
+      branch-cleanup: ${{ steps.branch.outputs.result }}
       target: ${{ steps.build.outputs.result }}
       attempt: ${{ github.run_attempt }}
     steps:
+      - name: Check branch preview name
+        id: branch
+        if: github.event_name != 'workflow_run'
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const branch = context.payload.pull_request?.head.ref ?? context.payload.ref;
+            const slug = branch.normalize('NFKD').replace(/\p{Mark}/gu, '').toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+            return !/^pr-\d+$/.test(slug);
+
       - name: Match the CI run to the fork PR
+        if: github.event_name == 'workflow_run'
         id: build
         uses: actions/github-script@v9.0.0
         with:
@@ -89,28 +101,28 @@ jobs:
             return { operation: 'deploy', number, run: run.id };
 
   preview:
-    needs: prepare-fork-preview
+    needs: prepare-preview
     # Rerun all jobs to recheck the PR head on retries.
     if: >-
-      needs.prepare-fork-preview.outputs.attempt == github.run_attempt &&
-      needs.prepare-fork-preview.outputs.target != 'null' && needs.prepare-fork-preview.outputs.target != ''
+      needs.prepare-preview.outputs.attempt == github.run_attempt &&
+      needs.prepare-preview.outputs.target != 'null' && needs.prepare-preview.outputs.target != ''
     permissions:
       contents: read
       actions: read
       pull-requests: write
     uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@db39bebe03eb4bb85b150ea48f82ed234aa04e84 # main
     with:
-      operation: ${{ fromJSON(needs.prepare-fork-preview.outputs.target).operation }}
-      preview-name: forkpreview-${{ fromJSON(needs.prepare-fork-preview.outputs.target).number }}
+      operation: ${{ fromJSON(needs.prepare-preview.outputs.target).operation }}
+      preview-name: pr-${{ fromJSON(needs.prepare-preview.outputs.target).number }}
       pr-comment: true
-      fork-pr-number: ${{ fromJSON(needs.prepare-fork-preview.outputs.target).operation == 'deploy' && format('{0}', fromJSON(needs.prepare-fork-preview.outputs.target).number) || '' }}
+      fork-pr-number: ${{ fromJSON(needs.prepare-preview.outputs.target).operation == 'deploy' && format('{0}', fromJSON(needs.prepare-preview.outputs.target).number) || '' }}
       worker-name: docs
       environment: preview
       mode: preview
       cli: cf
       node-version: '26'
       artifact-name: worker-build
-      artifact-run-id: ${{ format('{0}', fromJSON(needs.prepare-fork-preview.outputs.target).run || '') }}
+      artifact-run-id: ${{ format('{0}', fromJSON(needs.prepare-preview.outputs.target).run || '') }}
     secrets:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
