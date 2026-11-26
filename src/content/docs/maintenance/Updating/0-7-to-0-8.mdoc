@@ -526,7 +526,7 @@ const token = document.cookie.match(/csrf_token=([^;]*)/)?.[1] || '';
 const token = document.cookie.match(/fossbilling_csrf=([^;]*)/)?.[1] || '';
 ```
 
-The bundled JavaScript API wrapper (`js/api.js`) already handles the new name, so themes using `API.*` or `fb_api_form`/`fb_api_link` require no change. The old names are no longer set after the upgrade.
+The bundled JavaScript API wrapper (`js/api.js`) reads the renamed CSRF cookie automatically. After the upgrade, FOSSBilling sets cookies using the new names.
 
 ### Security
 
