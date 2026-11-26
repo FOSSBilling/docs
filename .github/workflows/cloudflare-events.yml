@@ -32,13 +32,32 @@ jobs:
       build-workflow: ci-cd.yml
       pr-base-branch: main
 
-  cleanup:
-    name: Delete Cloudflare Preview
+  branch-preview:
     if: >-
       github.repository == 'FOSSBilling/docs' &&
-      !startsWith(github.event.pull_request.head.ref || github.event.ref, 'forkpreview-') &&
       ((github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository) ||
        (github.event_name == 'delete' && github.event.ref_type == 'branch'))
+    permissions:
+      contents: read
+    runs-on: ubuntu-slim
+    outputs:
+      enabled: ${{ steps.preview.outputs.enabled }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - id: preview
+        env:
+          BRANCH: ${{ github.event.pull_request.head.ref || github.event.ref }}
+        run: |
+          enabled=$(node .github/scripts/branch-preview.mjs "$BRANCH")
+          echo "enabled=$enabled" >> "$GITHUB_OUTPUT"
+
+  cleanup:
+    name: Delete Cloudflare Preview
+    needs: branch-preview
+    if: needs.branch-preview.outputs.enabled == 'true'
     permissions:
       contents: read
       actions: read
@@ -101,7 +120,7 @@ jobs:
     uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@db39bebe03eb4bb85b150ea48f82ed234aa04e84 # main
     with:
       operation: ${{ fromJSON(needs.prepare-fork-preview.outputs.target).operation }}
-      preview-name: forkpreview-${{ fromJSON(needs.prepare-fork-preview.outputs.target).number }}
+      preview-name: pr-${{ fromJSON(needs.prepare-fork-preview.outputs.target).number }}
       pr-comment: true
       fork-pr-number: ${{ fromJSON(needs.prepare-fork-preview.outputs.target).operation == 'deploy' && format('{0}', fromJSON(needs.prepare-fork-preview.outputs.target).number) || '' }}
       worker-name: docs
