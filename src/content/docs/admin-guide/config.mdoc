@@ -53,9 +53,12 @@ See [Reverse Proxies](/security/securing-fossbilling/#reverse-proxies) for insta
 
 ### Debugging
 
+These settings are in the `debug_and_monitoring` array in `config.php`.
+
 - `debug` — Show detailed error messages. **Disable in production.**
-- `log_stacktrace` — Include stack traces in logs (requires `debug: true`)
-- `stacktrace_length` — Maximum stack trace length
+- `log_stacktrace` — Log exception stack traces when debug mode is enabled.
+- `stacktrace_length` — Maximum number of frames in each logged stack trace.
+- `report_errors` — Set to `true` to enable automated error reporting or `false` to disable it.
 
 ### Updates
 
@@ -92,10 +95,7 @@ Temporarily disable public access. Use `allowed_urls` for endpoints that must st
 
 ### Data & Logging
 
-| Setting | Description |
-|---------|-------------|
-| `path_data` | Where sensitive data is stored |
-| `log_to_db` | Also log to database (not fully implemented) |
+`path_data` sets the directory for application data, including cache files and logs.
 
 ### Database
 
