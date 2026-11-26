@@ -170,4 +170,4 @@ Add the crontab line shown on the installer’s completion screen or under **Rec
 
 #### Guest Cron Endpoint
 
-If your host cannot run a local cron job, turn on **Enable Guest Access** in **Scheduled Tasks**. Configure your external scheduler to request the **Guest Cron URL** over HTTPS every five minutes. Use the full URL and keep it private because it contains the access hash. Local cron is preferred when available because HTTP requests can time out.
+Use guest cron only if local cron is unavailable, since HTTP requests can time out. Turn on **Enable Guest Access** in **Scheduled Tasks** and schedule an HTTPS request to the full **Guest Cron URL** every five minutes. Keep the URL private because it contains the access hash.
