@@ -41,6 +41,7 @@ jobs:
        (github.event_name == 'delete' && github.event.ref_type == 'branch'))
     permissions:
       contents: read
+      actions: read
     # Share the branch's push CI group so cleanup waits for its preview deployment.
     concurrency:
       group: CI/CD-push-refs/heads/${{ github.event.pull_request.head.ref || github.event.ref }}

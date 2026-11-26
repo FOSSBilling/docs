@@ -123,6 +123,9 @@ jobs:
     name: Deploy Production
     needs: [validation, build]
     if: github.repository == 'FOSSBilling/docs' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      actions: read
     uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@b6637a0dda8ccd8d54fb3c3fafbb3a0bbbc4f4fe # main
     with:
       operation: deploy
