@@ -71,25 +71,14 @@ In the admin sidebar, go to **System → Settings** and select the **System** mo
 
 ## Issues with cron
 
-If you see a warning like this in the FOSSBilling dashboard, cron has not run for at least 15 minutes. That is a real problem because many core tasks depend on it.
+If FOSSBilling warns that scheduled tasks are overdue, check the last run and review your [cron setup](/getting-started/installation/#configuring-the-cronjob).
 ![FOSSBilling warning about cron execution](../../../assets/guides/install/cron-warning.png)
 
-1. Check the FOSSBilling [logs](/support/faq/#where-can-i-find-error-logs) for any PHP or application errors.
-2. Confirm that cron is configured to run every five minutes. FOSSBilling shows a crontab example with the correct path for your installation under the cron settings (`/admin/extension/settings/cron`).
-3. If you're using a control panel with multiple users, log into your user account via the CLI and enter `php -v` to see what the default PHP version is under your account. If it's less than FOSSBilling's minimum PHP version, follow the below steps to correct it.
+Check the FOSSBilling [logs](/support/faq/#where-can-i-find-error-logs) for PHP or application errors.
 
 ### An incorrect PHP version is being used
 
-Because cron runs as a server command, it is not tied to the PHP version configured for a specific site. Control panels often default to an older system PHP binary, which can make the cron job fail if that version is below FOSSBilling's minimum requirement.
-
-These steps may help you resolve this issue:
-
-1. If your control panel provides a PHP selector for cron, choose a version that meets FOSSBilling's requirements.
-2. Try specifying a different PHP binary in the cron command, for example `php8.3` or `/usr/bin/php8.3` instead of just `php`.
-3. Remove unsupported PHP versions if they keep being selected by default.
-4. Ask your hosting or control-panel provider how to set a different PHP version for cron jobs.
-5. As a last resort, use the [cron API endpoint](/getting-started/installation/#configuring-the-cronjob) with `wget` or an external cron service.
-   - Be aware that cron can run for a while. Triggering it over HTTP is more likely to hit timeout limits than running it locally.
+A local cron job can use a different PHP version from your website. Run the PHP executable from the cron command with `-v` as the account that runs the job. If it falls below the [PHP requirements](/getting-started/requirements/#php), choose a supported version in your hosting panel or use the full path to a supported PHP executable in the cron command.
 
 ## Administrator account login issues
 
