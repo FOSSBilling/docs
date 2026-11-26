@@ -21,7 +21,7 @@ For most installations, the built-in updater is the easiest option:
 
 {% steps %}
 1. Log in to your admin panel
-2. Go to **System** → **Update**
+2. Go to **System → Update**
 3. Click to install the update
 {% /steps %}
 
@@ -57,6 +57,12 @@ If you prefer to manage files yourself:
 {% /steps %}
 
 If an update fails or FOSSBilling errors after updating, see [Troubleshooting FOSSBilling Issues](/maintenance/troubleshooting/#errors-after-updating).
+
+## Docker Updates
+
+The [Docker installation examples](/getting-started/docker/) store FOSSBilling in a named volume mounted at `/var/www/html`. A replacement container mounts that same volume over the application files bundled in the new image.
+
+Pull a newer image and recreate the container to refresh PHP and Apache. Use the [built-in updater](#automatic-updates-recommended) to update FOSSBilling in the volume, then [finalize the update](#update-finalization) when prompted.
 
 ## Version-Specific Upgrade Notes
 
