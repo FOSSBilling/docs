@@ -59,7 +59,7 @@ For assistance, ask in our [Discord](https://fossbilling.org/discord).
 
 ## Setting the Default Language
 
-Open **System → Settings → Localization** in the admin panel. Choose a **Default Locale**, set **Automatic Browser Language Detection**, and save.
+Open **System → Settings → Localization** in the admin panel and choose a **Default Locale**. Enable **Automatic Browser Language Detection** to use browser preferences for visitors without a saved locale. With detection disabled, those visitors start in the default locale. Save your settings.
 
 For manual changes in `config.php`, see [`i18n.locale` and `i18n.auto_detect_locale`](/admin-guide/config/#localization).
 
@@ -70,5 +70,5 @@ For manual changes in `config.php`, see [`i18n.locale` and `i18n.auto_detect_loc
 ## How Language Selection Works
 
 1. Use the visitor's saved locale if it is enabled.
-2. If browser language detection is enabled, use a matching enabled locale. A locale for the same language can match even if the region differs.
+2. If browser language detection is enabled, match the single locale PHP selects from the browser's preferences against the enabled locales. A match can use the same language in a different region.
 3. Otherwise, use the configured default locale.

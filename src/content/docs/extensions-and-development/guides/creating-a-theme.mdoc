@@ -73,7 +73,7 @@ Theme settings forms submit to the admin `/theme/{theme}` route using POST. Incl
 
 ## Server-Side API Globals
 
-Twig templates can call FOSSBilling APIs during server-side rendering. Use `guest` for public calls and `client` or `admin` for the corresponding signed-in user.
+Twig templates can call FOSSBilling APIs directly during server-side rendering. These calls do not require a CSRF token. Use `guest` for public calls and `client` or `admin` for the corresponding signed-in user.
 
 This example renders the currency codes and names returned by the guest API.
 
