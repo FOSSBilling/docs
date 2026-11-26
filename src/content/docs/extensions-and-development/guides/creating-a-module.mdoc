@@ -61,41 +61,25 @@ public function getModulePermissions(): array
 }
 ```
 
-`can_always_access` grants baseline access to the module, while `manage_settings` limits the settings page to the listed permissions.
+`can_always_access` grants baseline access to the module. Declaring `manage_settings` registers the standard boolean permission for editing the module's settings.
 
 ### Checking Permissions
 
-**Quick check:**
+In PHP handlers, use `checkPermissionsAndThrowException()` to enforce a permission for the current staff member:
+
 ```php
 $this->di['mod_service']('Staff')->checkPermissionsAndThrowException('example', 'delete_something');
 ```
 
-**Manual check:**
-```php
-$staff_service = $this->di['mod_service']('Staff');
-if (!$staff_service->hasPermission(null, 'example', 'delete_something')) {
-    throw new \FOSSBilling\InformationException(
-        'You do not have permission to perform this action',
-        [],
-        403
-    );
-}
-```
+In admin Twig templates, use `has_permission()` to show controls for that permission:
 
-**Twig templates:**
 ```twig {% process=false %}
 {% if has_permission('example', 'delete_something') %}
     <button type="button">{{ 'Delete something'|trans }}</button>
 {% endif %}
 ```
 
-Use the `has_permission(module, permission = null)` Twig function in admin templates to check whether the logged-in staff member has access to a module or module permission. Omit the second argument to check module access only, for example `has_permission('example')`. The function returns `false` when no admin is logged in or the permission check fails.
-
-Key points:
-- Pass `null` to check the currently logged-in staff member
-- Use your module ID as the second parameter
-- Permission keys are module-specific (no naming conflicts)
-- Use `has_permission` to conditionally render admin UI, but keep enforcing permissions in PHP/API handlers
+Pass just the module ID, as in `has_permission('example')`, to check module access. Enforce permissions in the PHP handler even if Twig hides the control.
 
 ## Getting Started
 
