@@ -106,13 +106,6 @@
 
   .sl-markdown-content .starlight-aside {
     border-radius: 1rem;
-    border-color: color-mix(in srgb, var(--sl-color-accent) 65%, transparent);
-    background: color-mix(in srgb, var(--sl-color-accent) 14%, transparent);
-  }
-
-  .sl-markdown-content .starlight-aside__title,
-  .sl-markdown-content .starlight-aside a {
-    color: var(--sl-color-accent-high);
   }
 
   .sl-markdown-content ul {

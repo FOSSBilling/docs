@@ -9,85 +9,25 @@ This page covers the application-level settings you should review after installa
 
 ## Configuration Options
 
-These settings live in your `config.php` file and control FOSSBilling's built-in security behavior.
+Review these settings after installation. The [Configuration File reference](/admin-guide/config/) lists their defaults and syntax.
 
 ### Security Options
 
-| Property | Default | Options | Description |
-|----------|---------|---------|-------------|
-| `mode` | `strict` | `strict` or `regular` | In `strict` mode, cookies use `SameSite=Strict` and `HttpOnly`. `regular` mode uses default cookie properties but still sets `HttpOnly`. |
-| `force_https` | `true` | `bool` | When enabled, FOSSBilling redirects all requests to HTTPS and forces cookies to be sent only over secure connections. |
-| `session_lifespan` | `7200` | `int` | How long sessions remain valid (in seconds). Default is 2 hours. After this, sessions expire and are destroyed. |
-| `session_regeneration_grace_period` | `300` | `int` | Grace period (seconds) before a regenerated session ID takes full effect. |
-| `perform_session_fingerprinting` | `true` | `bool` | Verify browser fingerprint on each request to help prevent session hijacking. |
-| `debug_fingerprint` | `false` | `bool` | Log fingerprint checks for debugging (enable temporarily only). |
-
-```php
-'security' => [
-    'mode' => 'strict',
-    'force_https' => true,
-    'session_lifespan' => 7200,
-    'session_regeneration_grace_period' => 300,
-    'perform_session_fingerprinting' => true,
-    'debug_fingerprint' => false,
-],
-```
+Keep the [default security settings](/admin-guide/config/#security-settings) for production unless you have a specific compatibility issue. Enforce HTTPS, use strict session cookies, and enable fingerprint logging only while troubleshooting session problems.
 
 ### Trusted Proxies
 
-Configure reverse-proxy support so FOSSBilling correctly detects the visitor's IP and protocol:
-
-```php
-'security' => [
-    'trusted_proxies' => [
-        'enabled' => false,
-        'proxies' => [],
-        'headers' => 'x_forwarded',
-    ],
-],
-```
-
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `trusted_proxies.enabled` | `false` | Enable trusted proxy detection |
-| `trusted_proxies.proxies` | `[]` | List of trusted proxy IPs or CIDR ranges |
-| `trusted_proxies.headers` | `x_forwarded` | Header type: `x_forwarded` (standard) or `forwarded` (RFC 7239) |
-
-If you are running behind a reverse proxy, configure the `trusted_proxies` setting in your config (see above) so request metadata is interpreted correctly.
+Enable [trusted proxy settings](/admin-guide/config/#trusted-proxies) only for proxies you control. Confirm their addresses and forwarded header format so FOSSBilling can identify the visitor's IP and protocol.
 
 ### API Security
 
-| Property | Default | Options | Description |
-|----------|---------|---------|-------------|
-| `CSRFPrevention` | `true` | `bool` | Enables CSRF protection for session-authenticated browser API calls. Keep this enabled unless it is causing a specific compatibility issue. |
-
-```php
-'api' => [
-    'CSRFPrevention' => true,
-],
-```
-
-The bundled [JavaScript API wrapper](/extensions-and-development/javascript/) sends the CSRF token automatically. External API calls authenticated with an API key do not need a CSRF token.
+Keep [CSRF protection](/admin-guide/config/#api-settings) enabled for session-authenticated browser API calls. The bundled [JavaScript API wrapper](/extensions-and-development/javascript/) sends the token automatically. External API calls authenticated with an API key do not need a CSRF token.
 
 Guest client login/signup, staff login, and cart mutations require a session-bound token and reject cross-origin browser requests even when `api.CSRFPrevention` is disabled. See the [API reference](/extensions-and-development/api/#csrf-tokens) for endpoint and token requirements.
 
 ### Rate Limiter
 
-Rate limiting is configured under the `rate_limiter` block, replacing the old `api.rate_*` keys:
-
-```php
-'rate_limiter' => [
-    'enabled' => true,
-    'whitelist_ips' => [],
-    'policies' => [],
-],
-```
-
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `rate_limiter.enabled` | `true` | Enable or disable the rate limiter entirely |
-| `rate_limiter.whitelist_ips` | `[]` | IPs that bypass rate limiting |
-| `rate_limiter.policies` | `[]` | Custom rate-limit policies (advanced). Leave empty for sensible defaults covering login and API endpoints. |
+Keep [rate limiting](/admin-guide/config/#rate-limiter) enabled to protect login and other public endpoints. Limit exemptions to trusted integrations that need them. If you are upgrading from a version that used `api.rate_*` settings, see the [rate limiter migration notes](/maintenance/updating/0-7-to-0-8/#rate-limiter).
 
 ## Antispam
 
@@ -108,7 +48,7 @@ FOSSBilling can detect when it is running behind a reverse proxy. If forwarded h
 - The detected header format
 - A suggested public URL derived from the forwarded headers
 
-You can enable trust directly in the installer or configure it later in `config.php` using the `trusted_proxies` setting.
+You can enable trust in the installer or later in `config.php` under the `security.trusted_proxies` setting.
 
 ### HTTPS Detection
 

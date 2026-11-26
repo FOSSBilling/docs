@@ -3,161 +3,56 @@ title: Changelog
 description: FOSSBilling release history and version changes.
 ---
 
-FOSSBilling publishes release notes and tagged versions on GitHub. Use the links below to review new features, fixes, and upgrade notes before you update.
-
-{% cardgrid %}
-  {% card title="GitHub Releases" icon="list-format" %}
-    View all FOSSBilling releases with detailed changelogs on [GitHub Releases](https://github.com/FOSSBilling/FOSSBilling/releases).
-  {% /card %}
-  {% card title="Version History" icon="code-branch" %}
-    Browse the complete [commit history](https://github.com/FOSSBilling/FOSSBilling/commits/main) to see all changes.
-  {% /card %}
-{% /cardgrid %}
+FOSSBilling publishes its release notes on GitHub.
 
 ## Latest Release
 
-For the latest changes, start with the [most recent release](https://github.com/FOSSBilling/FOSSBilling/releases/latest).
+See the [latest release](https://github.com/FOSSBilling/FOSSBilling/releases/latest) for changes and release-specific notes.
+
+## Release History
 
 ### Version 0.8.9
 
-**Released: 2026-10-23.** This patch release hardens authentication, payments, and extension handling and includes several security fixes. Update as soon as possible, after reviewing the [0.8.9 migration notes](/maintenance/updating/0-7-to-0-8/#authentication-api--payment-hardening-089).
-
-| Area | Summary |
-|------|---------|
-| **Breaking: API Errors** | Error codes in the HTTP range `400`–`599` now use that status, except application codes `413`, `436`, `437`, and `498`, which map to HTTP `400`. Existing application-code mappings remain. The JSON envelope and original error code are unchanged; integrations must read error bodies on non-200 responses. (#4266) |
-| **Breaking: Guest Requests** | Client login/signup and staff login require POST with a pre-login session CSRF token. Guest cart mutations also require a session-bound token. Both reject cross-origin browser requests; review custom themes, storefronts, order buttons, and embed forms. (#4474, #4546) |
-| **Breaking: Payment Returns and PDFs** | Gateway return/cancel/thank-you URLs use `/invoice/payment-return` with fixed invoice destinations; the legacy session `restore_token` flow is removed and PayPal uses browser redirects. Dompdf no longer fetches remote assets directly; custom invoice PDF templates must use local or embedded assets. (#4474) |
-| **Security** | Password reset races prevented with transactional token handling; email-confirmation tokens bound to the current email with 24-hour expiry; stricter session/cookie handling; installer and extension extraction protections; permission and CSRF checks for settings; validated PDF logo downloads with private-network blocking; plain-text ticket notes and sandboxed email previews; stricter validation of public inputs, gateway notifications, control-panel requests, and extension metadata. |
-| **New Features** | Sitemap coverage for the homepage and custom pages, product `lastmod`, and a Custompages guest API. (#4566) |
-| **Enhancements** | CWP single sign-on with panel URL fallback; hosting pages tolerate panel URL lookup failures; extension directory caching with a fallback for responses up to 48 hours old; recipient locale used for cron emails; configurable invoice reminder send time; product category ordering and bulk priority API; corrected Stripe currency conversion and renewal payment handling; PayPal item-number mismatch logged as a warning; WHM activation handles existing packages; clearer extension manifest errors; translatable support message dates. |
-| **Bug Fixes** | Duplicate activation after credit checkout; API key settings/order pages; domain sync retries; services pagination; custom-page Unicode storage and MariaDB charset repair; invoice-counter and domain-period validation; abandoned session cleanup; registrar phone normalization and Internet.bs contact/TLD handling; sparse extension metadata/icons; CWP suspension messages; standalone Form Builder rendering; product settings permissions; unavailable news returns 404; product pricing and form-answer validation. |
-| **Changes** | Expected user-facing API errors are no longer sent to Sentry; unexpected failures remain reportable. (#4512) |
-| **Dependencies** | PHP dependencies refreshed, including Doctrine ORM 3.7.5, Persistence 4.2.1, Symfony components 7.4.21, Sentry 4.34.0, League URI 7.9.0, Guzzle PSR-7 3.2.0, and Nette Schema 1.4.0, plus development tools. Frontend updates include Tabler 1.7.0, Chart.js 4.6.1, flag-icons 7.6.0, and intl-tel-input 29.5.6; Composer Docker image digest refreshed. |
-
-[View the full 0.8.9 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.9) for the complete list of changes.
-
+[0.8.9 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.9)
 
 ### Version 0.8.8
 
-| Area | Summary |
-|------|---------|
-| **Breaking** | Stored values are no longer HTML-escaped before saving; escaping now happens at render time, with a database patch repairing previously double-escaped rows. Custom themes or modules that pre-escape output or rely on stored escaped values should verify rendering. |
-| **Security** | PayPal notifications bound to their invoice with signed callback URLs; Stripe redirect PaymentIntent ownership and currency verified before applying; PayPal IPN currency validated; gateway cancellations restricted to the stored subscription; once-per-client promo race, client-bound email recipient, reCAPTCHA v3 fast-submit bypass, and signup quota fixes; admin and client sessions invalidated on API token rotation; promo history and order/ticket details exposure limited; `cron.php` now refuses non-CLI execution (use the hash-protected guest cron endpoint when enabled in System → Cron instead); theme config directories protected; installer removed from production debug builds. |
-| **New Features** | Addon quantity selection with validation, storage on the addon order, order-form input, and admin toggles. |
-| **Enhancements** | Open hosting plan limits shown as "Unlimited"; domain transfers through the Email and Custom registrars; transfer codes collected for hosting domain orders. |
-| **Bug Fixes** | Client signup CAPTCHA double-verification; multi-item cart orders missing from client list; invoice PDF failure on missing company address; `Server_Manager::getPasswordLength()` cron fatal; promo redemption `serie_nr` column; restored product quantity toggle; Namecheap nameservers and Plesk credential preservation; renewal, balance, Add Funds deposit, ticket, gateway, tax math, and theme CSS fixes. |
-| **Changes** | Template-cache write failures render an error page instead of a raw 500; cache-backend configuration errors surfaced as settings-form validation errors. |
-
-[View the full 0.8.8 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.8) for the complete list of changes.
+[0.8.8 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.8)
 
 ### Version 0.8.7
 
-| Area | Summary |
-|------|---------|
-| **Security** | Guest signup flow hardened against email address enumeration; password hashes and API tokens no longer leaked in staff and client listing responses; payment gateway and domain registrar secrets masked in API responses and admin forms (admins see a "Configured" badge, and leaving a field blank keeps the existing secret); ResellerClub API credentials redacted from request logs; template existence checks hardened against invalid paths; install filesystem paths stripped from Sentry stack traces. |
-| **New Features** | Configurable Redis/Memcached cache backend with an admin cache settings page, Redis TLS support, and per-installation namespace isolation; per-TLD option to require a domain transfer code; "Sync Now" action to refresh domain status, WHOIS contacts, and dates from the registrar on demand. |
-| **Enhancements** | WHOIS domain availability lookups replaced with RDAP, with graceful fallback for the Custom and Email adapters; release archives mirrored to Cloudflare R2 so IPv6-only hosts can download updates. |
-| **Bug Fixes** | `Order\Service::assertOrderUsable()` restored, fixing client service endpoints failing with error 9998; checkout `TypeError` when a gateway left an invoice unpaid; ResellerClub mixed-case availability lookups, bare-scalar API responses, whois/contact edits, `.FR` contact types, renewals without cached expiration, and non-JSON responses (which previously crashed and leaked credentials); admin-role client/staff logins no longer throttled under the guest anti-brute-force policy; maintenance page crash with "hide company public" enabled; failed public suffix list download no longer breaking checkout; multi-byte UTF-8 corruption in the guest countries response; "change password" error in the client area; subscription renewal invoices allowed for `suspended`/`failed_renew` orders; Stripe checkout race creating duplicate customers and unhandled invalid UTF-8 in API responses; admin order creation with immediate invoice issuance; stale reads causing "has no active service"; extension hook listener rebuild on failure; theme settings fallback when `settings_data.json` is missing; Massmailer crash on mail sending and test client fetching. |
-| **Changes** | Native PHP deprecation notices no longer reported to Sentry. |
-| **Dependencies** | `io-developer/php-whois` dropped in favor of RDAP availability checks; PHP and frontend dependencies refreshed. |
-
-[View the full 0.8.7 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.7) for the complete list of changes.
+[0.8.7 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.7)
 
 ### Version 0.8.6
 
-| Area | Summary |
-|------|---------|
-| **Breaking: Cookies** | Cookie names standardized to `fossbilling_*` (`csrf_token` → `fossbilling_csrf`, `BBLANG`/`fb_locale`/`fb_timezone` etc.). Migrated transparently, but custom themes or scripts reading legacy names directly must update. |
-| **Security** | CSV exports hardened against secret columns and now require `view` + `export` permissions; cart config injection via downloadable products blocked; `manage_extensions` enforced for inactive modules; update archives verified via SHA-256 before extraction; hosting plan listings scoped to enabled products with order values cross-checked. |
-| **New Features** | Currency format patterns and fraction digits with per-currency manual rate overrides; promo redemption history and duplicate action; `Enable Add Funds` toggle for client top-ups; global Bcc for outgoing mail; ticket priority in email previews; failed invoice-item tracking with attempt counter and Failed Items page; opt-in cron to prune stale never-paid `pending_setup` orders; TLD periods can be restricted to an explicit list; order details show discount and post-discount amount; Update page surfaces preview build. |
-| **Bug Fixes** | PayPal IPN backslash stripping; Namecheap expiration dates; Plesk hosting-plan assignment and invalid webspace `set`; DirectAdmin package value reset; WHM reseller ACL; domain expiry sync not refreshing and sync marker advancing on failure; hosting orders stuck in `pending_setup` with duplicate `createacct`; checkout rolling back entire cart on partial failure; promo setup-fee waiver on non-applicable products; duplicate balance credits; race conditions: invoice-number collisions, credit double-spend, stock oversell, and Stripe webhook double-processing serialized; Stripe non-integer amount validation; cron client emails failing without admin session; session regeneration grace period hardcoded to zero and stale admin identity on client login; password reset confirmation and signup country selector timeout; new-order form crash for products missing period prices; one-time product checkout, TLD handler, and undefined `addons` variable; Cookie Consent crash when unconfigured; currency table missing columns and incomplete custom fields; client group not persisting and group-0 search errors; core-update login lockout and file-swap race; exception handler on non-integer codes; mass mailer preview, order button settings, and Service Management tab fatals; gateway highlight and dark border; inconsistent overdue invoice cleanup now routed through normal deletion. |
-
-[View the full 0.8.6 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.6) for the complete list of changes.
+[0.8.6 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.6)
 
 ### Version 0.8.5
 
-| Area | Summary |
-|------|---------|
-| **Security** | Active user sessions invalidated after a password reset, preventing retained access after a credential change. |
-| **New Features** | Separate billing email address for invoice notifications, distinct from primary contact email; end-of-period order cancellation so clients retain access for the period they have paid for. |
-| **Enhancements** | Batch invoice reminders limited to once daily with invoice generation now running before reminders in cron; partial cron failures now exit non-zero for monitoring; support ticket edit history rendered as formatted Markdown; Twig URL filter arguments standardized across templates; admin list pages load faster via query optimization and Doctrine-based client list pagination. |
-| **Bug Fixes** | SQL `GROUP BY` error in product category query on newer database versions; Stripe subscription cancellation not syncing to Stripe; Stripe webhook routing for shared accounts; duplicate transactions on one-time Stripe payments; ClientBalance single-payment gateway flags; guest redirect when viewing invoices; footer link checkbox state not persisting; invoice approval discarding unsaved changes; Twig currency formatting in non-default locales; broken preview variables for invoice, staff signup, and support email templates; bulk email template regeneration failures and timeouts; email template upgrades from 0.7.2 installs via database patch; HTML entity double-encoding in KB article titles; client session handling, form field states, and error page rendering; Thai and Lao text in invoice PDFs via DejaVu Sans font stack; escaped CSS font styles in invoice PDFs; order expiry checks enforced across service modules. |
-| **Dependencies** | stripe/stripe-php v21 (#3984); league/commonmark v2.8.3; CKEditor 5 v48.3.1. |
-
-[View the full 0.8.5 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.5) for the complete list of changes.
+[0.8.5 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.5)
 
 ### Version 0.8.4
 
-| Area | Summary |
-|------|---------|
-| **Breaking: Admin Permissions** | Admin permissions reworked from per-user to a group-based model. Existing staff are auto-migrated to temporary groups on upgrade. Custom modules/themes checking permissions directly may need updating. |
-| **Security** | Server manager credentials masked in API/admin UI; `manage_settings` permission enforced on extension config pages; Stripe webhooks require signing secret; server manager input hardened |
-| **Stripe** | Recurring subscriptions via Setup Intents and webhooks; invoice paid webhook and currency normalization |
-| **Client Profiles** | Per-user timezone support; country code selector and number formatter; custom client fields sorted and cap raised to 20; custom client IDs exposed in API |
-| **Knowledge Base** | Migrated to Doctrine with improved search, view counts, and canned responses; Markdown-safe sanitization for ticket/KB messages |
-| **Admin UX** | Ticket replies editable with revision history; staff notification emails scoped to admin groups; ribbon-style suspended badges; rate limit management UI; Discord community button |
-| **Invoicing** | PDF invoice attachment to emails; configurable reminder intervals; zero-price order invoices; price validation at order creation; renewal price and duplicate-payment fixes |
-| **Bug Fixes** | MySQL 8.0.22+ REGEXP charset conflict in patches 67/74; registrar adapter autoloader fix; PayPal duplicate subscription handling; Product Promotions crash on NULL flags; domain double-activation fix; UpdatePatcher undefined method from 0.6.x upgrades; Twig 500 error pages; cron defaults on fresh installs; DirectAdmin account deletion recovery |
-| **Development** | Email, Extension, Support modules migrated to Doctrine; frontend JS migrated to TypeScript; document fields migrated to custom client fields |
-| **Dependencies** | Twig v3.28.0; CKEditor 5 v48.3.0; Sentry v4.29.0; Stripe PHP v20.3.1; PostCSS v8.5.16; Autoprefixer v10.5.2; Rector v2.5.5 |
-
-[View the full 0.8.4 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.4) for the complete list of changes.
+[0.8.4 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.4)
 
 ### Version 0.8.3
 
-| Area | Summary |
-|------|---------|
-| **Breaking: Public Tickets** | Public (guest) tickets unified with client tickets — same endpoints, templates, emails, and event hooks. Eight deprecated ticket hooks removed; replaced by shared client ticket hooks. Old email links redirect automatically. Custom modules/themes referencing the old hooks, templates, or endpoints need updating. |
-| **Security** | Invoice hash self-healing — missing hashes are regenerated automatically; database patch backfills hashes for existing invoices |
-| **Admin UX** | Persistent light/dark theme toggle with dark-mode logo support on login pages |
-| **Orders & Transactions** | Order list/details use batch API retrieval; marking invoice as paid correctly records transaction; admin order templates handle null service data gracefully |
-| **Payment Gateways** | Failed transactions marked as errored with retry support; SQL claim queries use correct `IN` grouping; Stripe type hints and appearance enhancements |
-| **Huraga Theme** | Client dashboard widget slots; pagination tab redirects; `fb_api_link` usage for API actions instead of custom event listeners |
-| **Cron** | `is_cron` flag for context awareness; admin-level fallback during cron runs now restricted |
-| **Templates** | Twig strict-variables fixes across activity logs, tickets, invoices, payment gateways, and domain registrars; staff password reset emails now use correct recipient; client order page shows product add-ons for restricted categories |
-| **Bug Fixes** | Currency settings crash when exchange rate data missing; stale `unpaid_invoice` references corrected; `getCell` returns proper types; legacy BoxBilling IPN params (`bb_*`, `bb-ipn.php`) redirect to standard endpoint |
-| **Frontend** | Legacy PNG/font icons replaced with SVG; icon sprite `xlink:href` → `href` refactor with shared builder; Coloris color picker replaced with native `input type="color"` |
-| **Development** | Product models migrating to Doctrine; promo code redemption compensates correctly on checkout failure; esbuild helpers refactored with JS checker and asset optimization |
-| **Dependencies** | DiceBear core v10.3.0 / styles v10.2.0; esbuild v0.28.1; Sass v1.101.0; Sentry v4.28.0; guzzlehttp/psr7 v2.12.1; Docker base tag v1.25 |
-
-[View the full 0.8.3 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.3) for the complete list of changes.
+[0.8.3 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.3)
 
 ### Version 0.8.2
 
-| Area | Summary |
-|------|---------|
-| **Security** | Rate limiting on guest invoice, PDF, and payment APIs with per-hash and per-IP limits; invoice hash format validated (30–60 hex chars) and hashes expire after configurable period; guest cron endpoint now requires security hash; extension uninstall paths validated against directory traversal; fixed reverse tabnabbing vulnerability in Theme service; password values no longer echoed in login templates |
-| **Rate Limiting** | New `invoice_get_ip`, `invoice_get_hash`, `invoice_pdf_ip`, `invoice_pdf_hash` policies; invoice hashes expire by default after 90 days (`invoice_hash_lifetime_days`) |
-| **Email Templates** | Built-in syntax validation with error tracking in admin panel; new `last_error` / `error_checked_at` columns for tracking rendering failures; bulk actions and batch delete |
-| **Payment Gateways** | One-time payment enforcement per gateway; gateway keys required based on operating mode; update readiness checks in gateway settings UI |
-| **Performance** | Doctrine ORM metadata now cached on filesystem |
-| **Updates** | Pre-flight filesystem permission checks before applying updates |
-| **Widgets** | Login forms now support widget slots for extension injection |
-| **Maintenance** | Leftover Paidsupport and Servicemembership module files fully cleaned from disk |
-
-[View the full 0.8.2 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.2) for the complete list of changes.
+[0.8.2 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.2)
 
 ### Version 0.8.1
 
-| Area | Summary |
-|------|---------|
-| **Security** | Sanitized admin ticket replies, validated downloadable stored filenames, hardened license doc links, prevented subdomain override, refreshed OPcache after config preservation, hardened UpdatePatcher SQL safety |
-| **Hosting** | Free subdomain option with duplicate protection |
-| **Anti-spam** | reCAPTCHA v3 score-based bot detection on public forms |
-| **Client signup** | Auto-login after registration; separate last name field |
-| **Updates** | Two-phase update finalization process (install then finalize patches); maintenance mode enabled during updates |
-| **Proxy** | Pre-config proxy detection and admin proxy candidate settings UI for reverse proxy setups |
-| **Downloadable** | `stored_filename` attribute for safer file tracking and orphan cleanup |
-| **Admin** | Active menu highlighting, Massmailer autocomplete test client selector, tab-targeted redirects |
+[0.8.1 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.1)
 
-[View the full 0.8.1 release notes](https://github.com/FOSSBilling/FOSSBilling/releases/tag/0.8.1) for the complete list of changes.
-
-For older releases, browse the [full release history on GitHub](https://github.com/FOSSBilling/FOSSBilling/releases).
+For older versions, see the [full release history](https://github.com/FOSSBilling/FOSSBilling/releases).
 
 ## Breaking Changes
 
-Before updating, review the release notes for any breaking changes or manual follow-up steps. We call these out in each release whenever they apply.
+Before updating, check the release notes for compatibility changes. Follow [Updating FOSSBilling](/maintenance/updating/) for the update procedure and [Upgrading from 0.7.x to 0.8.x](/maintenance/updating/0-7-to-0-8/) for migration steps.
 
 ## Security Updates
 
-Security-related changes are also published through our [GitHub security advisories](https://github.com/FOSSBilling/FOSSBilling/security/advisories). If you run FOSSBilling in production, subscribe to release notifications and security alerts.
+See [GitHub security advisories](https://github.com/FOSSBilling/FOSSBilling/security/advisories) for affected versions and fixes.

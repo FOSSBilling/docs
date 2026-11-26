@@ -3,26 +3,20 @@ title: Configuration File
 description: Reference for the most important settings in FOSSBilling's config.php file.
 ---
 
-Your `config.php` file controls how FOSSBilling behaves after installation. You will find it in the installation root of a running instance.
-
-{% aside type="tip" %}
-See the [example config](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/config-sample.php) for inline documentation.
-{% /aside %}
-
-This page highlights the settings administrators most commonly change. For the full inline reference, use the sample config linked below.
+Your `config.php` file is in the installation root. This page covers the settings administrators most commonly change. For the full reference, see the [example config](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/config-sample.php).
 
 ## Configuration Options
 
 ### Security Settings
 
-Control security behavior:
+These settings control HTTPS and session handling. See [Securing FOSSBilling](/security/securing-fossbilling/#security-options) for production guidance.
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `security.mode` | `strict` | `strict` (recommended) or `regular`. Strict enables `SameSite=Strict` and `HttpOnly` cookies. |
-| `security.force_https` | `true` | Force HTTPS connections. **Recommended for production.** |
-| `security.session_lifespan` | `7200` | Session duration in seconds (default: 2 hours). |
-| `security.session_regeneration_grace_period` | `300` | Grace period in seconds before a regenerated session ID takes full effect. |
+| `security.mode` | `strict` | `strict` sets `SameSite=Strict` on session cookies. Both `strict` and `regular` set `HttpOnly`. |
+| `security.force_https` | `true` | Redirect HTTP requests to HTTPS and mark session cookies as secure. |
+| `security.session_lifespan` | `7200` | Session duration in seconds (2 hours by default). |
+| `security.session_regeneration_grace_period` | `300` | Time in seconds that the previous session ID can still be used after regeneration. |
 | `security.perform_session_fingerprinting` | `true` | Verify browser fingerprint on each request to help prevent session hijacking. |
 | `security.debug_fingerprint` | `false` | Log fingerprint checks for debugging (enable temporarily only). |
 
@@ -46,11 +40,7 @@ Configure reverse-proxy support so FOSSBilling correctly detects the visitor's I
 | `trusted_proxies.proxies` | `[]` | List of trusted proxy IPs or CIDR ranges |
 | `trusted_proxies.headers` | `x_forwarded` | Header type: `x_forwarded` (standard) or `forwarded` (RFC 7239) |
 
-{% aside type="tip" %}
-The installer and admin panel can detect reverse proxies automatically. When forwarded headers are detected, the installer shows a proxy configuration step with the detected proxy address and a suggested public URL. You can also review and configure proxy settings from **System** → **Settings** in the admin panel.
-{% /aside %}
-
-If you are running behind a reverse proxy, configure the `trusted_proxies` setting in your config (see above) so request metadata is interpreted correctly.
+See [Reverse Proxies](/security/securing-fossbilling/#reverse-proxies) for installer detection and HTTPS forwarding.
 
 ### Encryption Key
 
@@ -145,18 +135,19 @@ Control API access.
 ```
 
 ### Rate Limiter
-FOSSBilling includes a built-in rate limiter which depends on Symfony's [rate limiter](https://symfony.com/doc/current/rate_limiter.html) component.
 
-`policies` is an empty array by default and inherits sensible defaults from [`FOSSBilling\Security\RateLimiter::getDefaultConfig()`](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/library/FOSSBilling/Security/RateLimiter.php#L37).
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `rate_limiter.enabled` | `true` | Enable rate limiting. |
+| `rate_limiter.whitelist_ips` | `[]` | IP addresses or CIDR ranges exempt from rate limiting. |
+| `rate_limiter.policies` | `[]` | Overrides for individual built-in policies. |
 
-Any policy you explicitly set in the `policies` array will override the default one. We have included an example below. You can refer to Symfony's documentation on creating rate limiter policies.
+Set only the fields you want to override. This example lowers the `client_signup` limit from five to three attempts per hour. [FOSSBilling 0.8.9 default policies](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/FOSSBilling/Security/RateLimiter.php#L42-L79) · [Symfony rate limiter documentation](https://symfony.com/doc/current/rate_limiter.html)
 
 ```php
 'rate_limiter' => [
-    'enabled' => true,
-    'whitelist_ips' => [], // Array of whitelisted IP addresses and CIDRs
     'policies' => [
-        'client_signup' => ['policy' => 'fixed_window', 'limit' => 5, 'interval' => '1 hour'],
+        'client_signup' => ['limit' => 3],
     ],
 ],
 ```
