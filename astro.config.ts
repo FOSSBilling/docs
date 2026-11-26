@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import markdoc from '@astrojs/markdoc';
 import { cloudflare } from '@cloudflare/vite-plugin';
+import markdocContentPathContainment from './src/integrations/markdoc-partials.ts';
 
 // https://astro.build/config
 export default defineConfig({
@@ -154,6 +155,11 @@ export default defineConfig({
     markdoc(),
   ],
   vite: {
-    plugins: [cloudflare()],
+    plugins: [
+      markdocContentPathContainment(
+        new URL('./src/content/docs/', import.meta.url),
+      ),
+      cloudflare(),
+    ],
   },
 });
