@@ -11,7 +11,7 @@ on:
 
 # Serialize fork publication and cleanup; ordinary branch events keep their own runs.
 concurrency:
-  group: ${{ github.event_name == 'workflow_run' && (github.event.workflow_run.event == 'pull_request_review' || github.event.workflow_run.event == 'pull_request') && 'docs-fork-previews' || github.run_id }}
+  group: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request' && 'docs-fork-previews' || github.run_id }}
   queue: max
 
 permissions:
@@ -41,6 +41,7 @@ jobs:
        (github.event_name == 'delete' && github.event.ref_type == 'branch'))
     permissions:
       contents: read
+      actions: read
     # Share the branch's push CI group so cleanup waits for its preview deployment.
     concurrency:
       group: CI/CD-push-refs/heads/${{ github.event.pull_request.head.ref || github.event.ref }}
@@ -56,7 +57,7 @@ jobs:
   prepare-fork-preview:
     if: >-
       github.event_name == 'workflow_run' && github.repository == 'FOSSBilling/docs' &&
-      (github.event.workflow_run.event == 'pull_request' || github.event.workflow_run.event == 'pull_request_review')
+      github.event.workflow_run.event == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -64,57 +65,32 @@ jobs:
       contents: read
       pull-requests: read
     outputs:
-      target: ${{ steps.review.outputs.result }}
+      target: ${{ steps.build.outputs.result }}
       attempt: ${{ github.run_attempt }}
     steps:
-      - name: Find the approved CI build
-        id: review
+      - name: Match the CI run to the fork PR
+        id: build
         uses: actions/github-script@v9.0.0
         with:
           script: |
             const run = context.payload.workflow_run;
-            const match = /^PR ([1-9]\d*) (opened|reopened|synchronize|submitted|closed)$/.exec(run.display_title);
-            // Review and close runs complete with all CI jobs skipped. The build itself must succeed below.
+            const match = /^PR ([1-9]\d*) (opened|reopened|synchronize|closed)$/.exec(run.display_title);
+            // Close runs complete with all CI jobs skipped. The build itself must succeed below.
             if (!match || run.path !== '.github/workflows/ci-cd.yml' || !['skipped', 'success'].includes(run.conclusion)) return null;
             const number = Number(match[1]);
             const repo = context.repo;
             const { data: pr } = await github.rest.pulls.get({ ...repo, pull_number: number });
             if (pr.base.ref !== 'main' || pr.head.repo?.id === pr.base.repo.id) return null;
-            if (match[2] === 'closed' && run.event === 'pull_request')
+            if (match[2] === 'closed')
               return pr.state === 'closed' ? { operation: 'delete-preview', number } : null;
-            if (pr.state !== 'open' || !pr.head.repo) return null;
-
-            // Either CI or approval may finish first. Always identify the same upstream CI build.
-            const sha = pr.head.sha;
-            const matches = r => r.event === 'pull_request' && r.head_sha === sha &&
-              r.head_repository?.id === pr.head.repo.id && r.head_branch === pr.head.ref &&
-              ['opened', 'reopened', 'synchronize'].some(action => r.display_title === `PR ${number} ${action}`);
-            let build = run;
-            if (match[2] === 'submitted' && run.event === 'pull_request_review') {
-              const runs = await github.paginate(github.rest.actions.listWorkflowRuns, {
-                ...repo, workflow_id: 'ci-cd.yml', event: 'pull_request', head_sha: sha, per_page: 100,
-              });
-              build = runs.find(matches);
-            }
-            if (build?.path !== '.github/workflows/ci-cd.yml' || !matches(build) || build.conclusion !== 'success') return null;
-            const reviews = await github.paginate(github.rest.pulls.listReviews, { ...repo, pull_number: number, per_page: 100 });
-            const latest = new Map();
-            for (const r of reviews) {
-              if (['APPROVED', 'DISMISSED', 'CHANGES_REQUESTED'].includes(r.state)) latest.set(r.user.id, r);
-            }
-            for (const r of latest.values()) {
-              if (r.state !== 'APPROVED' || r.commit_id !== sha || r.user.type !== 'User') continue;
-              const { data } = await github.rest.repos.getCollaboratorPermissionLevel({ ...repo, username: r.user.login });
-              if (!['admin', 'write'].includes(data.permission)) continue;
-              const comments = await github.paginate(github.rest.issues.listComments, { ...repo, issue_number: number, per_page: 100 });
-              if (comments.some(c => c.user.login === 'github-actions[bot]' && c.body.startsWith(`<!-- fork-preview-run:${build.id} -->`))) return null;
-              return { operation: 'deploy', number, sha, run: build.id };
-            }
-            return null;
+            if (run.conclusion !== 'success' || pr.state !== 'open' || !pr.head.repo ||
+                run.head_repository?.id !== pr.head.repo.id || run.head_branch !== pr.head.ref ||
+                run.head_sha !== pr.head.sha) return null;
+            return { operation: 'deploy', number, sha: run.head_sha, run: run.id };
 
   preview:
     needs: prepare-fork-preview
-    # Rerun all jobs to obtain a fresh authorization on retries.
+    # Rerun all jobs to recheck the PR head on retries.
     if: >-
       needs.prepare-fork-preview.outputs.attempt == github.run_attempt &&
       needs.prepare-fork-preview.outputs.target != 'null' && needs.prepare-fork-preview.outputs.target != ''
@@ -152,5 +128,20 @@ jobs:
           script: |
             const { number, sha, run } = JSON.parse(process.env.TARGET);
             if (process.env.NAME !== `forkpreview-${number}`) throw new Error('Unexpected preview name');
-            await github.rest.issues.createComment({ ...context.repo, issue_number: number,
-              body: `<!-- fork-preview-run:${run} -->\nPreview of reviewed commit ${sha}: <${process.env.URL}>` });
+            const issue = { ...context.repo, issue_number: number };
+            const marker = `<!-- fork-preview-run:${run} -->\n`;
+            const body = `${marker}Preview of commit ${sha}: <${process.env.URL}>`;
+            const comments = await github.paginate(github.rest.issues.listComments, issue);
+            const existing = comments.find(comment =>
+              comment.user?.login === 'github-actions[bot]' && comment.body?.startsWith(marker)
+            );
+            if (existing?.body === body) return;
+
+            const { data: pr } = await github.rest.pulls.get({ ...context.repo, pull_number: number });
+            if (pr.state !== 'open' || pr.base.ref !== 'main' || pr.head.sha !== sha) return;
+
+            if (existing) {
+              await github.rest.issues.updateComment({ ...context.repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ ...issue, body });
+            }
