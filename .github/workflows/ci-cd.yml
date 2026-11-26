@@ -6,21 +6,19 @@ on:
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened, closed]
-  pull_request_review:
-    types: [submitted]
 
 permissions:
   contents: read
 
 concurrency:
   # Notifications and deleted pushes must not cancel a branch build or deployment.
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ (github.event.deleted || github.event.action == 'closed' || github.event_name == 'pull_request_review') && github.run_id || github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ (github.event.deleted || github.event.action == 'closed') && github.run_id || github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   validation:
-    name: ${{ (github.event.action == 'closed' || github.event_name == 'pull_request_review') && 'Validation (PR event)' || 'Validation' }}
-    if: &check-source ${{ !github.event.deleted && github.event.action != 'closed' && github.event_name != 'pull_request_review' }}
+    name: ${{ github.event.action == 'closed' && 'Validation (PR event)' || 'Validation' }}
+    if: &check-source ${{ !github.event.deleted && github.event.action != 'closed' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -47,16 +45,20 @@ jobs:
         run: npm run check
 
   build:
-    name: ${{ (github.event.action == 'closed' || github.event_name == 'pull_request_review') && 'Build (PR event)' || 'Build' }}
+    name: ${{ github.event.action == 'closed' && 'Build (PR event)' || 'Build' }}
     if: *check-source
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      # Use the same Vite build context that the pinned cf CLI sets for previews.
+      # Fork previews extract the static files and apply trusted Cloudflare config at deployment.
+      CLOUDFLARE_PREVIEW_BUILD: ${{ github.repository == 'FOSSBilling/docs' && github.event_name == 'push' && github.ref_type == 'branch' && !startsWith(github.ref_name, 'forkpreview-') && github.ref != 'refs/heads/main' && 'true' || 'false' }}
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7.0.1
         with:
-          # The preview must contain the revision GitHub records on the approval.
+          # The preview must contain the PR head recorded on the CI run.
           ref: ${{ (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) && github.event.pull_request.head.sha || github.sha }}
 
       - name: Setup Node.js
@@ -70,7 +72,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Validate Preview Build Output
+        if: env.CLOUDFLARE_PREVIEW_BUILD == 'true'
+        run: jq -e '.buildContext.isPreview == true and .buildContext.mode == "production"' .cloudflare/output/v1/config.json
+
       - name: Validate Worker Deployment
+        if: env.CLOUDFLARE_PREVIEW_BUILD == 'false'
         run: npm run cf-deploy -- --prebuilt --dry-run --mode production
 
       - name: Upload Worker Build
@@ -95,11 +102,12 @@ jobs:
       contents: read
       actions: read
       pull-requests: write
-    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@415540b79f2d744d6808670b933a599d4a740ba9 # main
+    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@b6637a0dda8ccd8d54fb3c3fafbb3a0bbbc4f4fe # main
     with:
       operation: deploy
       mode: preview
       cli: cf
+      prebuilt: true
       build-result: ${{ needs.build.result }}
       checks-result: ${{ needs.validation.result }}
       pr-comment: true
@@ -115,7 +123,10 @@ jobs:
     name: Deploy Production
     needs: [validation, build]
     if: github.repository == 'FOSSBilling/docs' && github.event_name == 'push' && github.ref == 'refs/heads/main'
-    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@415540b79f2d744d6808670b933a599d4a740ba9 # main
+    permissions:
+      contents: read
+      actions: read
+    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@b6637a0dda8ccd8d54fb3c3fafbb3a0bbbc4f4fe # main
     with:
       operation: deploy
       mode: production
