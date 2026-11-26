@@ -1,0 +1,372 @@
+---
+title: "Guest API: Products"
+description: Public (unauthenticated) endpoints for listing products, product categories and their pricing.
+---
+
+The endpoints on this page belong to the **guest** API role. They require no
+authentication and no CSRF token, so they can be called from any server-side
+integration, for example a price list on an external website.
+
+All endpoints follow the pattern `/api/guest/{module}/{action}`, accept `GET` or
+`POST`, and take parameters as JSON or form data. See the
+[API Reference](/extensions-and-development/api/#response-format) for the
+general response and error format.
+
+{% aside type="note" %}
+Prices are returned as numbers in the system's **default currency**. Use
+[`guest/currency/format`](/extensions-and-development/api/guest/domains-currency/#guestcurrencyformat)
+to convert and format them for display.
+{% /aside %}
+
+## Visibility rules
+
+Guest endpoints only return products a visitor is allowed to see, but the
+endpoints do not all apply the same rules:
+
+| Endpoint                     | Enabled only | Excludes hidden | Excludes addons |
+| ---------------------------- | ------------ | --------------- | --------------- |
+| `product/get_list`           | Yes          | Yes             | Yes             |
+| `product/get`                | Yes          | **No**          | Yes             |
+| `product/get_pairs`          | **No** (uses `active` flag only) | **No**          | Yes             |
+| `product/category_get_list`  | Yes          | Yes             | Yes             |
+| `product/category_get_pairs` | **No**       | **No**          | n/a             |
+
+Hidden products can still be fetched by ID or slug with `product/get`. This
+lets you link directly to a product that is not shown in the public catalog.
+
+## Product types
+
+The `type` field is one of the installed product types. Common values include:
+`custom`, `license`, `domain`, `downloadable`, `hosting`, `vps`, `apikey`.
+The exact set depends on which service modules are installed.
+
+## Pricing format
+
+Every product (and every addon) includes a `pricing` object. Its `type` field
+says which of the other keys applies:
+
+```json
+{
+  "type": "recurrent",
+  "free": { "price": 0, "setup": 0 },
+  "once": { "price": 0, "setup": 0 },
+  "recurrent": {
+    "1W": { "price": 0, "setup": 0, "enabled": false },
+    "1M": { "price": 0, "setup": 0, "enabled": false },
+    "3M": { "price": 0, "setup": 0, "enabled": false },
+    "6M": { "price": 0, "setup": 0, "enabled": false },
+    "1Y": { "price": 999, "setup": 0, "enabled": true },
+    "2Y": { "price": 0, "setup": 0, "enabled": false },
+    "3Y": { "price": 0, "setup": 0, "enabled": false }
+  }
+}
+```
+
+| `type`      | Use                                                                  |
+| ----------- | -------------------------------------------------------------------- |
+| `free`      | The product is free. `free.price` is always `0`.                     |
+| `once`      | One-time payment: `once.price` plus `once.setup`.                    |
+| `recurrent` | Billed per period. Only periods with `"enabled": true` can be ordered. |
+
+`price` is the price **per period** (for `1Y`, the price for one year), and
+`setup` is a one-time setup fee. All keys are always present, so check `type`
+and `enabled` instead of testing for missing keys.
+
+`price_starting_from` on a product is the lowest enabled price (or the once
+price, or `0` for free products), and is useful for "from X/month" labels.
+It does not include setup fees. It is `null` for recurrent products with no
+enabled periods.
+
+### Domain products
+
+Products of type `domain` use a different `pricing` format: an object keyed by
+TLD, with the same price fields as
+[`servicedomain/tlds`](/extensions-and-development/api/guest/domains-currency/#guestservicedomaintlds)
+(without `id` and `require_transfer_code`). Their `unit` is always `year`.
+
+```json
+{
+  ".se": {
+    "tld": ".se",
+    "price_registration": "259.00",
+    "price_renew": "259.00",
+    "price_transfer": "259.00",
+    "active": 1,
+    "allow_register": 1,
+    "allow_transfer": 1,
+    "min_years": 1,
+    "periods": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  }
+}
+```
+
+TLD prices are strings, while other product prices are numbers.
+`price_starting_from` is the lowest registration price of any TLD, so a
+free TLD makes it `0`.
+
+## Products (`product`)
+
+### `guest/product/get_list`
+
+Returns a paginated list of enabled, visible products, ordered by priority.
+
+| Parameter  | Type    | Required | Description                                          |
+| ---------- | ------- | -------- | ---------------------------------------------------- |
+| `type`     | string  | No       | Only return products of this [type](#product-types). |
+| `search`   | string  | No       | Only return products whose title contains this text. |
+| `page`     | integer | No       | Page number, starting at `1`. Default `1`.           |
+| `per_page` | integer | No       | Items per page. Default `100`, maximum `500`.        |
+
+There is no category filter. To list products per category, use
+[`category_get_list`](#guestproductcategory_get_list), which includes the
+products of each category.
+
+Values outside the valid ranges (`page` below `1`, `per_page` above `500`)
+return an error; non-integer values fall back to the defaults.
+
+```bash
+curl -s -X POST https://example.com/api/guest/product/get_list -d 'type=hosting'
+```
+
+```json
+{
+  "result": {
+    "pages": 1,
+    "page": 1,
+    "per_page": 100,
+    "total": 1,
+    "list": [
+      {
+        "id": 2,
+        "product_category_id": 1,
+        "type": "hosting",
+        "title": "Economy",
+        "slug": "economy",
+        "description": "",
+        "unit": "product",
+        "priority": 11,
+        "pricing": {
+          "type": "recurrent",
+          "free": { "price": 0, "setup": 0 },
+          "once": { "price": 0, "setup": 0 },
+          "recurrent": {
+            "1W": { "price": 0, "setup": 0, "enabled": false },
+            "1M": { "price": 0, "setup": 0, "enabled": false },
+            "3M": { "price": 0, "setup": 0, "enabled": false },
+            "6M": { "price": 0, "setup": 0, "enabled": false },
+            "1Y": { "price": 999, "setup": 0, "enabled": true },
+            "2Y": { "price": 0, "setup": 0, "enabled": false },
+            "3Y": { "price": 0, "setup": 0, "enabled": false }
+          }
+        },
+        "config": [],
+        "addons": [],
+        "price_starting_from": 999,
+        "icon_url": "",
+        "allow_quantity_select": false,
+        "form_id": null,
+        "created_at": "2026-11-16 07:27:49",
+        "updated_at": "2026-11-16 08:08:43"
+      }
+    ]
+  },
+  "error": null
+}
+```
+
+| Field                   | Description                                                                                              |
+| ----------------------- | -------------------------------------------------------------------------------------------------------- |
+| `pricing`               | See [Pricing format](#pricing-format).                                                                   |
+| `config`                | Public settings only (see list below). Keys that are not set are omitted. When none are set, `config` is an empty **array** (`[]`), not an object. |
+| `addons`                | Addons that can be ordered with the product. Each has `id`, `type`, `title`, `slug`, `description`, `unit`, `allow_quantity_select`, `icon_url`, `pricing` and `config`. |
+| `price_starting_from`   | Lowest available price. See [Pricing format](#pricing-format).                                           |
+| `unit`                  | `product` for most types, `year` for domain products.                                                    |
+| `icon_url`              | Icon URL. May be `null` or an empty string when no icon is set.                                          |
+| `form_id`               | ID of the custom order form, if any.                                                                     |
+| `created_at`, `updated_at` | Date and time as `YYYY-MM-DD HH:MM:SS`.                                                               |
+
+The only `config` keys exposed to guests are `allow_domain_register`,
+`allow_domain_transfer`, `allow_domain_own`, `allow_subdomain` and
+`subdomain_base_domain`.
+
+### `guest/product/get`
+
+Returns a single product by ID or slug. The response has the same fields as one
+entry from [`get_list`](#guestproductget_list).
+
+| Parameter | Type    | Required        | Description                        |
+| --------- | ------- | --------------- | ---------------------------------- |
+| `id`      | integer | One of the two  | Product ID. Takes precedence over `slug`. |
+| `slug`    | string  | One of the two  | Product slug.                      |
+
+```bash
+curl -s -X POST https://example.com/api/guest/product/get -d 'slug=economy'
+```
+
+**Errors**
+
+| Message                       | Cause                                                                |
+| ----------------------------- | -------------------------------------------------------------------- |
+| `Product ID or slug is missing` | Neither `id` nor `slug` was sent.                                  |
+| `Product not found`           | No enabled, active product with that ID or slug (addons are excluded). |
+
+### `guest/product/get_pairs`
+
+Returns products with the `active` flag set as an object mapping product ID to title, ordered by ID.
+Unlike `get_list`, it does not filter by `status` or hidden flag.
+
+| Parameter | Type   | Required | Description                                          |
+| --------- | ------ | -------- | ---------------------------------------------------- |
+| `type`    | string | No       | Only return products of this [type](#product-types). |
+
+```bash
+curl -s -X POST https://example.com/api/guest/product/get_pairs
+```
+
+```json
+{
+  "result": { "1": "Domains registration and transfer", "2": "Economy" },
+  "error": null
+}
+```
+
+{% aside type="caution" %}
+This endpoint filters on the product's _active_ flag only. Unlike `get_list`,
+it also returns hidden products.
+{% /aside %}
+
+## Product categories
+
+### `guest/product/category_get_list`
+
+Returns a paginated list of categories that contain at least one enabled,
+visible product, ordered by priority. Each category includes its products.
+
+| Parameter  | Type    | Required | Description                                   |
+| ---------- | ------- | -------- | --------------------------------------------- |
+| `page`     | integer | No       | Page number, starting at `1`. Default `1`.    |
+| `per_page` | integer | No       | Items per page. Default `100`, maximum `500`. |
+
+```bash
+curl -s -X POST https://example.com/api/guest/product/category_get_list
+```
+
+Values outside the valid ranges (`page` below `1`, `per_page` above `500`)
+return an error; non-integer values fall back to the defaults.
+
+```json
+{
+  "result": {
+    "pages": 1,
+    "page": 1,
+    "per_page": 100,
+    "total": 1,
+    "list": [
+      {
+        "id": 2,
+        "title": "Web hosting",
+        "description": "Shared hosting plans",
+        "icon_url": null,
+        "priority": 1,
+        "created_at": "2026-11-13 15:40:00",
+        "updated_at": "2026-11-13 15:40:00",
+        "price_starting_from": 999,
+        "type": "hosting",
+        "products": [{ "id": 2, "title": "Economy", "...": "..." }]
+      }
+    ]
+  },
+  "error": null
+}
+```
+
+| Field                 | Description                                                                 |
+| --------------------- | --------------------------------------------------------------------------- |
+| `products`            | Enabled, visible products in the category, with the same fields as `get_list`. |
+| `price_starting_from` | Lowest `price_starting_from` among the category's products.                 |
+| `type`                | Type of the first product in the category.                                  |
+
+This is the most efficient way to build a full price list: one call returns
+every visible category with its products and prices.
+
+### `guest/product/category_get_pairs`
+
+Returns all categories as an object mapping category ID to title, ordered by
+priority. Takes no parameters.
+
+```bash
+curl -s -X POST https://example.com/api/guest/product/category_get_pairs
+```
+
+{% aside type="caution" %}
+Unlike `category_get_list`, this returns **every** category, including
+categories without any enabled or visible products.
+{% /aside %}
+
+## Hosting (`servicehosting`)
+
+### `guest/servicehosting/free_tlds`
+
+Returns the TLDs a customer can register for free together with a hosting
+product.
+
+| Parameter    | Type    | Required | Description                     |
+| ------------ | ------- | -------- | ------------------------------- |
+| `product_id` | integer | Yes      | ID of a product of type `hosting`. |
+
+```bash
+curl -s -X POST https://example.com/api/guest/servicehosting/free_tlds -d 'product_id=3'
+```
+
+The shape of the result depends on the product configuration:
+
+- If the product has free TLDs configured, each entry only contains the TLD:
+  `[{ "tld": ".se" }, { "tld": ".nu" }]`.
+- If no free TLDs are configured, **all** active TLDs that allow registration
+  are returned, with the full fields from
+  [`servicedomain/tlds`](/extensions-and-development/api/guest/domains-currency/#guestservicedomaintlds):
+
+```json
+{
+  "result": [
+    {
+      "id": 3,
+      "tld": ".se",
+      "price_registration": "259.00",
+      "price_renew": "259.00",
+      "price_transfer": "259.00",
+      "active": 1,
+      "allow_register": 1,
+      "allow_transfer": 1,
+      "require_transfer_code": true,
+      "min_years": 1,
+      "periods": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    }
+  ],
+  "error": null
+}
+```
+
+Check for the `price_registration` key if your integration needs to tell the
+two cases apart.
+
+**Errors**
+
+| Message                   | Cause                                                       |
+| ------------------------- | ----------------------------------------------------------- |
+| `Product ID is missing`   | `product_id` was not sent.                                  |
+| `Product not found`       | No product exists with that ID.                             |
+| `Product type is invalid` | The product exists but is not of type `hosting`.           |
+
+## Example: building a public price list
+
+```bash
+# All visible categories with their products and prices, in one call
+curl -s -X POST https://example.com/api/guest/product/category_get_list
+
+# The default currency, for formatting
+curl -s -X POST https://example.com/api/guest/currency/get
+```
+
+Cache the response on your side. Product prices change rarely, and one cached
+call is enough to render a complete price list.
