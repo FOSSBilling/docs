@@ -46,42 +46,21 @@ Some Cloudflare features can interfere with FOSSBilling. Here are the most commo
 
 ## Permission issues
 
-If you are seeing permission-related errors around `config.php`, the cache, uploads, or updates, these checks usually help.
+Start with the path reported by the installer, updater, or [application logs](/support/faq/#where-can-i-find-error-logs).
 
 ### File and folder permissions
 
-- If your control panel has a "fix permissions" button, try that first.
-- Verify files and folders for your website have the correct permissions applied. Usually `755` is correct for folders and `644` for most PHP files, but security-sensitive files such as `config.php` may require stricter permissions (for example `600` or `640`) depending on your server setup.
-  - From within your terminal and under the document root, you can manually apply the correct permissions by using the following commands:
-    - `find . -type d -exec chmod 755 {} \;` to apply 755 to all folders.
-    - `find . -type f -exec chmod 644 {} \;` to apply 644 to all files.
+- Check that PHP can read the application files and `config.php`. Restrict access to `config.php` to the accounts that need it.
+- Check that PHP can write to the cache, log, and upload directories. These are normally under `data/`. If you changed `path_data`, check the configured location for the cache and logs.
+- During installation, PHP needs to create `config.php` in the installation directory. For updates started from the admin panel, use the paths reported by the updater's readiness check to identify any additional write permissions needed.
 
 ### File ownership
 
-If the wrong owner is assigned to the files, correct permission bits alone will not fix the problem. You can check the effective PHP user with these steps:
-
-- Create a new PHP file and place the following contents inside of it: `<?php var_dump(get_current_user());?>`
-- Open the PHP file in your browser. It will show the user PHP runs as, which tells you which user or group should own the relevant files.
+Find the account that runs PHP for your site in your hosting control panel or server configuration. For PHP-FPM, check the site's pool `user` and `group` settings. Check the affected path's owner, group, and permissions, then correct access for that account. [PHP-FPM pool configuration](https://www.php.net/manual/en/install.fpm.configuration.php#fpm.configuration.user)
 
 ### RHEL Linux (and derivatives)
 
-If you are using a RHEL-derived Linux distribution such as RHEL, CentOS, Rocky Linux, or AlmaLinux, SELinux may still block file creation even when Unix permissions look correct. Try the following:
-
-- Configure SELinux to allow PHP (Recommended)
-  1. Ensure the correct package is installed for your OS version: use `policycoreutils-python` on RHEL/CentOS 7-era systems, or `policycoreutils-python-utils` on RHEL/Rocky/Alma/CentOS Stream 8+.
-  2. Set the proper context for the document root
-     - Note: Please check the paths in the below code snippets before executing them. Your actual paths may differ.
-     1. `semanage fcontext -a -t httpd_sys_content_t '/var/www/html(/.*)?'`
-     2. `restorecon -Rv /var/www/html`
-  3. Configure SELinux rules.
-     1. `setsebool -P httpd_can_network_connect on`
-     2. `setsebool -P httpd_can_sendmail on`
-     3. `setsebool -P httpd_can_network_connect_db on`
-  4. Restart the server
-- Disable SELinux (Discouraged)
-  - Edit `/etc/selinux/config`
-  - Change `SELINUX=enforcing` to `SELINUX=disabled` and save the file
-  - Reboot the server
+If Unix permissions look correct on a system running SELinux, check the audit log for a denial involving the web PHP process and the affected path. Keep SELinux enforcing and correct the labeling or policy for the specific denial. [Red Hat SELinux troubleshooting](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/using_selinux/troubleshooting-problems-related-to-selinux_using-selinux)
 
 ## Unknown "encore_entry_link_tags" function.
 
