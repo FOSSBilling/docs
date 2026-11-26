@@ -29,16 +29,18 @@ Place your adapter in:
 - **File:** `MyGateway.php` (PascalCase)
 - **Class:** `Payment_Adapter_MyGateway`
 
-## Stripe one-time payment walkthrough
+## Stripe One-Time Payment Walkthrough
 
 The bundled Stripe adapter in FOSSBilling 0.8.9 handles one-time invoice payments. [Stripe adapter source](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Payment/Adapter/Stripe.php)
 
-1. **Create a PaymentIntent.** Use the invoice amount and currency and store the invoice, client, and gateway IDs as metadata. An idempotency key lets Stripe reuse the intent when a create request is retried with the same parameters. [Checkout code](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Payment/Adapter/Stripe.php#L1750-L1770)
+1. **Create a PaymentIntent.** The adapter uses the invoice amount and currency and stores the invoice, client, and gateway IDs as metadata. An idempotency key lets Stripe reuse the intent when a create request is retried with the same parameters. [Checkout code](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Payment/Adapter/Stripe.php#L1750-L1770)
 2. **Verify the callback.** The webhook handler verifies `Stripe-Signature` against the raw request body and checks that the event belongs to the gateway. The browser return handler fetches the intent from Stripe and checks the gateway ID and any linked invoice ID. In 0.8.9, only the browser return handler compares the payment currency with the invoice currency. [Webhook handler](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Payment/Adapter/Stripe.php#L639-L706) · [Browser return handler](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Payment/Adapter/Stripe.php#L346-L377)
 3. **Check the status and amount.** Both paths require a `succeeded` PaymentIntent and convert its amount from minor units. For a linked invoice, `validatePaymentAmount()` compares the payment with the invoice total including tax. It rejects underpayments beyond a rounding tolerance and logs significant overpayments. [Amount validation](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/modules/Invoice/Service.php#L1127-L1143)
 4. **Prevent duplicate credits.** Both paths take the same database lock for the gateway and PaymentIntent ID. The adapter skips payments already processed or in progress and invoices already paid. `claimForProcessing()` atomically claims the transaction row before applying credit. [Payment lock](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Payment/Adapter/Stripe.php#L1022-L1123) · [Transaction claim](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/modules/Invoice/ServiceTransaction.php#L475-L505)
 
 ## Configuration Options
+
+Use `getConfig()` to declare supported payment types and the settings shown in the admin panel.
 
 FOSSBilling injects these into `$this->config`:
 
