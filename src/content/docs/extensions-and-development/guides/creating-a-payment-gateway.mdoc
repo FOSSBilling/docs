@@ -31,14 +31,12 @@ Place your adapter in:
 
 ## Stripe one-time payment walkthrough
 
-The [bundled Stripe adapter in FOSSBilling 0.8.9](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Payment/Adapter/Stripe.php) shows how a one-time invoice payment moves from checkout to crediting the client.
+The bundled Stripe adapter in FOSSBilling 0.8.9 handles one-time invoice payments. [Stripe adapter source](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Payment/Adapter/Stripe.php)
 
-1. **Create the payment from the invoice.** `getConfig()` declares the gateway settings and supported payment types. `getHtml()` loads the invoice, then `_generateForm()` creates a Stripe PaymentIntent using the invoice total in minor units and its currency. It records the invoice, client, and gateway IDs as metadata. An idempotency key based on the invoice, gateway, and checkout parameters lets Stripe reuse the intent on a retried create request. [Checkout code](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Payment/Adapter/Stripe.php#L1750-L1770)
-2. **Verify the provider response.** For a webhook, `processWebhookEvent()` verifies the `Stripe-Signature` header against the raw request body with the test or live signing secret. It checks that the event belongs to this gateway before dispatching it. For a browser callback, the adapter retrieves the PaymentIntent from Stripe and checks the gateway ID and, for a linked invoice, the invoice ID and currency. [Webhook verification](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Payment/Adapter/Stripe.php#L639-L706) · [Browser callback verification](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Payment/Adapter/Stripe.php#L346-L377)
-3. **Validate the amount before crediting funds.** Both paths require a succeeded PaymentIntent and convert the amount from Stripe's minor units. For a linked invoice, they pass the amount and the invoice total with tax to `validatePaymentAmount()`. The helper rejects underpayments beyond its rounding tolerance and logs significant overpayments. [Payment application](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Payment/Adapter/Stripe.php#L1298-L1339) · [Amount validation](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/modules/Invoice/Service.php#L1127-L1143)
-4. **Serialise callbacks for the same payment.** The browser callback and webhook use the same database lock keyed by gateway and PaymentIntent ID. While holding it, the adapter checks for an existing transaction for the payment, skips an already-paid invoice, and uses `claimForProcessing()` to atomically claim the transaction row before crediting funds. [Payment lock and duplicate check](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Payment/Adapter/Stripe.php#L1022-L1123) · [Transaction claim](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/modules/Invoice/ServiceTransaction.php#L475-L505)
-
-Validate the payment's gateway, invoice, currency, and amount on every path your adapter uses to apply a credit. Record processing errors on the transaction so they can be reviewed in the admin panel.
+1. **Create a PaymentIntent.** Use the invoice amount and currency and store the invoice, client, and gateway IDs as metadata. An idempotency key lets Stripe reuse the intent when a create request is retried with the same parameters. [Checkout code](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Payment/Adapter/Stripe.php#L1750-L1770)
+2. **Verify the callback.** The webhook handler verifies `Stripe-Signature` against the raw request body and checks that the event belongs to the gateway. The browser return handler fetches the intent from Stripe and checks the gateway ID and any linked invoice ID. In 0.8.9, only the browser return handler compares the payment currency with the invoice currency. [Webhook handler](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Payment/Adapter/Stripe.php#L639-L706) · [Browser return handler](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Payment/Adapter/Stripe.php#L346-L377)
+3. **Check the status and amount.** Both paths require a `succeeded` PaymentIntent and convert its amount from minor units. For a linked invoice, `validatePaymentAmount()` compares the payment with the invoice total including tax. It rejects underpayments beyond a rounding tolerance and logs significant overpayments. [Amount validation](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/modules/Invoice/Service.php#L1127-L1143)
+4. **Prevent duplicate credits.** Both paths take the same database lock for the gateway and PaymentIntent ID. The adapter skips payments already processed or in progress and invoices already paid. `claimForProcessing()` atomically claims the transaction row before applying credit. [Payment lock](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Payment/Adapter/Stripe.php#L1022-L1123) · [Transaction claim](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/modules/Invoice/ServiceTransaction.php#L475-L505)
 
 ## Configuration Options
 
@@ -62,9 +60,11 @@ Keep `notify_url` for server-to-server notifications. A successful browser retur
 
 ## Testing
 
+Use this checklist to test your own adapter in test mode.
+
 {% steps %}
-1. Enable test mode and pay a test invoice. Confirm the record in **Invoicing → Transactions** and check that the invoice is paid.
-2. Test an invalid webhook signature, an underpayment, and a currency mismatch through the payment paths your adapter supports. Verify that validation failures apply no credit.
+1. Pay a test invoice. Confirm the record in **Invoicing → Transactions** and check that the invoice is paid.
+2. If your adapter uses signed webhooks, verify that an invalid signature applies no credit. Test each crediting path for underpayments and payments in the wrong currency. Both should be rejected.
 3. Redeliver the same successful webhook and confirm there is only one credit for the payment. If your adapter also processes a browser callback, test both arrival orders and concurrent delivery.
 4. Test browser returns for success and cancellation, including an expired browser session.
 {% /steps %}
