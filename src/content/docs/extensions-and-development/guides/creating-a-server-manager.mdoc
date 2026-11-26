@@ -22,7 +22,7 @@ Place your manager in:
 
 Extend `Server_Manager` and implement the required methods.
 
-## Common Methods {% #required-methods %}
+## Common Methods
 
 FOSSBilling passes a `Server_Account` to account operations. See [`Server_Manager`](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Server/Manager.php) for every required method and its signature.
 
@@ -36,9 +36,9 @@ FOSSBilling passes a `Server_Account` to account operations. See [`Server_Manage
 | `changeAccountPassword()` | Change the account password |
 | `changeAccountPackage()` | Change the hosting package |
 
-## Hestia Walkthrough {% #basic-structure %}
+## Hestia Walkthrough
 
-The bundled Hestia manager shows how FOSSBilling provisions a hosting account and manages it afterward. [Hestia manager in FOSSBilling 0.8.9](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Server/Manager/Hestia.php)
+The bundled Hestia manager shows how FOSSBilling provisions and manages hosting accounts. [Hestia manager source](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Server/Manager/Hestia.php)
 
 1. **Configure the server.** `getForm()` defines the access key ID and secret key fields. The manager’s `init()` checks that a hostname is configured. [Configuration code](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Server/Manager/Hestia.php#L16-L54)
 2. **Test the connection.** `testConnection()` sends `v-list-users` to the panel and checks that it returns a success code. [Connection check](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Server/Manager/Hestia.php#L99-L115)

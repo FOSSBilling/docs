@@ -18,7 +18,7 @@ Place your adapter in:
 
 Your class must extend `Registrar_AdapterAbstract` and implement its required methods.
 
-## Common Methods {% #required-methods %}
+## Common Methods
 
 FOSSBilling passes a `Registrar_Domain` to domain operations. See [`Registrar_AdapterAbstract`](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Registrar/AdapterAbstract.php) for every required method and its signature.
 
@@ -32,9 +32,9 @@ FOSSBilling passes a `Registrar_Domain` to domain operations. See [`Registrar_Ad
 | `modifyNs()` | Update nameservers |
 | `modifyContact()` | Update contact information |
 
-## Namecheap Walkthrough {% #basic-structure %}
+## Namecheap Walkthrough
 
-The bundled Namecheap adapter shows how FOSSBilling turns a domain request into a registrar operation. [Namecheap adapter in FOSSBilling 0.8.9](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Registrar/Adapter/Namecheap.php)
+The bundled Namecheap adapter illustrates availability checks and registration. [Namecheap adapter source](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Registrar/Adapter/Namecheap.php)
 
 1. **Configure the registrar.** `getConfig()` defines the admin form and marks the API key as secret. The constructor requires an API key, a username, and the server’s public IP address. [Configuration code](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Registrar/Adapter/Namecheap.php#L26-L89)
 2. **Check availability.** `isDomainAvailable()` builds the name from the domain object and sends `namecheap.domains.check`. It reads the availability flag and rejects premium domains. [Availability check](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Registrar/Adapter/Namecheap.php#L91-L109)
