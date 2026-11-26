@@ -1,0 +1,34 @@
+---
+import DefaultSiteTitle from '@astrojs/starlight/components/SiteTitle.astro';
+---
+
+<div class="brand">
+  <DefaultSiteTitle />
+  <span class="docs-label" aria-hidden="true">
+    Docs
+  </span>
+</div>
+
+<style>
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    min-width: 0;
+  }
+
+  .brand :global(.site-title img) {
+    height: 2.5rem;
+  }
+
+  .docs-label {
+    flex-shrink: 0;
+    border-inline-start: 1px solid var(--sl-color-gray-5);
+    padding-inline-start: 0.875rem;
+    color: var(--sl-color-gray-2);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+</style>
