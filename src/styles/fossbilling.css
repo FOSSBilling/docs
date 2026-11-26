@@ -71,8 +71,6 @@
 
   [data-has-sidebar] header.header {
     border-bottom: 1px solid var(--sl-color-hairline);
-    background: var(--sl-color-bg-nav);
-    backdrop-filter: blur(16px);
   }
 
   .sidebar-pane {
