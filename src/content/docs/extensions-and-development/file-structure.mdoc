@@ -1,117 +1,28 @@
 ---
 title: FOSSBilling File Structure
-description: Understanding how FOSSBilling organizes its code and where things live.
+description: Find the PHP application, frontend assets, modules, and themes in the FOSSBilling source tree.
 ---
 
-FOSSBilling's structure can feel unusual if you are coming from modern frameworks like Laravel or Symfony. This guide shows where the main pieces live and what each directory is responsible for.
+The PHP application lives in `src/`, and shared frontend code and tooling live in `frontend/` at the repository root. A release installation uses the contents of `src/` at its root.
 
 ## Source Code
 
-All source code lives in the `/src` directory.
-
-### `/src/data`
-
-Runtime data storage:
-- **Cache** — Compiled templates, API responses
-- **Logs** — Application logs and error logs
-- **Uploads** — User-uploaded files (`/data/uploads`)
-
-This directory should be writable by the web server.
-
-### `/src/public`
-
-Public core assets that must be web-accessible:
-- **Assets** — Shared built browser assets (`/public/assets`), including the API wrapper, shared runtime, Markdown CSS, and CKEditor bundle
-- **Branding** — Default logo, dark logo, and favicon (`/public/branding`)
-- **Gateway icons** — Payment gateway logos (`/public/gateways`)
-
-### `/src/install`
-
-The installation wizard. Automatically deleted after installation unless `APP_ENV=dev` is set.
-
-### `/src/library`
-
-Core PHP classes and business logic.
-
-#### `/src/library/Api`
-
-Core PHP API files. The browser-side API wrapper source now lives in `/frontend/core/api.js` and builds to `/src/public/assets/js/api.js`. [See the wrapper docs](/extensions-and-development/javascript/).
-
-#### `/src/library/Box`
-
-Legacy compatibility classes. Most have been migrated to `FOSSBilling/`:
-
-| File | Status |
-|------|--------|
-| `Box/Translate.php` | Still present |
-
-These are gradually being modernized.
-
-#### `/src/library/FOSSBilling`
-
-New or rewritten classes specific to FOSSBilling. This is where active development happens.
-
-| Subdirectory | Purpose |
-|-------------|---------|
-| `Doctrine/` | Doctrine DBAL and ORM factory classes (pairs with RedBean for a dual-ORM approach) |
-| `Http/` | `RequestFactory`, `CsvResponseFactory`, HTTP exception handling |
-| `Security/` | `RateLimiter`, `RateLimitResult`, `AuthenticationRequiredException`, `RandomizedTimeFloor` |
-| `Sanitizer/` | `BrowserHtmlSanitizer` (HTML sanitization via Symfony) |
-| `Twig/` | `TwigFactory`, `TwigLoader`, `SandboxedStringRenderer`, custom Twig extensions and filters. See [Twig Filters & Functions](/extensions-and-development/twig-filters/) for the template-facing API. |
-| `Validation/` | API validation utilities |
-
-Key standalone files:
-- `Module.php` — Base class for modules
-- `Paginator.php` — Pagination utility
-
-#### `/src/library/Model`
-
-Database models. You typically won't edit these, but they're useful for understanding the data structure.
-
-#### `/src/library/Payment`
-
-Payment gateway adapters. If you're building a payment gateway, look in `/src/library/Payment/Adapter/`.
-
-[Guide: Creating a Payment Gateway](/extensions-and-development/guides/creating-a-payment-gateway/)
-
-#### `/src/library/Registrar`
-
-Domain registrar adapters for domain reselling. Check `/src/library/Registrar/Adapter/`.
-
-[Guide: Creating a Registrar Integration](/extensions-and-development/guides/creating-a-registrar-integration/)
-
-#### `/src/library/Server`
-
-Server manager adapters for hosting control panels (cPanel, Plesk, HestiaCP, etc.).
-
-{% aside type="note" %}
-These are for shared hosting control panels. For VPS or game servers, consider creating a product module instead.
-{% /aside %}
-
-[Guide: Creating a Server Manager](/extensions-and-development/guides/creating-a-server-manager/)
-
-### `/src/locale`
-
-Translations as a Git submodule. Pointing to [github.com/FOSSBilling/locale](https://github.com/FOSSBilling/locale).
-
-### `/frontend`
-
-Shared frontend source and build tooling:
-
 | Path | Purpose |
-|------|---------|
-| `core/` | Shared browser runtime and API wrapper source |
-| `editor/` | CKEditor integration source |
-| `styles/` | Shared CSS such as Markdown rendering styles |
-| `tools/` | Common esbuild, Sass, PostCSS, asset copy, and PurgeCSS helpers used by theme builds |
-
-The root `npm run build` command builds this directory into `/src/public/assets`.
+| ---- | ------- |
+| `src/library/FOSSBilling/` | Core PHP classes, including API dispatch in `Api/` and the Twig environment in `Twig/`. |
+| `src/library/Box/`, `src/library/Model/` | Application classes and legacy database models. |
+| `src/library/Payment/Adapter/` | [Payment gateway adapters](/extensions-and-development/guides/creating-a-payment-gateway/). |
+| `src/library/Registrar/Adapter/` | [Domain registrar adapters](/extensions-and-development/guides/creating-a-registrar-integration/). |
+| `src/library/Server/Manager/` | [Server managers](/extensions-and-development/guides/creating-a-server-manager/) for hosting control panels. |
+| `src/install/` | Browser-based installation wizard. |
+| `src/data/` | Default location for cache files, logs, and uploads. See [file and folder permissions](/maintenance/troubleshooting/#file-and-folder-permissions). |
+| `src/locale/` | Language files. See the [build guide](/getting-started/building/#build-steps) for adding translations to a source checkout. |
+| `src/public/` | Shared public assets, including generated browser bundles, branding, and payment gateway icons. |
+| `frontend/` | Shared browser code and build tooling. The [JavaScript API wrapper](/extensions-and-development/javascript/) builds from `frontend/core/api.ts` to `src/public/assets/js/api.js`. |
 
 ### `/src/modules`
 
-All modules live here. Each module is a self-contained unit of functionality.
-
-A typical module structure:
+A typical module includes its API, controllers, templates, and metadata.
 
 {% filetree %}
 - ModuleName/
@@ -136,21 +47,4 @@ A typical module structure:
 
 ### `/src/themes`
 
-All installed themes.
-
-Theme structure:
-
-{% filetree %}
-- theme-name/
-  - assets/ CSS, JS, images (built via esbuild)
-    - build/ Generated theme assets and manifest
-  - config/
-    - settings.html.twig Theme settings UI
-  - html/ Twig templates
-  - html_custom/ User overrides (overrides take priority)
-  - manifest.json Theme metadata
-{% /filetree %}
-
-The `html_custom/` folder lets users override templates without editing the theme directly.
-
-[Guide: Creating a Theme](/extensions-and-development/guides/creating-a-theme/)
+Themes contain Twig templates, assets, and user overrides. See [Theme Structure](/extensions-and-development/guides/creating-a-theme/#theme-structure) for the directory layout.
