@@ -62,19 +62,14 @@ volumes:
   mariadb:
 ```
 
-Run it:
-
-```bash
-docker compose up -d
-```
-
-The first startup downloads container images, so it may take a few minutes.
-
-Before starting the stack, set a strong database password:
+For a new installation, generate the database password before starting the stack.
 
 ```bash
 export MARIADB_PASSWORD="$(openssl rand -base64 32)"
+docker compose up -d
 ```
+
+The first startup downloads container images and may take a few minutes. Keep the same `MARIADB_PASSWORD` when starting the stack again with the existing database volume.
 
 **Database credentials** (if using the example above):
 - Hostname: `mariadb`

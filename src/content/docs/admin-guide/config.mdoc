@@ -44,7 +44,7 @@ See [Reverse Proxies](/security/securing-fossbilling/#reverse-proxies) for insta
 
 ### Encryption Key
 
-- `salt` — Used for reversible encryption. **Keep this secret and don't change it** after installation.
+- `info.salt` — Used for reversible encryption. **Keep this secret and don't change it** after installation.
 
 ### URLs
 
@@ -152,27 +152,10 @@ Set only the fields you want to override. This example lowers the `client_signup
 
 ## Environment Variables
 
-Some settings can be overridden via environment variables:
+Set `APP_ENV=dev` for local development. To enable debug output, use the [debugging settings](#debugging) in `config.php`.
 
-```bash
-APP_ENV=dev        # Enable development mode
-APP_DEBUG=true     # Enable debug mode
-DB_HOST=db.example.com   # Override database host
-DB_NAME=fossbilling      # Override database name
-DB_USER=myuser           # Override database user
-DB_PASS=mypass           # Override database password
-DB_PORT=3306             # Override database port
-```
+The web installer writes database settings directly to `config.php`. To supply them through environment variables, make `config.php` read them as shown in the [example config](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/config-sample.php).
 
 ## Making Changes
 
-{% steps %}
-1. Edit `config.php` with a text editor
-2. Save the file
-3. Clear the cache: **System → Tools → Clear cache** (or delete `/data/cache/`)
-4. Test your changes
-{% /steps %}
-
-{% aside type="caution" %}
-Always back up `config.php` before making changes. A syntax error will break your installation.
-{% /aside %}
+Back up `config.php`, then edit the file and test your changes. If cached settings are still in use, [clear the application cache](/maintenance/troubleshooting/#clearing-the-cache).
