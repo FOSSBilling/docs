@@ -74,7 +74,7 @@ jobs:
           script: |
             const slug = process.env.GITHUB_REF_NAME.normalize('NFKD').replace(/\p{Mark}/gu, '').toLowerCase()
               .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-            const enabled = !/^pr-\d+$/.test(slug) && !slug.startsWith('forkpreview-');
+            const enabled = !/^pr-\d+$/.test(slug);
             core.exportVariable('CLOUDFLARE_PREVIEW_BUILD', String(enabled));
             return enabled;
 

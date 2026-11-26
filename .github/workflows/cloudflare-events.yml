@@ -77,7 +77,7 @@ jobs:
             const branch = context.payload.pull_request?.head.ref ?? context.payload.ref;
             const slug = branch.normalize('NFKD').replace(/\p{Mark}/gu, '').toLowerCase()
               .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-            return !/^pr-\d+$/.test(slug) && !slug.startsWith('forkpreview-');
+            return !/^pr-\d+$/.test(slug);
 
       - name: Match the CI run to the fork PR
         if: github.event_name == 'workflow_run'
