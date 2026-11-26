@@ -37,17 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 ## CSRF Tokens
 
-FOSSBilling uses session-bound CSRF tokens for protected browser API calls. Browser-rendered Twig pages expose `CSRFToken` and set a `fossbilling_csrf` cookie. The submitted token must match the server-side session token.
-
-| Call type | CSRF requirement |
-|-----------|------------------|
-| Guest client login/signup and staff login | Required; POST only, same-origin browser context. |
-| Guest cart mutations | Required; same-origin browser context. |
-| Other `guest` API calls | Not required. |
-| `client` or `admin` API calls with the browser session | Required. |
-| External `client` or `admin` API calls using an API key | Not required. |
-
-The JavaScript wrapper reads the `fossbilling_csrf` cookie and sends it automatically on same-origin requests, including protected guest calls. Load a FOSSBilling page first to establish the session and token. If you include a `CSRFToken` form field explicitly, use the current page's token. Guest authentication requires the token in the body or header, not the query string. See the [API reference](/extensions-and-development/api/#csrf-tokens) for the protected endpoints.
+Load a FOSSBilling page first to establish the session and token. The wrapper reads the `fossbilling_csrf` cookie and sends the token on same-origin requests, including protected guest calls. If you include a `CSRFToken` form field explicitly, use the current page’s token. See the [API reference](/extensions-and-development/api/#csrf-tokens) for which requests require a token and where to send it.
 
 ## Making Requests
 
@@ -219,24 +209,7 @@ The wrapper passes the API error's `message` and `code` to `onError`, including 
 
 ## Manual Requests
 
-Use manual `fetch()` only when the wrapper does not fit. Include the CSRF token for session-authenticated `admin`/`client` calls and protected guest authentication/cart calls. Use the JSON body, form data, or `X-CSRF-Token` header; query tokens are not accepted for guest authentication:
-
-```javascript
-function getCsrfToken() {
-  const match = document.cookie.match(/fossbilling_csrf=([^;]*)/);
-  return match ? decodeURIComponent(match[1]) : '';
-}
-
-fetch('{{ "profile/update"|api_url }}', {
-  method: 'POST',
-  headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-    'X-CSRF-Token': getCsrfToken(),
-  },
-  body: JSON.stringify({ first_name: 'Jane' }),
-});
-```
+If you need to call the API without the wrapper, see the [`fetch()` example in the API reference](/extensions-and-development/api/#manual-browser-requests).
 
 ## Complete Example
 

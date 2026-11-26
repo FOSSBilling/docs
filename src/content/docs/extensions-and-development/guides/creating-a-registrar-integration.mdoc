@@ -18,88 +18,34 @@ Place your adapter in:
 
 Your class must extend `Registrar_AdapterAbstract` and implement its required methods.
 
-## Required Methods
+## Common Methods
 
-Check the [`Registrar_AdapterAbstract`](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/library/Registrar/AdapterAbstract.php) class for the full list of methods to implement. Common ones include:
+FOSSBilling passes a `Registrar_Domain` to domain operations. See [`Registrar_AdapterAbstract`](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Registrar/AdapterAbstract.php) for every required method and its signature.
 
 | Method | Purpose |
 |--------|---------|
-| `isAvailable()` | Check domain availability |
-| `register()` | Register a new domain |
-| `transfer()` | Transfer a domain |
-| `renew()` | Renew a domain |
-| `getInfo()` | Get domain details |
+| `isDomainAvailable()` | Check domain availability |
+| `registerDomain()` | Register a new domain |
+| `transferDomain()` | Request a domain transfer |
+| `renewDomain()` | Renew a domain |
+| `getDomainDetails()` | Read domain details from the registrar |
 | `modifyNs()` | Update nameservers |
 | `modifyContact()` | Update contact information |
 
-## Basic Structure
+## Namecheap Walkthrough
 
-```php
-<?php
+The bundled Namecheap adapter illustrates availability checks and registration. [Namecheap adapter source](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Registrar/Adapter/Namecheap.php)
 
-class Registrar_Adapter_YourRegistrar extends Registrar_AdapterAbstract
-{
-    public function __construct($options)
-    {
-        parent::__construct($options);
-
-        if (!isset($this->config['api_key'])) {
-            throw new Registrar_Exception('API key is required');
-        }
-    }
-
-    public static function getConfig(): array
-    {
-        return [
-            'label' => 'YourRegistrar',
-            'form' => [
-                'api_key' => ['text', ['label' => 'API Key']],
-                'api_secret' => ['password', ['label' => 'API Secret']],
-            ],
-        ];
-    }
-
-    public function isAvailable($domain): bool
-    {
-        $response = $this->apiRequest('check', ['domain' => $domain]);
-        return $response['available'] ?? false;
-    }
-
-    public function register($domain, array $contact): bool
-    {
-        $params = [
-            'domain' => $domain,
-            'period' => $this->getPeriod(),
-            'contacts' => $this->normalizeContact($contact),
-        ];
-
-        $response = $this->apiRequest('register', $params);
-        return $response['success'] ?? false;
-    }
-
-    private function apiRequest($action, array $params = []): array
-    {
-        $ch = curl_init($this->config['api_url'] . '/' . $action);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Authorization: Bearer ' . $this->config['api_key'],
-            'Content-Type: application/json',
-        ]);
-
-        $response = curl_exec($ch);
-        curl_close($ch);
-
-        return json_decode($response, true);
-    }
-}
-```
+1. **Configure the registrar.** `getConfig()` defines the admin form and marks the API key as secret. The constructor requires an API key, a username, and the server’s public IP address. [Configuration code](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Registrar/Adapter/Namecheap.php#L26-L89)
+2. **Check availability.** `isDomainAvailable()` builds the name from the domain object and sends `namecheap.domains.check`. It reads the availability flag and rejects premium domains. [Availability check](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Registrar/Adapter/Namecheap.php#L91-L109)
+3. **Register the domain.** `registerDomain()` sends the name, registration period, contacts, and any configured nameservers. It returns `true` when Namecheap confirms the registration. [Registration code](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Registrar/Adapter/Namecheap.php#L421-L506)
+4. **Handle provider errors.** Both operations use `_makeRequest()` to add authentication and parse the XML response. The helper raises `Registrar_Exception` for provider-reported error statuses. [Request handling](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Registrar/Adapter/Namecheap.php#L121-L169)
 
 ## Testing Your Adapter
 
 {% steps %}
 1. Create a test domain product in FOSSBilling
-2. Configure your registrar adapter in **System → Domain registration**
+2. Configure your registrar adapter in **System → Domain Registration**
 3. Test domain availability checks
 4. Test registration (if possible with registrar's test environment)
 5. Verify contact information syncing
@@ -107,8 +53,7 @@ class Registrar_Adapter_YourRegistrar extends Registrar_AdapterAbstract
 
 ## Resources
 
-- [`Registrar_AdapterAbstract`](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/library/Registrar/AdapterAbstract.php) — Base class with inline docs
-- Existing adapters in `src/library/Registrar/Adapter/`
+- [Bundled registrar adapters](https://github.com/FOSSBilling/FOSSBilling/tree/0.8.9/src/library/Registrar/Adapter/)
 - [Example: Netim adapter](https://github.com/netim-com/fossbilling-registrar-module)
 
 ## Getting Help

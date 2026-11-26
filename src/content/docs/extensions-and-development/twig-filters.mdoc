@@ -20,12 +20,12 @@ Common bundled filters include:
 
 ## FOSSBilling Custom Filters
 
-Project-specific filters and functions are defined in these classes:
+The bundled extension classes define FOSSBilling’s custom filters and functions.
 
-- [`FOSSBilling\Twig\Extension\ApiExtension`](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/library/FOSSBilling/Twig/Extension/ApiExtension.php)
-- [`FOSSBilling\Twig\Extension\FOSSBillingExtension`](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/library/FOSSBilling/Twig/Extension/FOSSBillingExtension.php)
-- [`FOSSBilling\Twig\Extension\LegacyExtension`](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/library/FOSSBilling/Twig/Extension/LegacyExtension.php)
-- [`FOSSBilling\Twig\Extension\DebugBarExtension`](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/library/FOSSBilling/Twig/Extension/DebugBarExtension.php)
+- [`FOSSBilling\Twig\Extension\ApiExtension`](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/FOSSBilling/Twig/Extension/ApiExtension.php)
+- [`FOSSBilling\Twig\Extension\FOSSBillingExtension`](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/FOSSBilling/Twig/Extension/FOSSBillingExtension.php)
+- [`FOSSBilling\Twig\Extension\LegacyExtension`](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/FOSSBilling/Twig/Extension/LegacyExtension.php)
+- [`FOSSBilling\Twig\Extension\DebugBarExtension`](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/FOSSBilling/Twig/Extension/DebugBarExtension.php)
 
 ### Translation & Localization
 
@@ -67,9 +67,9 @@ Project-specific filters and functions are defined in these classes:
 
 | Function | Description |
 |----------|-------------|
-| `fb_api` | Refer to [JavaScript Wrapper](/extensions-and-development/javascript/#api-forms-and-links) for documentation. |
-| `fb_api_form` | Refer to [JavaScript Wrapper](/extensions-and-development/javascript/#api-forms-and-links) for documentation. |
-| `fb_api_link` | Refer to [JavaScript Wrapper](/extensions-and-development/javascript/#api-forms-and-links) for documentation. |
+| `fb_api` | Render the `data-fb-api` attribute from wrapper options. |
+| `fb_api_form` | Configure a POST form for the JavaScript wrapper. |
+| `fb_api_link` | Configure a link for the JavaScript wrapper. |
 | `render_widgets` | Render widgets registered for a slot. |
 | `svg_sprite` | Render the current theme's SVG icon sprite when available. |
 | `has_permission` | Check whether the logged-in admin has a module permission. |
@@ -102,19 +102,8 @@ Project-specific filters and functions are defined in these classes:
 {{ 'js/fossbilling.js'|public_asset_url|script_tag }}
 {{ 'js/api.js'|public_asset_url|script_tag }}
 
-{# API form handled by the shared API wrapper #}
-<form action="{{ 'profile/update'|api_url }}" {{ fb_api_form({ message: 'Saved'|trans }) }}>
-  <input type="text" name="first_name">
-  <button type="submit">{{ 'Save'|trans }}</button>
-</form>
-
 {# Shared editor bundle #}
 {{ wysiwyg('.editor-textarea') }}
-
-{# API link with a confirmation modal #}
-<a href="{{ 'client/delete'|api_url(query: { id: client.id }, role: 'admin') }}"
-   {{ fb_api_link({ modal: { type: 'confirm', title: 'Are you sure?'|trans }, reload: true }) }}>
-  {{ 'Delete'|trans }}
-</a>
 ```
-See [JavaScript API Wrapper](/extensions-and-development/javascript/) for the `data-fb-api` options and CSRF behavior.
+
+See [API Forms and Links](/extensions-and-development/javascript/#api-forms-and-links) for form and link examples and `data-fb-api` options.

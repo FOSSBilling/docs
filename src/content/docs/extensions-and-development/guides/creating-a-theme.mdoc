@@ -56,30 +56,9 @@ FOSSBilling loads templates in this order (highest priority first):
 
 ## API URLs and CSRF
 
-Use `api_url` to build browser API URLs and `fb_api_form` or `fb_api_link` to let the [JavaScript API wrapper](/extensions-and-development/javascript/) handle submissions.
+Use `api_url` to build the endpoint and `fb_api_form()` or `fb_api_link()` to handle submissions through the wrapper. See [API Forms and Links](/extensions-and-development/javascript/#api-forms-and-links) for examples.
 
-```twig
-<form action="{{ 'profile/update'|api_url }}" {{ fb_api_form({ message: 'Profile updated'|trans }) }}>
-  <input type="text" name="first_name" value="{{ profile.first_name }}">
-  <button type="submit">{{ 'Save'|trans }}</button>
-</form>
-```
-
-For links that trigger API actions:
-
-```twig
-<a href="{{ 'client/group_delete'|api_url(query: { id: group.id }, role: 'admin') }}"
-   {{ fb_api_link({
-     modal: { type: 'confirm', title: 'Are you sure?'|trans },
-     reload: true
-   }) }}>
-  {{ 'Delete'|trans }}
-</a>
-```
-
-Session-authenticated `client` and `admin` browser API calls require CSRF protection. Guest client login/signup, staff login, and cart mutations require a session-bound token too, and reject cross-origin browser requests. The [JavaScript API wrapper](/extensions-and-development/javascript/) reads the `fossbilling_csrf` cookie and sends the token automatically on same-origin requests. Guest authentication requires POST.
-
-Use `role: 'guest'` for public actions such as login, signup, and password reset:
+Use `role: 'guest'` for public actions such as login, signup, and password reset. Login and signup forms submit the current session’s CSRF token via POST. See [Guest Authentication and Cart Calls](/extensions-and-development/api/#guest-authentication-and-cart-calls) for the full request requirements.
 
 ```twig
 <form action="{{ 'client/login'|api_url(role: 'guest') }}" {{ fb_api_form({ redirect: '/'|url }) }}>
