@@ -29,18 +29,9 @@ Three main entrypoints:
 
 ## Authentication
 
-Use HTTP Basic Auth with base64 encoding:
+Use HTTP Basic authentication over HTTPS. Set the username to `admin` or `client` according to the endpoint and use the corresponding API key as the password. Find your key in your staff or client profile.
 
-- **Username:** `admin` or `client` (depending on endpoint)
-- **Password:** Your API key (found in client profile or admin dashboard)
-
-```http
-Authorization: Basic base64_encode('admin:YOUR_API_KEY')
-```
-
-Most HTTP clients (curl, Postman) handle the encoding automatically.
-
-Browser requests from an active client or admin session use the session cookie instead. Those requests must include a valid CSRF token.
+Keep integration API keys on the server. Browser requests from an active client or admin session use the session cookie and a valid CSRF token.
 
 ## CSRF Tokens
 
@@ -84,74 +75,11 @@ fetch('/api/client/profile/update', {
 
 ## Example Requests
 
-{% tabs %}
-{% tabitem label="curl" %}
+To list products, replace the hostname with your FOSSBilling host. When cURL prompts for a password, enter the API key of a staff account with permission to view products.
+
 ```bash
-curl -X POST "https://example.com/api/admin/staff/create" \
-  -H "Authorization: Basic $(echo -n 'admin:YOUR_API_KEY' | base64)" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "hello@fossbilling.org",
-    "password": "Testing123+",
-    "name": "John Doe",
-    "admin_group_id": 1,
-    "status": "active"
-  }'
+curl --user admin 'https://billing.example.com/api/admin/product/get_list'
 ```
-{% /tabitem %}
-{% tabitem label="Python" %}
-```python
-import requests
-from requests.auth import HTTPBasicAuth
-
-url = "https://example.com/api/admin/staff/create"
-api_key = "YOUR_API_KEY"
-
-payload = {
-    "email": "hello@fossbilling.org",
-    "password": "Testing123+",
-    "name": "John Doe",
-    "admin_group_id": 1,
-    "status": "active"
-}
-
-auth = HTTPBasicAuth('admin', api_key)
-headers = {"Content-Type": "application/json"}
-
-response = requests.post(url, json=payload, auth=auth)
-print(response.json())
-```
-{% /tabitem %}
-{% tabitem label="Node.js" %}
-Run admin API calls from trusted server-side code only. Never expose an admin API key in browser JavaScript.
-
-```javascript
-const url = "https://example.com/api/admin/staff/create";
-const apiKey = "YOUR_API_KEY";
-
-const payload = {
-  email: "hello@fossbilling.org",
-  password: "Testing123+",
-  name: "John Doe",
-  admin_group_id: 1,
-  status: "active"
-};
-
-const headers = new Headers();
-headers.set("Content-Type", "application/json");
-headers.set("Authorization", "Basic " + Buffer.from("admin:" + apiKey).toString("base64"));
-
-fetch(url, {
-  method: "POST",
-  headers: headers,
-  body: JSON.stringify(payload)
-})
-.then(response => response.json())
-.then(data => console.log(data))
-.catch(error => console.error("Error:", error));
-```
-{% /tabitem %}
-{% /tabs %}
 
 ## Response Format
 
