@@ -18,7 +18,7 @@ Place your adapter in:
 
 Your class must extend `Registrar_AdapterAbstract` and implement its required methods.
 
-## Required Methods
+## Common Methods {% #required-methods %}
 
 FOSSBilling passes a `Registrar_Domain` to domain operations. See [`Registrar_AdapterAbstract`](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Registrar/AdapterAbstract.php) for every required method and its signature.
 
@@ -32,7 +32,7 @@ FOSSBilling passes a `Registrar_Domain` to domain operations. See [`Registrar_Ad
 | `modifyNs()` | Update nameservers |
 | `modifyContact()` | Update contact information |
 
-## Basic Structure
+## Namecheap Walkthrough {% #basic-structure %}
 
 The bundled Namecheap adapter shows how FOSSBilling turns a domain request into a registrar operation. [Namecheap adapter in FOSSBilling 0.8.9](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Registrar/Adapter/Namecheap.php)
 
