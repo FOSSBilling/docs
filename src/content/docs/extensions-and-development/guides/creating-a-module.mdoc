@@ -38,16 +38,7 @@ For template-specific helpers, see [Twig Filters & Functions](/extensions-and-de
 
 ## Running Scheduled Tasks
 
-Hook into cron using `onBeforeAdminCronRun` or `onAfterAdminCronRun`:
-
-```php
-public static function onBeforeAdminCronRun(\Box_Event $event): void
-{
-    error_log('Cron was called!');
-}
-```
-
-See [Event Hooks](/extensions-and-development/event-hooks/) for the full list of hook names.
+Use `onBeforeAdminCronRun` or `onAfterAdminCronRun` for scheduled work. Define the handler in `Service.php` using the [Event Hooks example](/extensions-and-development/event-hooks/#using-hooks-in-your-module).
 
 ## Module Permissions
 
