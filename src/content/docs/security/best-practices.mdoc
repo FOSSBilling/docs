@@ -28,21 +28,13 @@ See [Updating FOSSBilling](/maintenance/updating/) for more information about ke
 - Use strong, unique passwords for database accounts
 - Limit database user privileges to what's required
 
-## Application-Level Security
-
 ### HTTPS Everywhere
 
-- Always use HTTPS in production
-- Set `force_https` to `true` in your FOSSBilling config
-- Use valid SSL certificates (Let's Encrypt is free and easy)
+Use HTTPS in production with a valid TLS certificate.
 
-See [Securing FOSSBilling](/security/securing-fossbilling/) for the related application-level config keys.
+## Application-Level Security
 
-### Session Security
-
-- Keep `mode` set to `strict` in your security config
-- Don't increase `session_lifespan` unnecessarily
-- Log out when you're done working
+See [Securing FOSSBilling](/security/securing-fossbilling/#security-options) for HTTPS and session guidance and the [Configuration File reference](/admin-guide/config/#security-settings) for settings and defaults.
 
 ### Admin Access
 
