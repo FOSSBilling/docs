@@ -62,10 +62,15 @@ volumes:
   mariadb:
 ```
 
-For a new installation, generate the database password before starting the stack.
+For a new installation, create a `.env` file beside `docker-compose.yml`. Replace the placeholder with a strong database password and keep the file private.
+
+```dotenv {% meta="title='.env'" %}
+MARIADB_PASSWORD='replace-with-a-strong-password'
+```
+
+Start the stack from that directory. Compose reads `.env` automatically.
 
 ```bash
-export MARIADB_PASSWORD="$(openssl rand -base64 32)"
 docker compose up -d
 ```
 
@@ -75,7 +80,7 @@ The first startup downloads container images and may take a few minutes. Keep th
 - Hostname: `mariadb`
 - Database: `fossbilling`
 - Username: `fossbilling`
-- Password: the value of `MARIADB_PASSWORD`
+- Password: the value of `MARIADB_PASSWORD` in `.env`
 
 Open `http://localhost` or your server's IP/hostname to continue with the installer.
 {% /tabitem %}
