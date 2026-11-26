@@ -7,6 +7,7 @@
     "cf-deploy": "cf deploy",
     "cf-preview": "cf previews deploy",
     "dev": "astro dev",
+    "test": "node --test",
     "check": "astro check",
     "build": "astro build",
     "format": "prettier --write \"{src,public}/**/*.{astro,css,js,json,mjs,ts}\" \"*.{json,mjs,ts}\"",
