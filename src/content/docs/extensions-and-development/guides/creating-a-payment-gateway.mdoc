@@ -29,110 +29,16 @@ Place your adapter in:
 - **File:** `MyGateway.php` (PascalCase)
 - **Class:** `Payment_Adapter_MyGateway`
 
-## Basic Adapter Structure
+## Stripe one-time payment walkthrough
 
-```php
-<?php
+The [bundled Stripe adapter in FOSSBilling 0.8.9](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Payment/Adapter/Stripe.php) shows how a one-time invoice payment moves from checkout to crediting the client.
 
-class Payment_Adapter_MyGateway implements FOSSBilling\InjectionAwareInterface
-{
-    protected ?Pimple\Container $di = null;
+1. **Create the payment from the invoice.** `getConfig()` declares the gateway settings and supported payment types. `getHtml()` loads the invoice, then `_generateForm()` creates a Stripe PaymentIntent using the invoice total in minor units and its currency. It records the invoice, client, and gateway IDs as metadata. An idempotency key based on the invoice, gateway, and checkout parameters lets Stripe reuse the intent on a retried create request. [Checkout code](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Payment/Adapter/Stripe.php#L1750-L1770)
+2. **Verify the provider response.** For a webhook, `processWebhookEvent()` verifies the `Stripe-Signature` header against the raw request body with the test or live signing secret. It checks that the event belongs to this gateway before dispatching it. For a browser callback, the adapter retrieves the PaymentIntent from Stripe and checks the gateway ID and, for a linked invoice, the invoice ID and currency. [Webhook verification](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Payment/Adapter/Stripe.php#L639-L706) · [Browser callback verification](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Payment/Adapter/Stripe.php#L346-L377)
+3. **Validate the amount before crediting funds.** Both paths require a succeeded PaymentIntent and convert the amount from Stripe's minor units. For a linked invoice, they pass the amount and the invoice total with tax to `validatePaymentAmount()`. The helper rejects underpayments beyond its rounding tolerance and logs significant overpayments. [Payment application](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Payment/Adapter/Stripe.php#L1298-L1339) · [Amount validation](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/modules/Invoice/Service.php#L1127-L1143)
+4. **Serialise callbacks for the same payment.** The browser callback and webhook use the same database lock keyed by gateway and PaymentIntent ID. While holding it, the adapter checks for an existing transaction for the payment, skips an already-paid invoice, and uses `claimForProcessing()` to atomically claim the transaction row before crediting funds. [Payment lock and duplicate check](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/Payment/Adapter/Stripe.php#L1022-L1123) · [Transaction claim](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/modules/Invoice/ServiceTransaction.php#L475-L505)
 
-    public function __construct(private $config)
-    {
-        if (!isset($this->config['api_key'])) {
-            throw new Payment_Exception(
-                'The ":pay_gateway" payment gateway is not fully configured. Please configure the :missing',
-                [':pay_gateway' => 'MyGateway', ':missing' => 'API Key'],
-                4001
-            );
-        }
-    }
-
-    public function setDi(Pimple\Container $di): void
-    {
-        $this->di = $di;
-    }
-
-    public function getDi(): ?Pimple\Container
-    {
-        return $this->di;
-    }
-
-    public static function getConfig(): array
-    {
-        return [
-            'supports_one_time_payments' => true,
-            'supports_subscriptions' => false,
-            'description' => 'Accept payments via MyGateway.',
-            'logo' => [
-                'logo' => 'mygateway.png',
-                'height' => '30px',
-                'width' => '65px',
-            ],
-            'form' => [
-                'api_key' => ['text', ['label' => 'API Key:']],
-                'api_secret' => ['password', ['label' => 'API Secret:']],
-            ],
-        ];
-    }
-
-    public function getHtml($api_admin, $invoice_id, $subscription): string
-    {
-        $invoice = $api_admin->invoice_get(['id' => $invoice_id]);
-
-        $fields = [
-            'merchant_id' => $this->config['api_key'],
-            'amount' => number_format($invoice['total'], 2, '.', ''),
-            'currency' => $invoice['currency'],
-            'callback_url' => $this->config['notify_url'],
-            'success_url' => $this->config['thankyou_url'],
-        ];
-
-        $form = '<form action="https://api.mygateway.com/checkout" method="post">';
-        foreach ($fields as $key => $value) {
-            $form .= sprintf(
-                '<input type="hidden" name="%s" value="%s" />',
-                htmlspecialchars($key),
-                htmlspecialchars($value)
-            );
-        }
-        $form .= '<input type="submit" value="Pay Now" class="btn btn-primary" />';
-        $form .= '</form>';
-
-        return $form;
-    }
-
-    public function processTransaction($api_admin, $id, $data, $gateway_id): void
-    {
-        $tx = $this->di['db']->getExistingModelById('Transaction', $id);
-        $invoiceId = $data['get']['invoice_id'] ?? $data['post']['invoice_id'];
-        $invoice = $this->di['db']->getExistingModelById('Invoice', $invoiceId);
-
-        $paymentId = $data['post']['payment_id'];
-        $payment = $this->verifyPaymentWithGateway($paymentId);
-
-        if ($payment['status'] === 'completed') {
-            $clientService = $this->di['mod_service']('Client');
-            $invoiceService = $this->di['mod_service']('Invoice');
-
-            $client = $this->di['db']->getExistingModelById('Client', $invoice->client_id);
-            $clientService->addFunds($client, $payment['amount'], 'MyGateway payment');
-
-            if (!$invoiceService->isInvoiceTypeDeposit($invoice)) {
-                $invoiceService->payInvoiceWithCredits($invoice);
-            }
-
-            $tx->status = 'processed';
-        } else {
-            $tx->status = 'error';
-            $tx->error = 'Payment failed';
-        }
-
-        $this->di['db']->store($tx);
-    }
-}
-```
+Validate the payment's gateway, invoice, currency, and amount on every path your adapter uses to apply a credit. Record processing errors on the transaction so they can be reviewed in the admin panel.
 
 ## Configuration Options
 
@@ -154,22 +60,13 @@ Use top-level browser navigation for the return flow, as the bundled PayPal adap
 
 Keep `notify_url` for server-to-server notifications. A successful browser return is not proof of payment; verify the provider callback and payment details before applying funds or marking the invoice paid.
 
-## Best Practices
-
-- **Always verify server-side** — Never trust client-side data
-- **Check amounts and currency** — Ensure they match the invoice
-- **Handle errors gracefully** — Record errors on the transaction
-- **Prevent duplicates** — Check `$tx->status` before processing
-- **Log for debugging** — Use `$this->di['logger']` when needed
-
 ## Testing
 
 {% steps %}
-1. Enable test mode in the admin panel
-2. Create a test invoice
-3. Check **Invoicing → Transactions** for results
-4. Test the full flow: payment → verification → invoice marking
-5. Test browser returns for success and cancellation, including an expired browser session
+1. Enable test mode and pay a test invoice. Confirm the record in **Invoicing → Transactions** and check that the invoice is paid.
+2. Test an invalid webhook signature, an underpayment, and a currency mismatch through the payment paths your adapter supports. Verify that validation failures apply no credit.
+3. Redeliver the same successful webhook and confirm there is only one credit for the payment. If your adapter also processes a browser callback, test both arrival orders and concurrent delivery.
+4. Test browser returns for success and cancellation, including an expired browser session.
 {% /steps %}
 
 ## Examples
