@@ -142,7 +142,7 @@ Control API access.
 | `rate_limiter.whitelist_ips` | `[]` | IP addresses or CIDR ranges exempt from rate limiting. |
 | `rate_limiter.policies` | `[]` | Overrides for individual built-in policies. |
 
-Set only the fields you want to override. This example lowers the `client_signup` limit from five to three attempts per hour. [FOSSBilling 0.8.9 default policies](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/FOSSBilling/Security/RateLimiter.php#L42-L79) · [Symfony rate limiter documentation](https://symfony.com/doc/current/rate_limiter.html)
+Set only the fields you want to override. This example lowers the `client_signup` limit from five to three attempts per hour. [Built-in rate-limiter policies](https://github.com/FOSSBilling/FOSSBilling/blob/0.8.9/src/library/FOSSBilling/Security/RateLimiter.php#L42-L79) · [Symfony rate limiter documentation](https://symfony.com/doc/current/rate_limiter.html)
 
 ```php
 'rate_limiter' => [
