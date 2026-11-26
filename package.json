@@ -15,7 +15,7 @@
   "devDependencies": {
     "@astrojs/check": "0.9.12",
     "@cloudflare/vite-plugin": "2.0.0-rc.3",
-    "cf": "1.0.0-rc.3",
+    "cf": "1.0.0-rc.4",
     "prettier": "3.10.1",
     "prettier-plugin-astro": "1.1.2",
     "typescript": "6.0.3"
