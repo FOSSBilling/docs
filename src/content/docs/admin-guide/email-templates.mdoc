@@ -19,9 +19,9 @@ Use **Bulk Actions → Regenerate Built-in Templates** to restore the default su
 
 ## Editing Templates
 
-1. Click the **Edit** button on any template
-2. Modify the subject and content
-3. Save your changes
+1. Open the template with **Edit**, then change the subject and content.
+2. Select **Preview** to render the current draft with example values.
+3. Select **Update** to save your changes.
 
 ![Editing an email template](../../../assets/guides/emails/template-edit.png)
 
@@ -29,38 +29,38 @@ Use **Bulk Actions → Regenerate Built-in Templates** to restore the default su
 
 Templates can use any variables passed by the module. Common ones include:
 
-- `staff.name` — Staff member name
+- `staff_member_name` — Staff recipient's name in the built-in test email
 - `client.first_name` — Client first name
 - `guest.system_company.name` — Your company name
-- `guest.system_company.signature` — Your email signature
+- `guest.system_email.signature` — The configured email signature
 
-{% aside type="tip" %}
-Send a test email to see which variables are available for that template. The **Variables** tab shows values from the last sent email.
-{% /aside %}
+The **Variables** tab shows example values saved when that template was used. If the tab is empty, trigger the action that sends the template in a test installation.
 
-See [Twig Filters & Functions](/extensions-and-development/twig-filters/) for all available filters.
+To check email delivery, use **Send a Test Email to Yourself** in Email settings. It sends the built-in test template to your staff address.
+
+Email templates run in a Twig sandbox. Use [supported tags, filters, and functions](https://github.com/FOSSBilling/FOSSBilling/blob/a480f5fc28991f3d27e5641b5e7b011e269504a4/src/library/FOSSBilling/Twig/EmailPolicy.php#L25-L54) such as `if`, `format_date`, and `markdown_to_html`.
 
 ## Template Examples
 
+These examples show two ways to format the built-in test email.
+
 ### Markdown Format
 
-Default templates use Markdown for simple formatting. Wrap your content with the `apply markdown_to_html` filter:
+Use `apply markdown_to_html` to render Markdown. Place the formatted signature after that block.
 
 ```twig {% process=false %}
 {% apply markdown_to_html %}
-Hi {{ staff.name }},
+Hi {{ staff_member_name|default('') }},
 
 If you are reading this email, FOSSBilling is **configured properly** and is **able to send emails**.
-
-{{ guest.system_company.signature }}
 {% endapply %}
+
+{{ guest.system_email.signature }}
 ```
 
 ### HTML Format
 
-For full control, use HTML:
-
-```html
+```twig {% process=false %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -86,20 +86,20 @@ For full control, use HTML:
 </head>
 <body>
   <h1>Test email from {{ guest.system_company.name }}</h1>
-  <p>Hi {{ staff.name }},</p>
+  <p>Hi {{ staff_member_name|default('') }},</p>
   <p>If you are reading this email, FOSSBilling is <strong>configured properly</strong>.</p>
-  <p class="signature">{{ guest.system_company.signature }}</p>
+  <div class="signature">{{ guest.system_email.signature }}</div>
 </body>
 </html>
 ```
 
-### Before and After
+### Example Previews
 
-**Default (Markdown):**
-![Default template](../../../assets/guides/emails/default-template-preview.png)
+**Markdown**
+![Markdown email preview](../../../assets/guides/emails/default-template-preview.png)
 
-**Custom HTML:**
-![Custom template](../../../assets/guides/emails/custom-template-preview.png)
+**HTML**
+![HTML email preview](../../../assets/guides/emails/custom-template-preview.png)
 
 ## Locale and Invoice Reminder Timing
 
@@ -118,7 +118,6 @@ Edit installed templates in the admin panel. To restore defaults from the module
 
 ## Limitations
 
-- Variables only appear in the **Variables** tab after an email has been sent at least once
 - Email client HTML support varies — test with popular clients
 - Inline CSS works more reliably than `<style>` blocks
 

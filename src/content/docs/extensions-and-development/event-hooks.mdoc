@@ -52,6 +52,8 @@ The Hook module also supports `onEveryEvent`, a global listener that is connecte
 - `onBeforeAdminClientUpdate`
 - `onAfterAdminClientUpdate`
 
+Creating a client through the admin API fires both `onAfterAdminClientCreate` and `onAfterAdminCreateClient` on success. Use `onAfterAdminCreateClient` when your handler needs the new client's `id`.
+
 ### Orders
 
 - `onBeforeAdminOrderActivate`
