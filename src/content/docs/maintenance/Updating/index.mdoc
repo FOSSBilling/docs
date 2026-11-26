@@ -36,6 +36,14 @@ Starting with 0.8.1, updates follow a two-phase process:
 
 This prevents older versions from automatically applying database patches before the new code is in place.
 
+If you dismissed the finalization prompt, go to **System → Update** and choose **Apply Patches & Update Configuration**.
+
+If you cannot access the admin panel after installing the new files, run the patcher from your FOSSBilling installation directory.
+
+```bash
+php console.php system:run-patcher
+```
+
 The updater follows the configured update branch, usually `release` or `preview`, which you can change in your [configuration file](/admin-guide/config/).
 
 ## Manual Updates
@@ -47,10 +55,8 @@ If you prefer to manage files yourself:
 2. [Download the latest release](https://fossbilling.org/downloads/stable)
 3. Extract the files over your existing installation (overwrite existing files)
 4. Delete the `install` folder that came with the new files
-5. Log in to the admin panel and follow the finalization prompt to apply pending patches
+5. Log in to the admin panel and [finalize the update](#update-finalization)
 {% /steps %}
-
-FOSSBilling will detect the new files and direct you to the finalization page. If you navigated away, go to **System** → **Update** and use **Apply Patches & Update Configuration**.
 
 If an update fails or FOSSBilling errors after updating, see [Troubleshooting FOSSBilling Issues](/maintenance/troubleshooting/#errors-after-updating).
 

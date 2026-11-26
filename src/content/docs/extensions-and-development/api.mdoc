@@ -65,16 +65,9 @@ These checks apply even when `api.CSRFPrevention` is disabled. A supplied `Origi
 
 Other guest calls are not subject to this authentication/cart CSRF check. See the [migration guide](/maintenance/updating/0-7-to-0-8/#authentication-api--payment-hardening-089) for migration details.
 
-Use Twig helpers for theme and module templates. This way, you don't need to manually attach CSRF tokens to the requests:
+### Manual Browser Requests
 
-```twig
-<form action="{{ 'profile/update'|api_url }}" {{ fb_api_form({ message: 'Saved'|trans }) }}>
-  <input type="text" name="first_name">
-  <button type="submit">{{ 'Save'|trans }}</button>
-</form>
-```
-
-For raw `fetch()` requests, send the token yourself:
+Use the [Twig form and link helpers](/extensions-and-development/javascript/#api-forms-and-links) for theme and module templates. For protected requests made directly with `fetch()`, send the current session’s CSRF token.
 
 ```javascript
 const token = document.cookie.match(/fossbilling_csrf=([^;]*)/)?.[1] || '';
