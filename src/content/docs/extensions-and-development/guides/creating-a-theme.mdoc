@@ -75,19 +75,19 @@ Theme settings forms submit to the admin `/theme/{theme}` route using POST. Incl
 
 The `guest`, `client`, and `admin` Twig globals call FOSSBilling APIs during server-side template rendering. They are not browser HTTP requests and do not use CSRF tokens.
 
-### Guest API (always available)
+### Guest API (Always Available)
 
 ```twig
 {{ guest.currency_get_pairs() }}
 ```
 
-### Client API (when logged in)
+### Client API (When Logged In)
 
 ```twig
 {{ client.invoice_get_list({ 'per_page': 10 }) }}
 ```
 
-### Admin API (when logged in)
+### Admin API (When Logged In)
 
 ```twig
 {{ admin.staff_group_get_pairs() }}

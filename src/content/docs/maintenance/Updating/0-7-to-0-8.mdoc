@@ -436,7 +436,7 @@ Login forms now include widget slots that extensions can use to inject alerts, b
 **Custom email templates must be updated.** The email Twig environment now runs inside a sandbox that restricts allowed tags, filters, functions, and globals. Any template that used filters that were removed or renamed, the `{% set %}` tag, the `api_admin` / `api_client` globals, or `{{ guest.method() }}` calls will fail to render and block email delivery.
 {% /aside %}
 
-### File-backed Defaults
+### File-Backed Defaults
 
 In the email template editor, three states are now shown: customized, file-backed default, and no file-backed default. Admins can reset a customized template back to its file-backed default.
 

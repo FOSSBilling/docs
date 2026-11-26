@@ -10,9 +10,9 @@ sidebar:
 
 When troubleshooting, you will usually need the FOSSBilling log files. Their location is covered in [Support](/support/faq/#where-can-i-find-error-logs).
 
-## HTTP Error 404 / Can only access client dashboard
+## HTTP Error 404 / Can Only Access Client Dashboard
 
-### Subfolder installations
+### Subfolder Installations
 
 Install FOSSBilling in the document root of its own domain or subdomain, such as `https://billing.example.com`. Subfolder URLs such as `https://example.com/billing` are unsupported.
 
@@ -35,29 +35,29 @@ If you are using Apache, LiteSpeed, or OpenLiteSpeed and receive HTTP 404 errors
 
 - Verify that you loaded the recommended [NGINX configuration](/getting-started/installation/#web-server-configuration).
 
-## Permission issues
+## Permission Issues
 
 Start with the path reported by the installer, updater, or [application logs](/support/faq/#where-can-i-find-error-logs).
 
-### File and folder permissions
+### File and Folder Permissions
 
 - Check that PHP can read the application files and `config.php`. Restrict access to `config.php` to the accounts that need it.
 - Check that PHP can write to the cache, log, and upload directories. These are normally under `data/`. If you changed `path_data`, check the configured location for the cache and logs.
 - During installation, PHP needs to create `config.php` in the installation directory. For updates started from the admin panel, use the paths reported by the updater's readiness check to identify any additional write permissions needed.
 
-### File ownership
+### File Ownership
 
 Find the account that runs PHP for your site in your hosting control panel or server configuration. For PHP-FPM, check the site's pool `user` and `group` settings. Check the affected path's owner, group, and permissions, then correct access for that account. [PHP-FPM pool configuration](https://www.php.net/manual/en/install.fpm.configuration.php#fpm.configuration.user)
 
-### RHEL Linux (and derivatives)
+### RHEL Linux (and Derivatives)
 
 If Unix permissions look correct on a system running SELinux, check the audit log for a denial involving the web PHP process and the affected path. Keep SELinux enforcing and correct the labeling or policy for the specific denial. [Red Hat SELinux troubleshooting](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/using_selinux/troubleshooting-problems-related-to-selinux_using-selinux)
 
-## Unknown "encore_entry_link_tags" function.
+## Unknown "encore_entry_link_tags" Function.
 
 If a custom theme still uses this Twig function, follow the [theme asset migration instructions](/maintenance/updating/0-7-to-0-8/#asset-loading) to replace it.
 
-## Errors after updating
+## Errors After Updating
 
 If FOSSBilling starts failing after an update, work through these steps:
 
@@ -69,23 +69,23 @@ If FOSSBilling starts failing after an update, work through these steps:
 
 In the admin sidebar, go to **System → Settings** and select the **System** module. Open the **Cache** tab and click **Invalidate cache** to clear compiled templates and cached application state.
 
-## Issues with cron
+## Issues with Cron
 
 If FOSSBilling warns that scheduled tasks are overdue, check the last run and review your [cron setup](/getting-started/installation/#configuring-the-cronjob).
 ![FOSSBilling warning about cron execution](../../../assets/guides/install/cron-warning.png)
 
 Check the FOSSBilling [logs](/support/faq/#where-can-i-find-error-logs) for PHP or application errors.
 
-### An incorrect PHP version is being used
+### An Incorrect PHP Version Is Being Used
 
 A local cron job can use a different PHP version from your website. Run the PHP executable from the cron command with `-v` as the account that runs the job. If it falls below the [PHP requirements](/getting-started/requirements/#php), choose a supported version in your hosting panel or use the full path to a supported PHP executable in the cron command.
 
-## Administrator account login issues
+## Administrator Account Login Issues
 
 - Verify that you are using the administrator login page. The client and admin areas are separate, and the default admin prefix is `/admin` (`https://example.com/admin`).
 - [Manually reset your admin password](/maintenance/admin-manual-reset).
 
-## `curl_multi_exec` errors
+## `curl_multi_exec` Errors
 
 If you are seeing errors involving `curl_multi_exec`, your control panel or host has probably disabled that PHP function.
 You will need to re-enable it before FOSSBilling can work correctly on that server.
