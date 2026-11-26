@@ -71,6 +71,8 @@ export function validatePartialFilePath(value: unknown) {
     (!value.startsWith('./') && !value.startsWith('../')) ||
     value.includes('\\') ||
     value.includes('\0') ||
+    value.includes('?') ||
+    value.includes('#') ||
     !value.endsWith('.mdoc')
   ) {
     return [INVALID_PARTIAL_PATH];

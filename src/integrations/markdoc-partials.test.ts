@@ -164,7 +164,7 @@ test('partial path policy allows explicit relative Markdoc files', () => {
   assert.deepEqual(validatePartialFilePath('../shared/_partial.mdoc'), []);
 });
 
-test('partial path policy rejects paths that bypass the containment hook', () => {
+test('partial path policy rejects invalid file paths', () => {
   for (const value of [
     '../../../.gitignore',
     '/etc/passwd',
@@ -173,6 +173,8 @@ test('partial path policy rejects paths that bypass the containment hook', () =>
     './partial.txt',
     './partial.mdoc?raw',
     './partial.mdoc#fragment',
+    './secret?raw.mdoc',
+    './secret#raw.mdoc',
     './bad\0name.mdoc',
     './bad\\name.mdoc',
     123,
@@ -243,4 +245,18 @@ test('Astro validates and contains nested partials before reading them', async (
     await writeFile(nested, '{% partial file="./secret.txt" /%}');
     await assert.rejects(render(), /explicit relative path/);
   });
+
+  await t.test(
+    'rejects query and fragment suffixes hiding a non-Markdoc file',
+    async () => {
+      await writeFile(
+        path.join(path.dirname(nested), 'secret.txt'),
+        'Not a partial',
+      );
+      for (const suffix of ['?raw.mdoc', '#raw.mdoc']) {
+        await writeFile(nested, `{% partial file="./secret.txt${suffix}" /%}`);
+        await assert.rejects(render(), /explicit relative path/);
+      }
+    },
+  );
 });
