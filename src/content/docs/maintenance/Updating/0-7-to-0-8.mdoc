@@ -565,7 +565,7 @@ Some API errors that previously returned HTTP `200` now use an error status. Upd
 
 ### Guest Authentication and Cart Requests
 
-Update custom login, signup, order-button, embed, and cart flows for the new session-bound CSRF requirements. Send login and signup requests by POST and use the updated [JavaScript wrapper](/extensions-and-development/javascript/#csrf-tokens) for same-origin browser calls. For custom requests, follow the [API reference's endpoint and token requirements](/extensions-and-development/api/#guest-authentication-and-cart-calls).
+Serve custom login, signup, and cart forms from the FOSSBilling origin, including forms in order buttons and embeds. Send login and signup requests by POST. The [JavaScript wrapper](/extensions-and-development/javascript/#csrf-tokens) adds the session's CSRF token to same-origin browser requests. For raw requests, follow the [API reference's endpoint and token requirements](/extensions-and-development/api/#guest-authentication-and-cart-calls).
 
 ### Payment Returns
 
