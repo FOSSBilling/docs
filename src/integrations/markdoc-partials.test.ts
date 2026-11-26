@@ -54,6 +54,7 @@ function createContext(resolvedId: string) {
         external: false,
         moduleSideEffects: true,
         meta: {},
+        attributes: {},
       };
     },
     error(message) {
