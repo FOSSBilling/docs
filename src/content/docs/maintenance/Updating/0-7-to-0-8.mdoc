@@ -403,7 +403,7 @@ Invoice hashes now expire after a configurable number of days. The new `invoice_
 
 The `guest/cron/run` endpoint now requires a `hash` parameter to prevent unauthorized triggering. One is automatically generated if guest cron is enabled but no hash has been configured.
 
-The hash is displayed in **System → Cron** and can be regenerated from the admin interface. If you use the guest cron URL externally, append `?hash=...` — the old unauthenticated URL now returns a 403 error.
+If you use an external scheduler, replace the old URL with the full [Guest Cron URL](/getting-started/installation/#guest-cron-endpoint) shown in Scheduled Tasks. Requests using the old unauthenticated URL return HTTP 403.
 
 ## Email Template Validation (0.8.2)
 
@@ -560,7 +560,7 @@ Stored values are no longer HTML-escaped before saving; escaping now happens at 
 
 ### Cron Entry Point Now CLI-Only
 
-The `cron.php` entry point now refuses non-CLI execution, closing direct HTTP triggering of the scheduler script. If you triggered `cron.php` over HTTP, switch to a system cron job or to the hash-protected guest cron endpoint (`guest/cron/run`) when enabled in **System → Cron**.
+The `cron.php` entry point now runs only from the command line. If you previously triggered it over HTTP, switch to a [local cron job](/getting-started/installation/#local-cron-job) or the [hash-protected guest cron endpoint](/getting-started/installation/#guest-cron-endpoint).
 
 ### Sessions
 

@@ -19,18 +19,20 @@ If you're using something else, you'll need to configure URL rewriting manually.
 ## PHP
 
 - **Supported Versions**: 8.3, 8.4, or 8.5.
-- **Required Extensions**: `curl`, `dom`, `iconv`, `intl`, `json`, `openssl`, `pdo_mysql`, `xml`, and `zlib`.
+- **Required Extensions**: `curl`, `dom`, `gd`, `iconv`, `intl`, `json`, `openssl`, `pdo_mysql`, `xml`, and `zlib`.
 - **Recommended Extensions**:
   | Extension | Why Recommended |
   |-----------|-----------------|
   | `mbstring` | Proper handling of multibyte characters |
   | `opcache` | Significantly improves performance |
-  | `imagick` or `gd` | Image processing for logos and PDFs |
-  | `simplexml` | Required for Plesk integration only |
+  | `imagick` | PDF image processing performance |
+  | `bz2` | Support for bzip2 archives |
+  | `simplexml` | Plesk integration |
 - **Configuration (`php.ini`)**:
   - **`memory_limit`**: At least `64M`. Increase if you run many modules or have high traffic.
   - **`max_execution_time`**: Default `30` seconds is usually fine. Increase to `45`–`60` on shared hosting if needed.
-  - **`allow_url_fopen`**: Set to `On` if you need remote images in PDFs or emails.
+
+For remote images in invoices, see the [PDF logo requirements](/admin-guide/invoice-pdf/#logos-and-remote-assets).
 
 ## Database
 
