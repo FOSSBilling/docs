@@ -11,7 +11,7 @@ Use this gateway when clients need payment instructions and an administrator wil
 If you want to integrate an external payment processor with automated callbacks, see [Creating a Payment Gateway](/extensions-and-development/guides/creating-a-payment-gateway/) instead.
 {% /aside %}
 
-## How it works
+## How It Works
 
 1. A client selects the Custom gateway during checkout or invoice payment.
 2. FOSSBilling displays the payment instructions configured for the gateway.
@@ -21,7 +21,7 @@ If you want to integrate an external payment processor with automated callbacks,
 
 When the invoice is marked as paid through the Custom gateway, FOSSBilling creates and processes a transaction from the admin action.
 
-## Configure the gateway
+## Configure the Gateway
 
 Go to **Payment Gateways** in the admin area and open the **Custom** gateway.
 
@@ -34,7 +34,7 @@ The Custom gateway provides two instruction fields:
 
 You can also configure the gateway title, accepted currencies, whether one-time and subscription payments are allowed, and whether the gateway is enabled.
 
-## Template variables
+## Template Variables
 
 Custom gateway instructions are rendered as sandboxed Twig templates. The adapter currently passes one variable:
 
@@ -48,7 +48,7 @@ HTML is supported, but the rendered output is sanitized before being shown to cl
 Only trusted administrators should edit Custom gateway templates. Do not paste scripts or code from unknown sources. The template renderer is sandboxed, and unsupported Twig syntax will be rejected.
 {% /aside %}
 
-## Example: Bank transfer instructions
+## Example: Bank Transfer Instructions
 
 ```html
 <div>
@@ -67,7 +67,7 @@ Only trusted administrators should edit Custom gateway templates. Do not paste s
 </div>
 ```
 
-## Example: Different instructions by currency
+## Example: Different Instructions by Currency
 
 ```twig {% process=false %}
 {% if invoice.currency == 'EUR' %}
@@ -79,13 +79,13 @@ Only trusted administrators should edit Custom gateway templates. Do not paste s
 {% endif %}
 ```
 
-## Supported template syntax
+## Supported Template Syntax
 
 Custom gateway templates use a restricted Twig environment. Basic output, conditionals, loops, simple variables, and common formatting filters are supported.
 
 Do not use advanced Twig features such as importing templates, including templates, calling API globals, or debugging helpers like `dump()`. If a template contains unsupported syntax, FOSSBilling will show a configuration or rendering error instead of rendering unsafe output.
 
-## Mark an invoice as paid
+## Mark an Invoice as Paid
 
 After confirming the payment:
 
