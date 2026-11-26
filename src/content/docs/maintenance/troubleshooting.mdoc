@@ -35,15 +35,6 @@ If you are using Apache, LiteSpeed, or OpenLiteSpeed and receive HTTP 404 errors
 
 - Verify that you loaded the recommended [NGINX configuration](/getting-started/installation/#web-server-configuration).
 
-## Cloudflare specific issues
-
-Some Cloudflare features can interfere with FOSSBilling. Here are the most common ones to check.
-
-### Auto Minify
-
-- Enabling Cloudflare's "Auto Minify" feature can break integrity checks in the admin panel. When that happens, JavaScript and CSS files stop loading and the admin panel may become unusable. A browser error usually looks like this: `None of the "sha384" hashes in the integrity attribute match the content of the subresource.`
-- Disable "Auto Minify" to fix the issue.
-
 ## Permission issues
 
 Start with the path reported by the installer, updater, or [application logs](/support/faq/#where-can-i-find-error-logs).
@@ -64,8 +55,7 @@ If Unix permissions look correct on a system running SELinux, check the audit lo
 
 ## Unknown "encore_entry_link_tags" function.
 
-This error usually appears when FOSSBilling is installed under a subfolder such as `example.com/billing`.
-Subfolder installations are not supported right now. Install FOSSBilling on a dedicated subdomain such as `billing.example.com` instead.
+If a custom theme still uses this Twig function, follow the [theme asset migration instructions](/maintenance/updating/0-7-to-0-8/#asset-loading) to replace it.
 
 ## Errors after updating
 
