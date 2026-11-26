@@ -130,8 +130,8 @@ curl -X POST "https://example.com/api/guest/servicelicense/check" \
 
 ## Custom License Plugins
 
-Start with the bundled [`Simple` plugin](https://github.com/FOSSBilling/FOSSBilling/blob/a480f5fc28991f3d27e5641b5e7b011e269504a4/src/modules/Servicelicense/Plugin/Simple.php). Add your own PHP file in `src/modules/Servicelicense/Plugin/` and give its class the same name as the file, under the `Box\Mod\Servicelicense\Plugin` namespace. Then select the plugin in the license product settings.
+Start with the bundled [`Simple` plugin](https://github.com/FOSSBilling/FOSSBilling/blob/a480f5fc28991f3d27e5641b5e7b011e269504a4/src/modules/Servicelicense/Plugin/Simple.php). Add your PHP file to `modules/Servicelicense/Plugin/` in a release installation or `src/modules/Servicelicense/Plugin/` in a source checkout. Use the filename without `.php` as the class name in the `Box\Mod\Servicelicense\Plugin` namespace, then select the plugin in the license product settings.
 
-When an order is activated, FOSSBilling calls the plugin's `generate()` method with the license entity, the order, and the configuration. `Simple` uses the configured length and optional prefix to generate a random key. The service retries if that key already exists.
+When an order is activated, FOSSBilling calls the plugin's `generate()` method with the license entity, the order, and the configuration. `Simple` uses the configured length and optional prefix to generate a random key. FOSSBilling retries duplicate keys up to the attempt limit, which defaults to 10.
 
 The license server checks the order and the configured IP, host, version, and path rules. A plugin may also implement `validate()` to apply additional rules or return extra fields in the API response. `Simple` uses the built-in checks alone.
