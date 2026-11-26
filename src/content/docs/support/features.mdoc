@@ -3,7 +3,7 @@ title: Features & Functionality
 description: What the current stable FOSSBilling release supports.
 ---
 
-This page summarizes features in the current stable release. For proposed features, see the [feature request tracker](https://github.com/FOSSBilling/FOSSBilling/issues?q=is%3Aopen+is%3Aissue+label%3A%22feature+request%22).
+Highlights from the current stable release. For proposed features, see the [feature request tracker](https://github.com/FOSSBilling/FOSSBilling/issues?q=is%3Aopen+is%3Aissue+label%3A%22feature+request%22).
 
 ## Currency Support
 
@@ -12,9 +12,9 @@ This page summarizes features in the current stable release. For proposed featur
 
 ## Security & Anti-Spam
 
-- IP blocking, Stop Forum Spam, and disposable email blocking through [FakeFilter](https://fakefilter.net). See [Anti-Spam](/admin-guide/anti-spam/) for setup.
+- IP blocking, Stop Forum Spam, and disposable email blocking. [FakeFilter](https://fakefilter.net) supplies the disposable email domain list. See [Anti-Spam](/admin-guide/anti-spam/) for setup.
 - CAPTCHA via reCAPTCHA v2, score-based reCAPTCHA v3, Cloudflare Turnstile, or hCaptcha.
-- Activity logs, session protection, role-based staff permissions, and staff login IP restrictions.
+- Activity logs, session protection, role-based staff permissions, and staff login IP restrictions. An incorrect IP allowlist can lock admins out.
 - Vulnerability alerts via the [Central Alerts API](https://fossbilling.org/api/central-alerts/list).
 - CSRF protection is enabled by default. The [bundled JavaScript wrapper](/extensions-and-development/javascript/) handles it for browser API calls.
 
