@@ -27,34 +27,27 @@ Use domain products when you want clients to search, register, renew, or transfe
 
 ## Supported Registrars
 
-### Official Integrations
+Find installable registrar extensions in the [Extension Directory](https://extensions.fossbilling.org/).
 
-- **[Namecheap](https://www.namecheap.com/)**
-- **[Netim](https://www.netim.com/)** — [View their module](https://github.com/netim-com/fossbilling-registrar-module)
+### Bundled Options
 
-### Generic/Community Options
+**System → Domain Registration** lists the adapters available in your installation.
 
-| Option | Description |
-|--------|-------------|
-| **Custom** | Manual process — use as last resort. Can check WHOIS for availability. |
-| **Email** | Sends an email when domains are ordered. Can check WHOIS. ⚠️ Currently uses PHP `sendmail` instead of FOSSBilling's email settings. |
-| **[Generic RFC EPP](https://github.com/getpinga/fossbilling-epp-rfc)** | By Pinga — for registries supporting standard EPP |
-| **[FRED Registry](https://github.com/getpinga/fossbilling-epp-fred)** | By Pinga — for FRED-based registries |
-| **[Hostmaster.ua](https://github.com/getpinga/fossbilling-epp-ua)** | By Pinga — for Ukrainian domains |
+- **[Namecheap](https://www.namecheap.com/)** connects to the Namecheap reseller API.
+- **ResellerClub** requires you to authorize your FOSSBilling server's IP address under **Settings → API** in its reseller control panel.
+- **Custom** lets you handle domain orders manually and check availability via WHOIS.
+- **Email** sends domain orders through PHP's `mail()` function, bypassing FOSSBilling's configured mail transport. It can check availability via WHOIS.
 
-### Known Issues
+### Manually Installed Options
 
-**ResellerClub** has known bugs:
-- [Issue #1267](https://github.com/FOSSBilling/FOSSBilling/issues/1267)
-- [Issue #77](https://github.com/FOSSBilling/FOSSBilling/issues/77)
-
-The module exists but needs fixes. [Source code](https://github.com/FOSSBilling/FOSSBilling/blob/main/src/library/Registrar/Adapter/Resellerclub.php)
+- [Generic EPP](https://github.com/getnamingo/fossbilling-epp-registrar) supports registries that use EPP, including Hostmaster.ua.
+- [FRED Registry](https://github.com/getpinga/fossbilling-epp-fred) is an adapter for FRED-based registries.
 
 ## Setting Up Domain Reselling
 
 {% steps %}
 1. Get API credentials from your chosen registrar
-2. Go to **System** → **Domain registration** in FOSSBilling
+2. Go to **System → Domain Registration** in FOSSBilling
 3. Configure the registrar settings
 4. Set up pricing for each TLD you want to sell
 5. Enable the TLDs you want to offer
