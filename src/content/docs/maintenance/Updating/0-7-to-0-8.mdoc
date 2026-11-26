@@ -134,15 +134,9 @@ jQuery has been removed from both bundled themes. All admin and client templates
 
 ### JavaScript API Wrapper
 
-The JS API wrapper has been rewritten and moved from `library/Api/API.js` to `frontend/core/api.js`. The browser call pattern (`API.admin.post`, `API.client.get`, `API.guest.get`, etc.) remains compatible, and the related Twig helpers (`fb_api_form`, `fb_api_link`) are still available, but the internal implementation is entirely new.
+Use `FOSSBilling.api` in browser calls. For example, change `API.admin.post(...)` to `FOSSBilling.api.admin.post(...)`. The `fb_api_form()` and `fb_api_link()` Twig helpers are still available.
 
-Load it with:
-```twig
-{{ 'js/fossbilling.js' | public_asset_url | script_tag }}
-{{ 'js/api.js' | public_asset_url | script_tag }}
-```
-
-The old `library_url` filter used for `{{ "Api/API.js" | library_url | script_tag }}` has been removed.
+Replace the old `Api/API.js` import that uses `library_url` with the [wrapper setup for custom layouts](/extensions-and-development/javascript/#importing-the-wrapper).
 
 ### Frontend Directory Structure
 
