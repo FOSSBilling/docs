@@ -86,7 +86,7 @@ jobs:
             if (run.conclusion !== 'success' || pr.state !== 'open' || !pr.head.repo ||
                 run.head_repository?.id !== pr.head.repo.id || run.head_branch !== pr.head.ref ||
                 run.head_sha !== pr.head.sha) return null;
-            return { operation: 'deploy', number, sha: run.head_sha, run: run.id };
+            return { operation: 'deploy', number, run: run.id };
 
   preview:
     needs: prepare-fork-preview
@@ -97,10 +97,13 @@ jobs:
     permissions:
       contents: read
       actions: read
-    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@b6637a0dda8ccd8d54fb3c3fafbb3a0bbbc4f4fe # main
+      pull-requests: write
+    uses: FOSSBilling/.workflows/.github/workflows/cloudflare-workers.yml@60b2c5a489faa7d3d7428cfd19b5e0467271561e # main
     with:
       operation: ${{ fromJSON(needs.prepare-fork-preview.outputs.target).operation }}
       preview-name: forkpreview-${{ fromJSON(needs.prepare-fork-preview.outputs.target).number }}
+      pr-comment: true
+      fork-pr-number: ${{ fromJSON(needs.prepare-fork-preview.outputs.target).operation == 'deploy' && format('{0}', fromJSON(needs.prepare-fork-preview.outputs.target).number) || '' }}
       worker-name: docs
       environment: preview
       mode: preview
@@ -111,37 +114,3 @@ jobs:
     secrets:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-
-  fork-comment:
-    needs: [prepare-fork-preview, preview]
-    if: needs.preview.outputs.preview-build-url != ''
-    runs-on: ubuntu-slim
-    permissions:
-      pull-requests: write
-    steps:
-      - uses: actions/github-script@v9.0.0
-        env:
-          TARGET: ${{ needs.prepare-fork-preview.outputs.target }}
-          NAME: ${{ needs.preview.outputs.preview-name }}
-          URL: ${{ needs.preview.outputs.preview-build-url }}
-        with:
-          script: |
-            const { number, sha, run } = JSON.parse(process.env.TARGET);
-            if (process.env.NAME !== `forkpreview-${number}`) throw new Error('Unexpected preview name');
-            const issue = { ...context.repo, issue_number: number };
-            const marker = `<!-- fork-preview-run:${run} -->\n`;
-            const body = `${marker}Preview of commit ${sha}: <${process.env.URL}>`;
-            const comments = await github.paginate(github.rest.issues.listComments, issue);
-            const existing = comments.find(comment =>
-              comment.user?.login === 'github-actions[bot]' && comment.body?.startsWith(marker)
-            );
-            if (existing?.body === body) return;
-
-            const { data: pr } = await github.rest.pulls.get({ ...context.repo, pull_number: number });
-            if (pr.state !== 'open' || pr.base.ref !== 'main' || pr.head.sha !== sha) return;
-
-            if (existing) {
-              await github.rest.issues.updateComment({ ...context.repo, comment_id: existing.id, body });
-            } else {
-              await github.rest.issues.createComment({ ...issue, body });
-            }
