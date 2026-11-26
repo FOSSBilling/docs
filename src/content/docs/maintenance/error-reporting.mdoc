@@ -13,7 +13,7 @@ FOSSBilling can send optional error reports to Sentry to help maintainers diagno
 
 Reports can include error messages, stack traces, FOSSBilling and PHP versions, web server details, and your instance ID. FOSSBilling filters out expected errors such as validation failures.
 
-FOSSBilling disables Sentry's default collection of personally identifiable information and strips the installation path from stack trace filenames. Reports can include incoming request URLs and query strings.
+FOSSBilling sets Sentry's `send_default_pii` option to `false` and strips the installation path from stack trace filenames. Reports can include incoming request URLs, query strings, some headers, and form or JSON request data.
 
 ## Instance ID
 
