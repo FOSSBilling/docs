@@ -30,20 +30,10 @@ Configure the rest of your business profile in the same area:
 | VAT/Tax ID | Invoice PDFs, tax calculations |
 | Terms of Service | Checkout page, client agreements |
 
-## Email Signature
+## Signatures
 
-Set the default signature appended to system emails:
-
-```text
---
-Best regards,
-The Example Company Team
-https://example.com
-```
-
-This signature appears at the bottom of most automated emails. You can still override it in individual templates.
-
-For more control over generated output, see [Email Templates](/admin-guide/email-templates/) and [Customizing Invoice PDFs](/admin-guide/invoice-pdf/).
+- For the company signature, fill in **Signature** under **Company Details**. The default [invoice PDF](/admin-guide/invoice-pdf/) uses it in the footer.
+- For the email signature, go to **System → Settings**, select **Email**, open **Email Settings**, and fill in **Email Signature**. This sets `guest.system_email.signature` in [email templates](/admin-guide/email-templates/). Leave the field blank to use the company signature.
 
 ## Currency Settings
 
