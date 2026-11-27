@@ -7,11 +7,11 @@ description: Build custom modules to extend FOSSBilling's functionality.
 
 ## Getting Started
 
-Use the first-party [Cookie Consent module](https://github.com/FOSSBilling/modules/tree/448e4c368b6b531a254b60901bf6fb447ce7f4c0/Cookieconsent) as a reference for the manifest, admin controller, and Twig templates.
+Use the bundled [Cookie Consent module](https://github.com/FOSSBilling/FOSSBilling/tree/a480f5fc28991f3d27e5641b5e7b011e269504a4/src/modules/Cookieconsent) as a reference for the manifest, admin controller, and Twig templates.
 
 {% steps %}
 1. Create `modules/Example/` in a development installation, or `src/modules/Example/` in a source checkout. Use `example` as the manifest ID and `Box\Mod\Example` as the PHP namespace. The folder name is the lowercase ID with its first letter capitalized. Start product-type module names with `Service`, as in `Servicehosting`.
-2. Adapt the package's `manifest.json` for your module. Put your module's logic in `Service.php`. If you need an admin page, use `Controller/Admin.php` to register its route and put the Twig template in `templates/admin/`.
+2. Adapt the bundled [`manifest.json`](https://github.com/FOSSBilling/FOSSBilling/blob/a480f5fc28991f3d27e5641b5e7b011e269504a4/src/modules/Cookieconsent/manifest.json) for your local module. Put your module's logic in `Service.php`. If you need an admin page, use `Controller/Admin.php` to register its route and put the Twig template in `templates/admin/`.
 3. In the admin panel, go to **Extensions → Overview** and select **Activate** next to your module. If you added an admin page, open it to check that the route and template load.
 {% /steps %}
 
@@ -19,7 +19,9 @@ For template-specific helpers, see [Twig Filters & Functions](/extensions-and-de
 
 ## The Manifest
 
-Set `manifest_version` to `1` and `type` to `"module"`. Use `requires` to declare supported FOSSBilling and PHP versions and any module dependencies. See the [manifest schema](https://github.com/FOSSBilling/modules/blob/main/manifest.schema.json) for all fields and validation rules.
+If your local manifest sets `author`, use a plain string.
+
+For publishing, follow the [v1 manifest schema](https://github.com/FOSSBilling/modules/blob/main/manifest.schema.json). Set `manifest_version` to `1` and `type` to `"module"`. Use `requires` to declare supported FOSSBilling and PHP versions and any module dependencies.
 
 You can place an icon next to `manifest.json`. See the [module file structure](/extensions-and-development/file-structure/#srcmodules) for supported icon formats and other entry points.
 
