@@ -90,7 +90,7 @@ The first startup downloads container images and may take a few minutes. Keep th
 
 If your browser runs on the Docker host, open `http://localhost:8080` to continue with the installer. This HTTP endpoint is intended only for local setup on the Docker host.
 
-For remote or production use, configure a TLS-terminating reverse proxy that forwards `X-Forwarded-Host` and `X-Forwarded-Proto: https`, then enable trusted-proxy support when prompted and complete the installer using its HTTPS URL, such as `https://billing.example.com` (see [reverse-proxy setup](/getting-started/installation/#pre-installation-steps)). Do not replace the loopback mapping with a public port and enter installer credentials over remote HTTP.
+For remote or production use, configure a TLS-terminating reverse proxy that forwards `X-Forwarded-For`, `X-Forwarded-Host`, and `X-Forwarded-Proto: https`, then enable trusted-proxy support when prompted and complete the installer using its HTTPS URL, such as `https://billing.example.com` (see [reverse-proxy setup](/getting-started/installation/#pre-installation-steps)). Do not replace the loopback mapping with a public port and enter installer credentials over remote HTTP.
 
 ## Post-Installation
 
