@@ -52,6 +52,8 @@ The Hook module also supports `onEveryEvent`, a global listener that is connecte
 - `onBeforeAdminClientUpdate`
 - `onAfterAdminClientUpdate`
 
+Creating a client through the admin API fires both `onAfterAdminClientCreate` and `onAfterAdminCreateClient` on success. Use `onAfterAdminCreateClient` when your handler needs the new client's `id`.
+
 ### Orders
 
 - `onBeforeAdminOrderActivate`
@@ -211,30 +213,19 @@ The Hook module also supports `onEveryEvent`, a global listener that is connecte
 
 ## Using Hooks in Your Module
 
-Define static methods in your module's `Service.php`:
+Define public static handlers in your module's `Service.php`. The `onAfterAdminOrderCreate` event passes the order ID in its parameters.
 
 ```php
 class Service
 {
     public static function onAfterAdminOrderCreate(\Box_Event $event): void
     {
-        $order = $event->getSubject();
-        error_log('New order created: ' . $order->id);
-    }
-
-    public static function onBeforeAdminCronRun(\Box_Event $event): void
-    {
+        $orderId = $event->getParameters()['id'];
+        error_log('New order created: ' . $orderId);
     }
 }
 ```
 
-FOSSBilling automatically discovers and calls these hooks when the events fire.
-
 ## Troubleshooting Hook Discovery
 
-FOSSBilling discovers hook methods when cron jobs run. If you add a new hook handler in a module, cron must run at least once before the hook is registered.
-
-If a new hook is not being called:
-- Confirm cron is configured and running correctly.
-- During development, run cron jobs manually once after adding or renaming hook methods.
-- Make sure the hook method is public and accepts a `\Box_Event` argument.
+FOSSBilling registers hooks when you activate a module and refreshes them during cron. After adding or renaming a handler in an active module, run cron once to register the change. See [cron troubleshooting](/maintenance/troubleshooting/#issues-with-cron) if scheduled tasks are overdue.

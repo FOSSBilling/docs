@@ -5,6 +5,17 @@ description: Make your invoice PDFs match your brand with custom CSS and HTML te
 
 FOSSBilling generates invoice PDFs with [Dompdf](https://github.com/dompdf/dompdf), which renders HTML and CSS into a printable document.
 
+## Create an Override
+
+In `modules/Invoice/templates/pdf/`, copy the default file for the change you want to make.
+
+| To Change | Copy | Save As |
+|-----------|------|---------|
+| Styling | `default-invoice.css` | `custom-invoice.css` |
+| HTML structure | `default-invoice.twig` | `custom-invoice.twig` |
+
+FOSSBilling uses your custom files automatically. Edit those copies because updates replace the default files.
+
 ## Logos and Remote Assets
 
 Dompdf cannot fetch remote assets directly. Custom PDF templates must use local or embedded images, styles, and fonts. Use the supplied `logo_source` variable for the company logo and `css` for the invoice stylesheet instead of adding remote URLs.
@@ -15,35 +26,9 @@ If a logo is missing, check that it is publicly reachable, uses a supported imag
 
 ## CSS Limitations
 
-Dompdf is not a complete PDF engine. FOSSBilling uses Dompdf 3.x, which supports many print-friendly CSS features but still has layout limitations:
+Use basic positioning and table layouts. Avoid flexbox and grid, and keep each table row short enough to fit on one page. See [Dompdf's CSS compatibility reference](https://github.com/dompdf/dompdf/wiki/CSSCompatibility) for supported properties.
 
-| Supported | Not Supported |
-|-----------|---------------|
-| CSS 2.1 and some CSS3 | Flexbox |
-| `@import`, `@media`, `@page` | CSS Grid |
-| CSS custom properties and math functions such as `calc()` | Browser-style complex layouts |
-| Basic positioning and table layouts | Splitting table rows or cells across pages |
-
-{% aside type="tip" %}
-Table cells can't span pages. Keep table rows compact enough to fit on one page.
-{% /aside %}
-
-## Custom CSS
-
-### Creating a Custom Stylesheet
-
-{% steps %}
-1. Copy `/modules/Invoice/templates/pdf/default-invoice.css`
-2. Paste as `/modules/Invoice/templates/pdf/custom-invoice.css`
-{% /steps %}
-
-FOSSBilling automatically uses `custom-invoice.css` if it exists.
-
-{% aside type="caution" %}
-Changes to `default-invoice.css` are overwritten on updates. Always use `custom-invoice.css`.
-{% /aside %}
-
-### CSS Classes Reference
+## CSS Classes Reference
 
 ![PDF layout with CSS classes](../../../assets/invoice-layout.png)
 
@@ -61,20 +46,9 @@ The default stylesheet uses these classes:
 
 ## Custom HTML Template
 
-Customize the HTML structure by adding a custom Twig template.
-
-### Creating a Custom Template
-
-{% steps %}
-1. Copy `/modules/Invoice/templates/pdf/default-invoice.twig`
-2. Paste as `/modules/Invoice/templates/pdf/custom-invoice.twig`
-{% /steps %}
-
-FOSSBilling uses `custom-invoice.twig` automatically.
-
 ### Template Variables
 
-Available in PDF templates:
+Use these variables in `custom-invoice.twig`.
 
 | Variable | Description |
 |----------|-------------|
@@ -92,16 +66,14 @@ The PDF renderer does not provide top-level `client`, `company`, or `currency` v
 
 ### Example: Add a Custom Header
 
-```twig
+```twig {% process=false %}
 <div class="custom-header">
-  {% if logo_source %\}
+  {% if logo_source %}
   <img src="{{ logo_source }}" alt="{{ seller['Name']|default(seller['Company']|default('Company logo'|trans)) }}">
-  {% endif %\}
+  {% endif %}
   <h1>{{ 'Invoice'|trans }} #{{ invoice.serie_nr }}</h1>
 </div>
 ```
-
-Remove backslashes in actual template code.
 
 ### Twig Filters
 
@@ -123,7 +95,7 @@ PDF templates support the same [Twig filters](/extensions-and-development/twig-f
 {% /steps %}
 
 {% aside type="tip" %}
-Twig templates may be cached. Clear the cache (**System → Tools → Clear cache**) if template changes do not appear.
+If your Twig template changes do not appear, [clear the application cache](/maintenance/troubleshooting/#clearing-the-cache).
 {% /aside %}
 
 ## Debugging

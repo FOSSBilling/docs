@@ -5,10 +5,6 @@ sidebar:
   order: 2
 ---
 
-{% aside type="note" %}
-This feature works well for basic hosting reselling. Some advanced features like account imports and SSO aren't available yet.
-{% /aside %}
-
 ## What You Can Do
 
 Use hosting products when you want FOSSBilling to create and manage shared-hosting accounts through a supported control panel.
@@ -22,32 +18,19 @@ Use hosting products when you want FOSSBilling to create and manage shared-hosti
 
 - Can't import existing accounts from control panels
 - Suspension reasons aren't sent to the control panel (only stored in FOSSBilling)
-- No single sign-on (SSO) — clients log in separately
+- Control-panel single sign-on depends on the server manager. See [CWP single sign-on](/admin-guide/server-managers/cwp/#control-panel-single-sign-on) for an example.
 
 ## Supported Control Panels
 
-FOSSBilling integrates with these control panels:
-
-| Control Panel | Status | Notes |
-|---------------|--------|-------|
-| [CWP](https://control-webpanel.com/) | ✅ Working | - |
-| [HestiaCP](https://hestiacp.com/) | ✅ Working | - |
-| [DirectAdmin](https://www.directadmin.com/) | ✅ Working | - |
-| [cPanel/WHM](https://cpanel.net/) | ✅ Working | - |
-| [Plesk](https://www.plesk.com/) | ⚠️ Working | Minor bug with package syncing |
-
-Anything not listed above likely won't work. Check our [server managers documentation](/admin-guide/server-managers/) for setup guides.
+See [Supported Integrations](/admin-guide/server-managers/#supported-integrations) for the bundled control panels and setup guides where available.
 
 ## Setting Up Hosting
 
 {% steps %}
-1. Configure your server in **System** → **Hosting plans and servers**
-2. Create hosting plans that match your control panel packages
-3. Create products using the "Hosting" product type
-4. Link them to your hosting plans
+1. [Add your hosting server](/admin-guide/server-managers/#add-a-hosting-server)
+2. Create a hosting plan using your server manager's package instructions
+3. Create a **Hosting** product. Under **Hosting Settings**, select the **Server** and **Hosting Plan** you created.
 {% /steps %}
-
-See [server manager guides](/admin-guide/server-managers/) for specific setup instructions.
 
 ## Domain Options
 

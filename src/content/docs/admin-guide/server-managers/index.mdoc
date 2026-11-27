@@ -11,27 +11,22 @@ Server managers let FOSSBilling create, suspend, unsuspend, and manage hosting a
 
 Review your control panel's supported actions before relying on automatic provisioning in production.
 
-## Supported integrations
+## Supported Integrations
 
-{% cardgrid %}
-  {% linkcard
-    title="WHM/cPanel"
-    href="/admin-guide/server-managers/whm/"
-    description="Provision and manage hosting accounts through WHM and cPanel."
-  /%}
-  {% linkcard
-    title="HestiaCP"
-    href="/admin-guide/server-managers/hestiacp/"
-    description="Connect FOSSBilling to Hestia Control Panel."
-  /%}
-  {% linkcard
-    title="CWP"
-    href="/admin-guide/server-managers/cwp/"
-    description="Use CentOS Web Panel / Control Web Panel with FOSSBilling."
-  /%}
-  {% linkcard
-    title="Other Server Managers"
-    href="/admin-guide/server-managers/others/"
-    description="Review other integration options and custom server manager guidance."
-  /%}
-{% /cardgrid %}
+- [CWP](/admin-guide/server-managers/cwp/)
+- [DirectAdmin](https://www.directadmin.com/)
+- [HestiaCP](/admin-guide/server-managers/hestiacp/)
+- [Plesk](https://www.plesk.com/) — FOSSBilling assigns the named plan when creating a subscription. Package changes update the settings on an existing subscription. To switch its assigned plan, use Plesk.
+- [WHM/cPanel](/admin-guide/server-managers/whm/)
+
+For other control panels, see [requested integrations](https://github.com/FOSSBilling/FOSSBilling/issues/1362) or follow the guide to [creating a server manager](/extensions-and-development/guides/creating-a-server-manager/).
+
+## Add a Hosting Server
+
+{% steps %}
+1. Set up API access in your control panel.
+2. In the FOSSBilling admin panel, go to **System → Hosting Plans and Servers** and select **New Server**
+3. Enter the server name, hostname, and IP address. Add the nameservers your hosting accounts should use, if applicable.
+4. Under **Connection Settings**, select the **Server Manager** and enter any credentials it requires. Set **Connection Port** if your panel uses a custom port.
+5. Select **Add Server**
+{% /steps %}

@@ -78,38 +78,18 @@ The client's **IP address** is detected automatically from the request and does 
 If you disabled validation for certain fields (like `host` or `version`), you can send dummy values for them.
 {% /aside %}
 
-#### Examples
+#### Example Request
 
-{% tabs %}
-{% tabitem label="curl" %}
 ```bash
 curl -X POST "https://example.com/api/guest/servicelicense/check" \
   -H "Content-Type: application/json" \
   -d '{
-    "license": "MYAPP-ABCD1-EFGH2-IJKL3-MNOP4",
+    "license": "MYAPP-ABCD-EFGH-IJKL-MNOP-QRST",
     "host": "customer-site.com",
     "version": "1.2.3",
     "path": "/var/www/myapp"
   }'
 ```
-{% /tabitem %}
-{% tabitem label="Python" %}
-```python
-import requests
-
-url = "https://example.com/api/guest/servicelicense/check"
-payload = {
-    "license": "MYAPP-ABCD1-EFGH2-IJKL3-MNOP4",
-    "host": "customer-site.com",
-    "version": "1.2.3",
-    "path": "/var/www/myapp"
-}
-
-response = requests.post(url, json=payload)
-print(response.json())
-```
-{% /tabitem %}
-{% /tabs %}
 
 #### Success Response
 
@@ -117,7 +97,7 @@ print(response.json())
 {
   "result": {
     "licensed_to": "Client Name",
-    "created_at": "2025-01-01T12:00:00Z",
+    "created_at": "2025-01-01 12:00:00",
     "expires_at": null,
     "valid": true
   },
@@ -128,8 +108,8 @@ print(response.json())
 | Field | Type | Description |
 |-------|------|-------------|
 | `licensed_to` | string | Name of the license owner |
-| `created_at` | string | License creation date (ISO 8601) |
-| `expires_at` | string or null | Expiry date in ISO 8601, or `null` if no expiry |
+| `created_at` | string | License creation date (`YYYY-MM-DD HH:MM:SS`) |
+| `expires_at` | string or null | Expiry date in the same format, or `null` if the license has no expiry |
 | `valid` | bool | Whether the license passed all validation checks |
 
 #### Error Codes
@@ -147,53 +127,11 @@ print(response.json())
 | 1008 | Host is not allowed for this license |
 | 1009 | Version is invalid for this license |
 | 1010 | Software install path is invalid for this license |
-| 1020 | Plugin-specific validation failure |
 
 ## Custom License Plugins
 
-You can create your own license generation and validation logic.
+Start with the bundled [`Simple` plugin](https://github.com/FOSSBilling/FOSSBilling/blob/a480f5fc28991f3d27e5641b5e7b011e269504a4/src/modules/Servicelicense/Plugin/Simple.php). Add your PHP file to `modules/Servicelicense/Plugin/` in a release installation or `src/modules/Servicelicense/Plugin/` in a source checkout. Use the filename without `.php` as the class name in the `Box\Mod\Servicelicense\Plugin` namespace, then select the plugin in the license product settings.
 
-### Creating a Plugin
+When an order is activated, FOSSBilling calls the plugin's `generate()` method with the license entity, the order, and the configuration. `Simple` uses the configured length and optional prefix to generate a random key. FOSSBilling retries duplicate keys up to the attempt limit, which defaults to 10.
 
-Place your plugin in `/modules/Servicelicense/Plugin/YourPlugin.php`:
-
-```php
-class License_YourPlugin
-{
-    public function generate(array $data): string
-    {
-        return 'YOUR-KEY-HERE';
-    }
-
-    public function validate(\Model_ServiceLicense $service, array $data): array
-    {
-        if (empty($data['host'])) {
-            throw new \LogicException('Host is required', 1020);
-        }
-
-        return ['host' => $data['host']];
-    }
-}
-```
-
-### Plugin Requirements
-
-- Class name must be `License_PluginName`
-- File must be `PluginName.php` in the `Plugin/` directory
-- Must implement a `generate()` method
-- Optional: implement a `validate()` method for custom rules
-
-### The Simple Plugin (Built-in)
-
-The default `Simple` plugin generates keys like:
-
-```text
-MYAPP-ABCD1-EFGH2-IJKL3-MNOP4
-```
-
-- 25 characters by default
-- Optional prefix
-- Dashes every 5 characters
-- Uppercase letters and digits 1–9
-
-See `src/modules/Servicelicense/Plugin/Simple.php` for the implementation.
+The license server checks the order and the configured IP, host, version, and path rules. A plugin may also implement `validate()` to apply additional rules or return extra fields in the API response. `Simple` uses the built-in checks alone.

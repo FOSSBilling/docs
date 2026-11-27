@@ -5,49 +5,29 @@ description: Build custom modules to extend FOSSBilling's functionality.
 
 {% partial file="./_breaking-changes-caution.mdoc" /%}
 
-## Quick Overview
+## Getting Started
 
-- Modules live in `/modules`
-- Product type modules should start with "Service" (e.g., `Servicehosting`)
-- Module IDs must be lowercase
-- Modules can add: API endpoints, templates, product types, cron jobs, hooks, and more
+Use the bundled [Cookie Consent module](https://github.com/FOSSBilling/FOSSBilling/tree/a480f5fc28991f3d27e5641b5e7b011e269504a4/src/modules/Cookieconsent) as a reference for the manifest, admin controller, and Twig templates.
 
-## Directory Structure
-
-Module names start with a capital letter:
-
-- ✅ **Valid:** `Example`, `Mynewmodule`, `Servicehosting`
-- ❌ **Invalid:** `example`, `MyNewModule`, `servicehosting`
-
-See the [file structure docs](/extensions-and-development/file-structure/#srcmodules) for the complete layout.
-
-## Example Module
-
-The best way to learn is by example. Our [example module](https://github.com/FOSSBilling/example-module) demonstrates:
-
-- Admin and client area templates
-- Email templates
-- API routes
-- Using the dependency injection container
-- Routes with variables (`/example/user/:id`)
-- Translations
-- Interacting with the database
-- Event hooks
+{% steps %}
+1. Create `modules/Example/` in a development installation, or `src/modules/Example/` in a source checkout. Use `example` as the manifest ID and `Box\Mod\Example` as the PHP namespace. The folder name is the lowercase ID with its first letter capitalized. Start product-type module names with `Service`, as in `Servicehosting`.
+2. Adapt the bundled [`manifest.json`](https://github.com/FOSSBilling/FOSSBilling/blob/a480f5fc28991f3d27e5641b5e7b011e269504a4/src/modules/Cookieconsent/manifest.json) for your local module. Put your module's logic in `Service.php`. If you need an admin page, use `Controller/Admin.php` to register its route and put the Twig template in `templates/admin/`.
+3. In the admin panel, go to **Extensions → Overview** and select **Activate** next to your module. If you added an admin page, open it to check that the route and template load.
+{% /steps %}
 
 For template-specific helpers, see [Twig Filters & Functions](/extensions-and-development/twig-filters/). For browser-side API forms and links, see the [JavaScript API Wrapper](/extensions-and-development/javascript/).
 
+## The Manifest
+
+If your local manifest sets `author`, use either a plain string or the object form shown in the bundled manifest.
+
+For publishing, follow the [v1 manifest schema](https://github.com/FOSSBilling/modules/blob/main/manifest.schema.json). Set `manifest_version` to `1` and `type` to `"module"`. Use `requires` to declare supported FOSSBilling and PHP versions and any module dependencies.
+
+You can place an icon next to `manifest.json`. See the [module file structure](/extensions-and-development/file-structure/#srcmodules) for supported icon formats and other entry points.
+
 ## Running Scheduled Tasks
 
-Hook into cron using `onBeforeAdminCronRun` or `onAfterAdminCronRun`:
-
-```php
-public static function onBeforeAdminCronRun(\Box_Event $event): void
-{
-    error_log('Cron was called!');
-}
-```
-
-See [Event Hooks](/extensions-and-development/event-hooks/) for the full list of hook names.
+Use `onBeforeAdminCronRun` or `onAfterAdminCronRun` for scheduled work. Define the handler in `Service.php` and adapt the event-specific method name and body in the [Event Hooks example](/extensions-and-development/event-hooks/#using-hooks-in-your-module).
 
 ## Module Permissions
 
@@ -70,73 +50,22 @@ public function getModulePermissions(): array
 }
 ```
 
-`can_always_access` grants baseline access to the module, while `manage_settings` limits the settings page to the listed permissions.
+`can_always_access` grants baseline access to the module. Declaring `manage_settings` registers the standard boolean permission for editing the module's settings.
 
 ### Checking Permissions
 
-**Quick check:**
+In PHP handlers, use `checkPermissionsAndThrowException()` to enforce a permission for the current staff member:
+
 ```php
 $this->di['mod_service']('Staff')->checkPermissionsAndThrowException('example', 'delete_something');
 ```
 
-**Manual check:**
-```php
-$staff_service = $this->di['mod_service']('Staff');
-if (!$staff_service->hasPermission(null, 'example', 'delete_something')) {
-    throw new \FOSSBilling\InformationException(
-        'You do not have permission to perform this action',
-        [],
-        403
-    );
-}
-```
+In admin Twig templates, use `has_permission()` to show controls for that permission:
 
-**Twig templates:**
-```twig
-{% if has_permission('example', 'delete_something') %\}
+```twig {% process=false %}
+{% if has_permission('example', 'delete_something') %}
     <button type="button">{{ 'Delete something'|trans }}</button>
-{% endif %\}
+{% endif %}
 ```
 
-Remove the backslashes when using this in your actual template.
-
-Use the `has_permission(module, permission = null)` Twig function in admin templates to check whether the logged-in staff member has access to a module or module permission. Omit the second argument to check module access only, for example `has_permission('example')`. The function returns `false` when no admin is logged in or the permission check fails.
-
-Key points:
-- Pass `null` to check the currently logged-in staff member
-- Use your module ID as the second parameter
-- Permission keys are module-specific (no naming conflicts)
-- Use `has_permission` to conditionally render admin UI, but keep enforcing permissions in PHP/API handlers
-
-## Getting Started
-
-{% steps %}
-1. Copy the [example module](https://github.com/FOSSBilling/example-module)
-2. Rename files and update the manifest
-3. Start building your functionality
-4. Test in a development environment
-{% /steps %}
-
-## The Manifest
-
-The `manifest.json` file describes your module. The canonical specification is [`manifest.schema.json`](https://github.com/FOSSBilling/modules/blob/main/manifest.schema.json) in the [FOSSBilling/modules](https://github.com/FOSSBilling/modules) repository, which CI validates every published module against.
-
-Required fields:
-
-| Field | Description |
-|---|---|
-| `manifest_version` | Specification version — use `1` |
-| `type` | Must be `"module"` |
-| `id` | Lowercase module identifier; must match the directory name (case-insensitive) |
-| `name` | Display name shown in the admin panel |
-| `version` | Semantic version (no `v` prefix) |
-| `description` | One-line description |
-| `author` | Object with `name` and optional `url` |
-| `license` | SPDX license identifier (e.g. `Apache-2.0`) |
-| `requires` | Compatibility requirements (`fossbilling`, `php`, `modules`) |
-
-Optional fields: `homepage_url` (an http(s) URL).
-
-### Icons
-
-Module icons are shipped as a file in the module folder rather than declared in the manifest: `icon.svg`, `icon.png`, `icon.webp` or `icon.avif` (at most one; SVG preferred). FOSSBilling picks it up automatically — no manifest entry is needed.
+Pass just the module ID, as in `has_permission('example')`, to check module access. Enforce permissions in the PHP handler even if Twig hides the control.

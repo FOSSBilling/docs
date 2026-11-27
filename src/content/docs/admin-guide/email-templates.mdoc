@@ -9,20 +9,19 @@ FOSSBilling uses [Twig](https://twig.symfony.com/) for email templates, so you c
 
 ### Access Email Settings
 
-1. Go to **Configuration → Settings**
-2. Click **Email**
+In the admin sidebar, go to **System → Settings**, select **Email**, and open the **Email Templates** tab.
 
 You'll see every installed email template, along with its subject, owning module, and enabled status.
 
-### Generate Missing Templates
+### Reset Built-In Templates
 
-If templates are missing, click **Generate templates** at the bottom of the page to recreate them.
+Use **Bulk Actions → Regenerate Built-in Templates** to restore the default subject and body of existing built-in templates. This overwrites any edits to those fields. Save a copy of your edits before running the reset.
 
 ## Editing Templates
 
-1. Click the **Edit** button on any template
-2. Modify the subject and content
-3. Save your changes
+1. Open the template with **Edit**, then change the subject and content.
+2. Select **Preview** to render the current draft with example values.
+3. Select **Update** to save your changes.
 
 ![Editing an email template](../../../assets/guides/emails/template-edit.png)
 
@@ -30,40 +29,38 @@ If templates are missing, click **Generate templates** at the bottom of the page
 
 Templates can use any variables passed by the module. Common ones include:
 
-- `staff.name` — Staff member name
-- `client.first_name` — Client first name
+- `staff_member_name` — Staff recipient's name in the built-in test email
+- `c.first_name` — Recipient's first name in client emails
 - `guest.system_company.name` — Your company name
-- `guest.system_company.signature` — Your email signature
+- `guest.system_email.signature` — The [configured email signature](/admin-guide/company/#signatures)
 
-{% aside type="tip" %}
-Send a test email to see which variables are available for that template. The **Variables** tab shows values from the last sent email.
-{% /aside %}
+The **Variables** tab shows the example values used by **Preview**. If the tab lists no variables, trigger the action that sends the template in a test installation.
 
-See [Twig Filters & Functions](/extensions-and-development/twig-filters/) for all available filters.
+To check email delivery, use **Send a Test Email to Yourself** in Email settings. It sends the built-in test template to your staff address.
+
+Email templates run in a Twig sandbox. Use [supported tags, filters, and functions](https://github.com/FOSSBilling/FOSSBilling/blob/a480f5fc28991f3d27e5641b5e7b011e269504a4/src/library/FOSSBilling/Twig/EmailPolicy.php#L25-L54) such as `if`, `format_date`, and `markdown_to_html`.
 
 ## Template Examples
 
+These examples show two ways to format the built-in test email.
+
 ### Markdown Format
 
-Default templates use Markdown for simple formatting. Wrap your content with the `apply markdown_to_html` filter:
+Use `apply markdown_to_html` to render Markdown. Place the formatted signature after that block.
 
-```twig
-{% apply markdown_to_html %\}
-Hi {{ staff.name }},
+```twig {% process=false %}
+{% apply markdown_to_html %}
+Hi {{ staff_member_name|default('') }},
 
 If you are reading this email, FOSSBilling is **configured properly** and is **able to send emails**.
+{% endapply %}
 
-{{ guest.system_company.signature }}
-{% endapply %\}
+{{ guest.system_email.signature }}
 ```
-
-Remove the backslashes when using this in your actual template.
 
 ### HTML Format
 
-For full control, use HTML:
-
-```html
+```twig {% process=false %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -89,20 +86,20 @@ For full control, use HTML:
 </head>
 <body>
   <h1>Test email from {{ guest.system_company.name }}</h1>
-  <p>Hi {{ staff.name }},</p>
+  <p>Hi {{ staff_member_name|default('') }},</p>
   <p>If you are reading this email, FOSSBilling is <strong>configured properly</strong>.</p>
-  <p class="signature">{{ guest.system_company.signature }}</p>
+  <div class="signature">{{ guest.system_email.signature }}</div>
 </body>
 </html>
 ```
 
-### Before and After
+### Example Previews
 
-**Default (Markdown):**
-![Default template](../../../assets/guides/emails/default-template-preview.png)
+**Markdown**
+![Markdown email preview](../../../assets/guides/emails/default-template-preview.png)
 
-**Custom HTML:**
-![Custom template](../../../assets/guides/emails/custom-template-preview.png)
+**HTML**
+![HTML email preview](../../../assets/guides/emails/custom-template-preview.png)
 
 ## Locale and Invoice Reminder Timing
 
@@ -117,11 +114,10 @@ Templates exist in two places:
 1. **Module source** — `modules/{Module}/templates/email/`
 2. **Database** — `email_template` table (copied there when module is installed)
 
-After installation, edit templates through the admin panel or directly in the database. Changes made only to the module files will not apply until you regenerate the templates.
+Edit installed templates in the admin panel. To restore defaults from the module files, see [Reset Built-In Templates](#reset-built-in-templates).
 
 ## Limitations
 
-- Variables only appear in the **Variables** tab after an email has been sent at least once
 - Email client HTML support varies — test with popular clients
 - Inline CSS works more reliably than `<style>` blocks
 

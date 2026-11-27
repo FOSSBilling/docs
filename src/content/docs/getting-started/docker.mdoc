@@ -16,6 +16,10 @@ sidebar:
 Use the `latest` tag for the current stable release.
 {% /aside %}
 
+{% aside type="caution" title="Keep the Installer Private" %}
+The examples below bind the container's HTTP port to `127.0.0.1` only. Do not expose the installer directly over HTTP: it receives database and administrator credentials. For remote or production use, configure and verify a TLS-terminating reverse proxy before opening the installer.
+{% /aside %}
+
 {% tabs %}
 {% tabitem label="Standalone" %}
 The simplest option. This runs only the FOSSBilling container, so you must provide your own database service.
@@ -23,13 +27,11 @@ The simplest option. This runs only the FOSSBilling container, so you must provi
 ```bash
 docker run -d \
   --name fossbilling \
-  -p 80:80 \
+  -p 127.0.0.1:8080:80 \
   -v fossbilling:/var/www/html \
   --restart unless-stopped \
   fossbilling/fossbilling:latest
 ```
-
-Then open your server IP or hostname in a browser to complete the web installer.
 {% /tabitem %}
 {% tabitem label="Docker Compose" %}
 This option brings up FOSSBilling and MariaDB together, which makes it the fastest way to get started.
@@ -40,7 +42,7 @@ services:
     image: fossbilling/fossbilling:latest
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "127.0.0.1:8080:80"
     volumes:
       - fossbilling:/var/www/html
     depends_on:
@@ -62,32 +64,38 @@ volumes:
   mariadb:
 ```
 
-Run it:
+For a new installation, create a `.env` file beside `docker-compose.yml`. Replace the placeholder with a strong database password and keep the file private.
+
+```dotenv {% meta="title='.env'" %}
+MARIADB_PASSWORD='replace-with-a-strong-password'
+```
+
+Start the stack from that directory. Compose reads `.env` automatically.
 
 ```bash
 docker compose up -d
 ```
 
-The first startup downloads container images, so it may take a few minutes.
-
-Before starting the stack, set a strong database password:
-
-```bash
-export MARIADB_PASSWORD="$(openssl rand -base64 32)"
-```
+The first startup downloads container images and may take a few minutes. Keep the same `MARIADB_PASSWORD` when starting the stack again with the existing database volume.
 
 **Database credentials** (if using the example above):
 - Hostname: `mariadb`
 - Database: `fossbilling`
 - Username: `fossbilling`
-- Password: the value of `MARIADB_PASSWORD`
-
-Open `http://localhost` or your server's IP/hostname to continue with the installer.
+- Password: the value of `MARIADB_PASSWORD` in `.env`
 {% /tabitem %}
 {% /tabs %}
+
+## Complete the Installer
+
+If your browser runs on the Docker host, open `http://localhost:8080` to continue with the installer. This HTTP endpoint is intended only for local setup on the Docker host.
+
+For remote or production use, configure a TLS-terminating reverse proxy that forwards `X-Forwarded-For`, `X-Forwarded-Host`, and `X-Forwarded-Proto: https`, then enable trusted-proxy support when prompted and complete the installer using its HTTPS URL, such as `https://billing.example.com` (see [reverse-proxy setup](/getting-started/installation/#pre-installation-steps)). Do not replace the loopback mapping with a public port and enter installer credentials over remote HTTP.
 
 ## Post-Installation
 
 The official Docker image runs FOSSBilling cron automatically every five minutes inside the container.
 
 You do not need to add a host crontab entry when using the official Docker image.
+
+See [Docker Updates](/maintenance/updating/#docker-updates) when updating FOSSBilling or replacing its container image.

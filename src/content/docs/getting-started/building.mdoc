@@ -10,20 +10,17 @@ Build FOSSBilling from source when you want to contribute code, test changes loc
 
 ## Prerequisites
 
-{% aside %}
-Make sure you have:
 - PHP 8.3 or newer
 - [Composer](https://getcomposer.org/) (latest version)
-- [Node.js](https://nodejs.org/) with npm 11 or newer
-{% /aside %}
+- [Node.js](https://nodejs.org/) 24 or newer with npm 11 or newer
 
 ## Build Steps
 
 {% steps %}
-1. **Clone the repository**
+1. **Clone the `0.8-next` branch**
 
    ```bash
-   git clone https://github.com/FOSSBilling/FOSSBilling.git
+   git clone --branch 0.8-next https://github.com/FOSSBilling/FOSSBilling.git
    cd FOSSBilling
    ```
 
@@ -36,7 +33,7 @@ Make sure you have:
 3. **Install Node dependencies**
 
    ```bash
-   npm install
+   npm ci
    ```
 
 4. **Build front-end assets**
@@ -55,17 +52,6 @@ Make sure you have:
 {% /steps %}
 
 After these steps, your checkout is ready for local development or for packaging into a deployment build.
-
-## Developer Tooling
-
-FOSSBilling bundles its development and CI tooling as a single console package in `tools/`. The tools package requires PHP 8.5 — a tighter requirement than FOSSBilling itself. After installing dependencies, the commands are available via:
-
-```bash
-composer install --working-dir=tools
-tools/bin/console list
-```
-
-This provides `manifest:validate` (validates bundled module manifests), `i18n:*` commands (translation extraction used by the locale repository's workflows), and `demo:seed` (populates an install with demo data).
 
 ## Development Mode
 

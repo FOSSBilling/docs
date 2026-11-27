@@ -59,39 +59,16 @@ For assistance, ask in our [Discord](https://fossbilling.org/discord).
 
 ## Setting the Default Language
 
-Set the default locale in your `config.php` file. If you are unsure which key to change, check the [configuration reference](/admin-guide/config/).
+Open **System → Settings → Localization** in the admin panel and choose a **Default Locale**. Enable **Automatic Browser Language Detection** to use browser preferences for visitors without a saved locale. With detection disabled, those visitors start in the default locale. Save your settings.
 
-Use a locale code such as `en_US`, `fr_FR`, or `de_DE`.
-
-{% aside type="tip" %}
-FOSSBilling 0.8.0+ includes the `i18n.auto_detect_locale` config option (default: `true`). When enabled, the visitor's browser language preference is used automatically. Set it to `false` to always use the default locale.
-{% /aside %}
+For manual changes in `config.php`, see [`i18n.locale` and `i18n.auto_detect_locale`](/admin-guide/config/#localization).
 
 ## Managing Languages
 
-**FOSSBilling 0.6.0+**: Enable/disable languages in the admin panel:
-
-**Extensions → Languages**
-
-See translation completion percentages and toggle languages on/off.
+**Extensions → Languages** shows translation completion and lets you enable or disable languages.
 
 ## How Language Selection Works
 
-FOSSBilling automatically detects the visitor's preferred language from their browser settings.
-
-![Language selection flowchart](../../../assets/locale-logic-flow.png)
-
-### Selection Order
-
-1. Use browser's primary preferred language (if FOSSBilling has it)
-2. Fall back to the default locale from `config.php`
-3. Manual language selection overrides both
-
-### What Counts as a Match?
-
-- **Exact match:** `en_US` ↔ `en_US`
-- **Language match:** `en_GB` ↔ `en_US` (same language, different region)
-
-{% aside %}
-FOSSBilling currently checks only the browser's first preferred language. Secondary language preferences in the header are ignored.
-{% /aside %}
+1. Use the visitor's saved locale if it is enabled.
+2. If browser language detection is enabled, match the single locale PHP selects from the browser's preferences against the enabled locales. A match can use the same language in a different region.
+3. Otherwise, use the configured default locale.

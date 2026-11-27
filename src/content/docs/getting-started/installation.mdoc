@@ -38,7 +38,7 @@ server {
 	listen 80;
 	listen [::]:80;
 	server_name %%DOMAIN%%;
-	return 301 https://$host$request_uri;
+	return 301 https://%%DOMAIN%%$request_uri;
 }
 
 server {
@@ -106,7 +106,7 @@ server {
   {% /tabitem %}
 {% /tabs %}
 
-## Pre-installation Steps
+## Pre-Installation Steps
 
 {% steps %}
 1. **Download FOSSBilling**: Download the latest [stable release](https://fossbilling.org/downloads) from our downloads page.
@@ -139,7 +139,7 @@ server {
 
 3. **Launch the installer**: Visit the domain you set up for FOSSBilling. If you are using HTTPS, access it over `https://` so the application configures secure URLs automatically.
 
-	{% aside type="tip" title="Seeing HTTP 500, HTTP 404, or permission errors?" %}
+	{% aside type="tip" title="Seeing HTTP 500, HTTP 404, or Permission Errors?" %}
 	  You may need to [fix folder permissions](/maintenance/troubleshooting/#permission-issues) before the installer can run.
 	{% /aside %}
 
@@ -156,19 +156,18 @@ server {
 If installation fails, you may need to manually empty the database before retrying.
 {% /aside %}
 
-## Post-installation Steps
-
-Once the installer finishes, configure the cron job before you begin using the system as soon as possible.
+## Post-Installation Steps
 
 ### Configuring the Cronjob
 
-FOSSBilling relies on cron to handle renewals, expired orders, email delivery, background checks, and other scheduled work. It needs to be configured correctly, run consistently, and execute often enough to keep the platform healthy.
+FOSSBilling uses cron for renewals, email delivery, and other scheduled tasks. The [official Docker image schedules cron automatically](/getting-started/docker/#post-installation). For other installations, open **System → Settings → Scheduled Tasks** in the admin panel and set up one of the methods below.
 
-We recommend running cron every five minutes. If more than 15 minutes pass without a run, FOSSBilling will show a warning in the admin panel. Treat the warning as urgent.
-![FOSSBilling warning about cron execution](../../../assets/guides/install/cron-warning.png)
+After setup, check **Last Scheduled Execution** on the same page to confirm your job ran.
 
 #### Local Cron Job
 
-FOSSBilling shows the correct cron command on the installation-complete screen and again in the admin panel. If you need to find it later, go to `Settings` -> `Scheduled Tasks` (`/admin/extension/settings/cron`).
+Add the crontab line shown on the installer’s completion screen or under **Recommended Schedule** in **Scheduled Tasks**. If your hosting panel asks for the schedule and command separately, set it to run the displayed PHP command every five minutes.
 
-![Cron settings - correct cron command](../../../assets/guides/install/cron-settings-command.png)
+#### Guest Cron Endpoint
+
+Use guest cron only if local cron is unavailable, since HTTP requests can time out. Turn on **Enable Guest Access** in **Scheduled Tasks** and schedule an HTTPS request to the full **Guest Cron URL** every five minutes. Keep the URL private because it contains the access hash.
