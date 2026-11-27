@@ -82,6 +82,17 @@ FOSSBilling.api.admin.post(
 );
 ```
 
+### Get the Signed-In Client's Profile
+
+```javascript
+FOSSBilling.api.client.get(
+  "profile/get",
+  {},
+  (profile) => console.log("First name:", profile.first_name),
+  (error) => console.error("Failed to load profile:", error.message)
+);
+```
+
 ## Loading Spinner
 
 The wrapper creates and removes the spinner element automatically. Your theme provides the `.spinner-border` styling.
@@ -109,19 +120,20 @@ Use `api_url` for the target endpoint:
 
 `fb_api_form()` adds `method="post"` and `data-fb-api`. The wrapper serializes the form, adds the CSRF token automatically for session-authenticated calls, disables enabled buttons while the request is running, and shows errors with `FOSSBilling.message()`.
 
-For API links:
+Use API links for read-only requests:
 
 ```twig
-<a href="{{ 'client/delete'|api_url(query: { id: client.id }, role: 'admin') }}"
-   {{ fb_api_link({
-     modal: { type: 'confirm', title: 'Are you sure?'|trans },
-     redirect: 'client'|url
-   }) }}>
-  {{ 'Delete'|trans }}
+<a href="{{ 'currency/get_pairs'|api_url(role: 'guest') }}"
+   {{ fb_api_link({ callback: 'showCurrencies' }) }}>
+  {{ 'Load Currency Pairs'|trans }}
 </a>
 ```
 
-The wrapper intercepts links with `data-fb-api`, sends a `GET` request to the link `href`, and then handles the configured follow-up action.
+Define the callback in your theme JavaScript. The wrapper sends a `GET` request and passes the result to the callback.
+
+```javascript
+window.showCurrencies = (pairs) => console.table(pairs);
+```
 
 Supported `data-fb-api` options:
 
@@ -134,40 +146,8 @@ Supported `data-fb-api` options:
 | `params` | Links | Extra request parameters merged into the link request. |
 | `modal` | Links | Show a confirmation, danger, or prompt modal before the request. |
 
-Prompt modals require a `key`; the entered value is sent under that request parameter name:
-
-```twig
-<a href="{{ 'example/update_name'|api_url }}"
-   {{ fb_api_link({
-     modal: { type: 'prompt', title: 'New name'|trans, label: 'Name'|trans, key: 'name' },
-     reload: true
-   }) }}>
-  {{ 'Rename'|trans }}
-</a>
-```
+For a prompt modal, set `modal.key` to the request parameter that should receive the entered value.
 
 ## Manual Requests
 
 If you need to call the API without the wrapper, see the [`fetch()` example in the API reference](/extensions-and-development/api/#manual-browser-requests).
-
-## Complete Example
-
-```javascript
-function loadProfile() {
-  FOSSBilling.api.client.get(
-    "profile/get",
-    {},
-    function(profile) {
-      document.getElementById('name').textContent = profile.first_name + ' ' + profile.last_name;
-      document.getElementById('email').textContent = profile.email;
-    },
-    function(error) {
-      alert('Failed to load profile: ' + error.message);
-    }
-  );
-}
-
-document.addEventListener('DOMContentLoaded', loadProfile);
-```
-
-For more details, see the [API Reference](/extensions-and-development/api/).
